@@ -29,6 +29,20 @@
     z-index: 0;
 }
 
+.create-account {
+    align-self: center;
+    color: #5c99c5;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: 4px;
+}
+
+.create-account:hover {
+    color: #1d6fa8;
+    text-decoration: underline;
+}
+
 /* Ondas suaves inferiores */
 .login-container::after {
     content: '';

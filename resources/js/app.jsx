@@ -4,12 +4,14 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainLayout from './Components/layout/MainLayout';
 import Home from './Pages/Home';
 import Login from './Pages/auth/Login';
+import Register from './Pages/auth/Register';
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
                 <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
                 <Route path="/" element={<MainLayout />}>
                     <Route index element={<Home />} />
                     {/* Aquí se agregarán las demás rutas */}

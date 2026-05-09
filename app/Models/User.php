@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'google_id', // ID único del usuario en Google
+        'avatar',    // URL del avatar de Google
     ];
 
     /**
@@ -43,7 +45,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            // google_id se guarda como string (IDs de Google son muy largos)
         ];
     }
 }
