@@ -1,0 +1,340 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+.login-container {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+    background:
+        radial-gradient(circle at 12% 18%, rgba(0, 105, 170, 0.35) 0%, transparent 30%),
+        radial-gradient(circle at 90% 78%, rgba(91, 111, 230, 0.28) 0%, transparent 32%),
+        radial-gradient(circle at 75% 18%, rgba(84, 190, 210, 0.25) 0%, transparent 25%),
+        linear-gradient(135deg, #c7e8ff 0%, #eef5ff 38%, #d9ecff 65%, #d8d3ff 100%);
+}
+
+/* Capa decorativa con patrón muy sutil */
+.login-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.28) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.20) 1px, transparent 1px);
+    background-size: 56px 56px;
+    opacity: 0.35;
+    z-index: 0;
+}
+
+/* Ondas suaves inferiores */
+.login-container::after {
+    content: '';
+    position: absolute;
+    width: 140%;
+    height: 280px;
+    left: -20%;
+    bottom: -130px;
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 50% 50% 0 0;
+    filter: blur(2px);
+    z-index: 0;
+}
+
+/* Blobs decorativos fuertes */
+.decor {
+    position: absolute;
+    border-radius: 999px;
+    filter: blur(12px);
+    opacity: 0.75;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.decor-blob-one {
+    width: 330px;
+    height: 330px;
+    top: 13%;
+    left: 15%;
+    background: linear-gradient(135deg, rgba(45, 156, 219, 0.45), rgba(160, 210, 255, 0.15));
+    animation: floatSoft 8s ease-in-out infinite alternate;
+}
+
+.decor-blob-two {
+    width: 380px;
+    height: 380px;
+    right: 12%;
+    bottom: 8%;
+    background: linear-gradient(135deg, rgba(142, 125, 255, 0.35), rgba(80, 190, 230, 0.18));
+    animation: floatSoft 10s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes floatSoft {
+    from { transform: translateY(0) scale(1); }
+    to { transform: translateY(-24px) scale(1.05); }
+}
+
+/* Flores hechas con CSS */
+.flower {
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.95;
+}
+
+.flower span {
+    position: absolute;
+    width: 62px;
+    height: 88px;
+    left: 49px;
+    top: 18px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(137, 207, 240, 0.72));
+    border-radius: 60% 60% 45% 45%;
+    transform-origin: 31px 62px;
+    box-shadow: 0 10px 24px rgba(56, 120, 180, 0.14);
+}
+
+.flower span:nth-child(1) { transform: rotate(0deg); }
+.flower span:nth-child(2) { transform: rotate(72deg); }
+.flower span:nth-child(3) { transform: rotate(144deg); }
+.flower span:nth-child(4) { transform: rotate(216deg); }
+.flower span:nth-child(5) { transform: rotate(288deg); }
+
+.flower::after {
+    content: '';
+    position: absolute;
+    width: 38px;
+    height: 38px;
+    left: 61px;
+    top: 58px;
+    background: radial-gradient(circle, #4db7e5 0%, #2f80c9 70%);
+    border-radius: 50%;
+    box-shadow: 0 8px 20px rgba(47, 128, 201, 0.3);
+}
+
+.flower-left {
+    left: 11%;
+    top: 30%;
+    transform: rotate(-18deg);
+}
+
+.flower-right {
+    right: 13%;
+    top: 22%;
+    transform: rotate(22deg) scale(0.82);
+    opacity: 0.75;
+}
+
+/* Hojas decorativas */
+.leaf {
+    position: absolute;
+    width: 120px;
+    height: 46px;
+    border-radius: 100% 0 100% 0;
+    background: linear-gradient(135deg, rgba(64, 169, 210, 0.42), rgba(255, 255, 255, 0.55));
+    box-shadow: 0 18px 35px rgba(48, 120, 180, 0.16);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.leaf-one {
+    left: 23%;
+    bottom: 20%;
+    transform: rotate(-28deg);
+}
+
+.leaf-two {
+    right: 23%;
+    bottom: 24%;
+    transform: rotate(34deg);
+}
+
+.leaf-three {
+    left: 31%;
+    top: 19%;
+    transform: rotate(18deg) scale(0.7);
+    opacity: 0.65;
+}
+
+/* Tarjeta principal */
+.login-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 420px;
+    padding: 46px 44px;
+    box-sizing: border-box;
+    border-radius: 20px;
+
+    /* Vidrio translúcido */
+    background: rgba(255, 255, 255, 0.68);
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+
+    /* Borde luminoso sutil */
+    border: 1px solid rgba(255, 255, 255, 0.82);
+
+    /* Sombra moderna multicapa: difusa + azul suave */
+    box-shadow:
+        0 8px 32px rgba(100, 149, 237, 0.12),
+        0 2px 8px rgba(100, 149, 237, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.login-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.login-logo {
+    width: 82px;
+    height: auto;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 12px 18px rgba(25, 118, 210, 0.28));
+}
+
+.login-title {
+    color: #173f68;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+    margin: 0 0 8px;
+}
+
+.login-subtitle {
+    color: #557999;
+    font-size: 12.5px;
+    margin: 0;
+}
+
+.login-message {
+    background: linear-gradient(135deg, rgba(213, 235, 255, 0.9), rgba(235, 231, 255, 0.9));
+    border: 1px solid rgba(86, 164, 230, 0.35);
+    color: #35698f;
+    padding: 15px 18px;
+    border-radius: 16px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.7;
+    font-style: italic;
+    margin-bottom: 28px;
+    box-shadow: 0 10px 25px rgba(72, 142, 205, 0.12);
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    color: #365d7d;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.75px;
+    text-transform: uppercase;
+    margin-bottom: 9px;
+}
+
+.form-group input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(76, 157, 225, 0.38);
+    background: rgba(234, 246, 255, 0.8);
+    color: #173f68;
+    font-size: 14px;
+    transition: all 0.25s ease;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+.form-group input:focus {
+    outline: none;
+    background: rgba(255,255,255,0.96);
+    border-color: rgba(37, 140, 220, 0.8);
+    box-shadow:
+        0 0 0 4px rgba(76, 157, 225, 0.18),
+        0 10px 22px rgba(76, 157, 225, 0.12);
+}
+
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 4px;
+}
+
+.forgot-password {
+    align-self: flex-end;
+    color: #5c99c5;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    color: #1d6fa8;
+    text-decoration: underline;
+}
+
+.login-button {
+    width: 100%;
+    border: none;
+    padding: 15px;
+    border-radius: 14px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    background: linear-gradient(135deg, #179ad7 0%, #4bb3f0 48%, #7b8ff2 100%);
+    box-shadow:
+        0 16px 32px rgba(23, 154, 215, 0.34),
+        0 7px 18px rgba(123, 143, 242, 0.18);
+    transition: all 0.22s ease;
+}
+
+.login-button:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 22px 42px rgba(23, 154, 215, 0.4),
+        0 10px 24px rgba(123, 143, 242, 0.24);
+}
+
+.login-button:active {
+    transform: scale(0.98);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .login-card {
+        max-width: calc(100% - 36px);
+        padding: 36px 28px;
+    }
+
+    .flower {
+        opacity: 0.35;
+        transform: scale(0.6);
+    }
+
+    .flower-left {
+        left: -25px;
+    }
+
+    .flower-right {
+        right: -25px;
+    }
+
+    .leaf {
+        opacity: 0.35;
+    }
+}
