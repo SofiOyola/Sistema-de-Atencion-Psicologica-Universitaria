@@ -1,0 +1,392 @@
+/* ==========================================================================
+   ESTILOS EXCLUSIVOS PARA "MIS CITAS"
+   Mantiene la herencia de StudentDashboard.css (variables, glassmorphism)
+   ========================================================================== */
+
+.sd-appts-container {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- ENCABEZADO --- */
+.sd-appts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    background: linear-gradient(135deg, rgba(255,255,255,0.8), rgba(240, 250, 244, 0.7));
+    backdrop-filter: var(--sd-glass-blur);
+    padding: 32px 40px;
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.9);
+    box-shadow: var(--sd-shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.sd-appts-header::after {
+    content: '📅';
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+.sd-appts-header-text {
+    z-index: 1;
+}
+
+.sd-appts-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--sd-text-main);
+    margin: 0 0 8px 0;
+}
+
+.sd-appts-subtitle {
+    font-size: 15px;
+    color: var(--sd-text-muted);
+    margin: 0;
+}
+
+/* Botón Nuevo */
+.sd-appts-new-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--sd-primary), var(--sd-accent));
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 16px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--sd-transition);
+    box-shadow: 0 8px 24px rgba(95, 168, 110, 0.3);
+    z-index: 1;
+}
+
+.sd-appts-new-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 32px rgba(95, 168, 110, 0.4);
+}
+
+/* --- TABS (FILTROS) --- */
+.sd-appts-tabs {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.sd-appts-tab {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid var(--sd-border);
+    padding: 10px 24px;
+    border-radius: 20px;
+    color: var(--sd-text-muted);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: var(--sd-transition);
+    white-space: nowrap;
+}
+
+.sd-appts-tab:hover {
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--sd-primary);
+}
+
+.sd-appts-tab.active {
+    background: var(--sd-primary);
+    color: white;
+    border-color: var(--sd-primary);
+    box-shadow: 0 4px 12px rgba(95, 168, 110, 0.2);
+}
+
+/* --- LISTADO DE CITAS --- */
+.sd-appts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sd-appt-item-card {
+    background: var(--sd-card-bg);
+    backdrop-filter: var(--sd-glass-blur);
+    border: 1px solid rgba(255,255,255,0.9);
+    border-radius: 20px;
+    padding: 24px 32px;
+    box-shadow: var(--sd-shadow-sm);
+    transition: var(--sd-transition);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sd-appt-item-card:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: var(--sd-shadow-md);
+}
+
+.sd-appt-item-header {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.sd-appt-item-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.sd-appt-item-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.sd-appt-item-col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sd-appt-item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--sd-text-main);
+    font-size: 15px;
+}
+
+.sd-appt-item-row svg {
+    color: var(--sd-primary);
+    background: rgba(95, 168, 110, 0.1);
+    padding: 6px;
+    border-radius: 8px;
+    width: 28px;
+    height: 28px;
+}
+
+.sd-appt-psych {
+    font-weight: 600;
+}
+
+.sd-appt-item-reason {
+    font-size: 14px;
+    color: var(--sd-text-muted);
+    background: rgba(255,255,255,0.6);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px dashed var(--sd-border);
+}
+
+.sd-appt-item-reason strong {
+    color: var(--sd-text-main);
+}
+
+.sd-appt-item-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px solid var(--sd-border);
+}
+
+/* Botones de acción */
+.sd-appt-btn-outline {
+    background: white;
+    color: var(--sd-primary);
+    border: 1px solid var(--sd-primary);
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--sd-transition);
+}
+
+.sd-appt-btn-outline:hover {
+    background: var(--sd-primary-light);
+}
+
+.sd-appt-btn-danger {
+    background: transparent;
+    color: #e57373;
+    border: 1px solid #e57373;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--sd-transition);
+}
+
+.sd-appt-btn-danger:hover {
+    background: #fdecea;
+}
+
+/* Estado Vacío */
+.sd-appts-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 20px;
+    border: 1px dashed var(--sd-border);
+    color: var(--sd-text-muted);
+    font-weight: 500;
+}
+
+.sd-appts-empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.8;
+}
+
+
+/* --- MODALES --- */
+.sd-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.sd-modal-card {
+    background: white;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.15);
+    position: relative;
+    animation: modalScale 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes modalScale {
+    from { opacity: 0; transform: scale(0.95) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.sd-modal-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: transparent;
+    border: none;
+    color: var(--sd-text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    transition: var(--sd-transition);
+}
+
+.sd-modal-close:hover {
+    background: #f5f5f5;
+    color: var(--sd-text-main);
+}
+
+.sd-modal-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--sd-text-main);
+    margin: 0 0 12px 0;
+}
+
+.sd-modal-desc {
+    color: var(--sd-text-muted);
+    font-size: 15px;
+    margin: 0 0 24px 0;
+    line-height: 1.5;
+}
+
+.sd-modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+
+.sd-modal-field label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--sd-text-main);
+}
+
+.sd-modal-field input,
+.sd-modal-field textarea {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid var(--sd-border);
+    border-radius: 12px;
+    background: #f9fdfa;
+    color: var(--sd-text-main);
+    font-family: inherit;
+    font-size: 14px;
+    transition: var(--sd-transition);
+    resize: none;
+}
+
+.sd-modal-field input:focus,
+.sd-modal-field textarea:focus {
+    outline: none;
+    border-color: var(--sd-primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(95, 168, 110, 0.15);
+}
+
+.sd-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* Responsive Modals & Cards */
+@media (max-width: 768px) {
+    .sd-appt-item-body {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .sd-appts-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 20px;
+        padding: 24px;
+    }
+    
+    .sd-appts-header::after {
+        display: none;
+    }
+    
+    .sd-appt-item-actions {
+        flex-direction: column;
+    }
+    
+    .sd-modal-card {
+        margin: 20px;
+        padding: 24px;
+    }
+}
