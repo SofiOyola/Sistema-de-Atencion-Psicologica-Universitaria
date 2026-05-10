@@ -1,13 +1,18 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, Users, Settings, BookOpen } from 'lucide-react';
+import { Home, Calendar, TrendingUp, FileText, BookOpen, Heart, MessageCircle, User, Settings } from 'lucide-react';
 
 const Sidebar = () => {
     const menuItems = [
-        { name: 'Inicio', icon: <Home size={20} />, path: '/' },
-        { name: 'Estudiantes', icon: <Users size={20} />, path: '/students' },
-        { name: 'Cursos', icon: <BookOpen size={20} />, path: '/courses' },
-        { name: 'Configuración', icon: <Settings size={20} />, path: '/settings' },
+    { name: 'Inicio', icon: <Home size={20} />, path: '/student/dashboard' },
+    { name: 'Mis citas', icon: <Calendar size={20} />, path: '/student/appointments' },
+    { name: 'Mi seguimiento', icon: <TrendingUp size={20} />, path: '/student/tracking' },
+    { name: 'Historial clínico', icon: <FileText size={20} />, path: '/student/history' },
+    { name: 'Recursos', icon: <BookOpen size={20} />, path: '/student/resources' },
+    { name: 'Bienestar emocional', icon: <Heart size={20} />, path: '/student/wellness' },
+    { name: 'Mensajes', icon: <MessageCircle size={20} />, path: '/student/messages' },
+    { name: 'Perfil', icon: <User size={20} />, path: '/student/profile' },
+    { name: 'Configuración', icon: <Settings size={20} />, path: '/student/settings' },
     ];
 
     return (
@@ -40,11 +45,11 @@ const Sidebar = () => {
             <div className="p-4 border-t border-slate-800">
                 <div className="flex items-center">
                     <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-                        A
+                        VR
                     </div>
                     <div className="ml-3">
-                        <p className="text-sm font-medium">Admin User</p>
-                        <p className="text-xs text-slate-400">admin@sapu.edu</p>
+                        <p className="text-sm font-medium">Valentina Ríos</p>
+                        <p className="text-xs text-slate-400">valentina.rios@udes.edu.co</p>
                     </div>
                 </div>
             </div>
