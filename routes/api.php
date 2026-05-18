@@ -17,6 +17,7 @@ Route::prefix('resources')->group(function () {
 });
 
 use App\Http\Controllers\Api\ClinicalFollowUpController;
+use App\Http\Controllers\Api\EmotionalAlertController;
 
 // Agenda del psicólogo
 // TODO: Añadir middleware auth:sanctum cuando se implemente autenticación real
@@ -32,4 +33,10 @@ Route::prefix('psychologist')->group(function () {
     Route::get('/patients', [ClinicalFollowUpController::class, 'getPatients']);
     Route::get('/patients/{id}/notes', [ClinicalFollowUpController::class, 'getPatientNotes']);
     Route::post('/patients/{id}/notes', [ClinicalFollowUpController::class, 'addNote']);
+
+    // Alertas emocionales
+    Route::get('/emotional-alerts/students', [EmotionalAlertController::class, 'getStudents']);
+    Route::get('/emotional-alerts/students/{id}/records', [EmotionalAlertController::class, 'getStudentRecords']);
+    Route::put('/emotional-alerts/{recordId}/review', [EmotionalAlertController::class, 'reviewRecord']);
+    Route::put('/emotional-alerts/{recordId}/close', [EmotionalAlertController::class, 'closeRecord']);
 });
