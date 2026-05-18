@@ -40,3 +40,10 @@ Route::prefix('psychologist')->group(function () {
     Route::put('/emotional-alerts/{recordId}/review', [EmotionalAlertController::class, 'reviewRecord']);
     Route::put('/emotional-alerts/{recordId}/close', [EmotionalAlertController::class, 'closeRecord']);
 });
+
+use App\Http\Controllers\Api\AdminDashboardController;
+
+// Panel Administrativo
+Route::prefix('admin')->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'getDashboardData']);
+});

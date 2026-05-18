@@ -13,6 +13,7 @@ import PsychologistAgenda    from './Pages/psychologist/PsychologistAgenda';
 import ResourcesPage from './Pages/student/ResourcesPage';
 import ClinicalFollowUp from './Pages/psychologist/ClinicalFollowUp';
 import EmotionalAlerts from './Pages/psychologist/EmotionalAlerts';
+import AdminDashboard from './Pages/admin/AdminDashboard';
 
 function App() {
     return (
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/psychologist/agenda"    element={<PsychologistAgenda />} />
                 <Route path="/psychologist/clinical-followup" element={<ClinicalFollowUp />} />
                 <Route path="/psychologist/alerts" element={<EmotionalAlerts />} />
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
             </Routes>
         </BrowserRouter>
     );
