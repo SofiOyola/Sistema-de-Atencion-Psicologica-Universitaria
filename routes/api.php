@@ -43,6 +43,7 @@ Route::prefix('psychologist')->group(function () {
 
 use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\AdminPsychologistController;
+use App\Http\Controllers\Api\AdminStudentController;
 
 // Panel Administrativo
 Route::prefix('admin')->group(function () {
@@ -54,4 +55,10 @@ Route::prefix('admin')->group(function () {
     Route::put('/psychologists/{id}', [AdminPsychologistController::class, 'update']);
     Route::patch('/psychologists/{id}/toggle-status', [AdminPsychologistController::class, 'toggleStatus']);
     Route::delete('/psychologists/{id}', [AdminPsychologistController::class, 'destroy']);
+
+    // Gestión de Estudiantes
+    Route::get('/students', [AdminStudentController::class, 'index']);
+    Route::post('/students', [AdminStudentController::class, 'store']);
+    Route::put('/students/{id}', [AdminStudentController::class, 'update']);
+    Route::delete('/students/{id}', [AdminStudentController::class, 'destroy']);
 });
