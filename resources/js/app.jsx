@@ -16,6 +16,8 @@ import EmotionalAlerts from './Pages/psychologist/EmotionalAlerts';
 import AdminDashboard from './Pages/admin/AdminDashboard';
 import AdminPsychologists from './Pages/admin/AdminPsychologists';
 import AdminStudents from './Pages/admin/AdminStudents';
+import AdminResources from './Pages/admin/AdminResources';
+
 
 function App() {
     return (
@@ -35,6 +37,7 @@ function App() {
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/psychologists" element={<AdminPsychologists />} />
                 <Route path="/admin/students" element={<AdminStudents />} />
+                <Route path="/admin/resources" element={<AdminResources />} />
             </Routes>
         </BrowserRouter>
     );

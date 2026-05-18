@@ -44,6 +44,8 @@ Route::prefix('psychologist')->group(function () {
 use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\AdminPsychologistController;
 use App\Http\Controllers\Api\AdminStudentController;
+use App\Http\Controllers\Api\AdminResourceController;
+
 
 // Panel Administrativo
 Route::prefix('admin')->group(function () {
@@ -61,4 +63,11 @@ Route::prefix('admin')->group(function () {
     Route::post('/students', [AdminStudentController::class, 'store']);
     Route::put('/students/{id}', [AdminStudentController::class, 'update']);
     Route::delete('/students/{id}', [AdminStudentController::class, 'destroy']);
+
+    // Gestión de Recursos Psicoeducativos
+    Route::get('/resources', [AdminResourceController::class, 'index']);
+    Route::post('/resources', [AdminResourceController::class, 'store']);
+    Route::put('/resources/{id}', [AdminResourceController::class, 'update']);
+    Route::patch('/resources/{id}/toggle-status', [AdminResourceController::class, 'toggleStatus']);
+    Route::delete('/resources/{id}', [AdminResourceController::class, 'destroy']);
 });
