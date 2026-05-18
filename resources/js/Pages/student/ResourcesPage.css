@@ -1,0 +1,343 @@
+/* ==========================================================================
+   RECURSOS PSICOEDUCATIVOS – Estilos de página
+   Usa las variables sd-* que ya carga StudentDashboard.css via StudentLayout.
+   ========================================================================== */
+
+/* ══════════════════════════════════════════════════════════════════════════
+   HERO HEADER
+   ══════════════════════════════════════════════════════════════════════════ */
+.rp-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    min-height: 200px;
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.93) 0%,
+        rgba(230, 242, 235, 0.87) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 28px;
+    padding: 40px 44px;
+    box-shadow: var(--sd-shadow-md, 0 8px 24px rgba(43, 69, 53, 0.08));
+    position: relative;
+    overflow: hidden;
+    animation: rpFadeUp 0.55s ease-out both;
+}
+
+/* Círculo decorativo de fondo */
+.rp-hero::before {
+    content: '';
+    position: absolute;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+        rgba(125, 184, 154, 0.14) 0%,
+        transparent 70%);
+    top: -70px;
+    right: -50px;
+    pointer-events: none;
+}
+
+.rp-hero-text {
+    position: relative;
+    z-index: 2;
+    max-width: 560px;
+}
+
+.rp-hero-tag {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--sd-primary, #5fa86e);
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+    margin: 0 0 10px 0;
+}
+
+.rp-hero-title {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--sd-text-main, #2b4535);
+    margin: 0 0 14px 0;
+    line-height: 1.15;
+}
+
+.rp-hero-desc {
+    font-size: 15px;
+    color: var(--sd-text-muted, #5e7a68);
+    line-height: 1.65;
+    margin: 0 0 22px 0;
+}
+
+.rp-hero-badges {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.rp-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sd-accent, #7db89a);
+    box-shadow: var(--sd-shadow-sm, 0 4px 12px rgba(43, 69, 53, 0.04));
+}
+
+/* ── Ilustración CSS ── */
+.rp-hero-illus {
+    position: relative;
+    width: 180px;
+    height: 170px;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.rp-illus-stack {
+    position: absolute;
+    bottom: 12px;
+    left: 10px;
+}
+
+.rp-illus-book {
+    position: absolute;
+    border-radius: 5px;
+    box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.09);
+}
+
+.rp-illus-book--a {
+    width: 100px;
+    height: 22px;
+    background: linear-gradient(135deg, #aed4be, #84c09e);
+    bottom: 0;
+    left: 0;
+    transform: rotate(-7deg);
+}
+
+.rp-illus-book--b {
+    width: 95px;
+    height: 20px;
+    background: linear-gradient(135deg, #b8d8e0, #8abec6);
+    bottom: 21px;
+    left: 4px;
+    transform: rotate(-4deg);
+}
+
+.rp-illus-book--c {
+    width: 88px;
+    height: 18px;
+    background: linear-gradient(135deg, #e6cfa8, #d4b98a);
+    bottom: 40px;
+    left: 8px;
+    transform: rotate(-2deg);
+}
+
+.rp-illus-leaf {
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    border-radius: 0 26px 0 26px;
+}
+
+.rp-illus-leaf--1 {
+    background: var(--sd-accent, #7db89a);
+    top: 18px;
+    right: 28px;
+    transform: rotate(15deg);
+    opacity: 0.75;
+    animation: rpLeafSway 7s ease-in-out infinite alternate;
+}
+
+.rp-illus-leaf--2 {
+    background: var(--sd-primary, #5fa86e);
+    top: 48px;
+    right: 8px;
+    transform: rotate(-28deg) scale(0.75);
+    opacity: 0.5;
+    animation: rpLeafSway 9s ease-in-out infinite alternate-reverse;
+}
+
+.rp-illus-dot {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.35;
+}
+
+.rp-illus-dot--1 {
+    width: 10px;
+    height: 10px;
+    background: var(--sd-primary, #5fa86e);
+    top: 10px;
+    left: 55px;
+}
+
+.rp-illus-dot--2 {
+    width: 7px;
+    height: 7px;
+    background: var(--sd-accent, #7db89a);
+    top: 72px;
+    right: 55px;
+}
+
+@keyframes rpLeafSway {
+    0%   { transform: rotate(15deg) translateY(0px);  }
+    100% { transform: rotate(20deg) translateY(-6px); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CONTADOR
+   ══════════════════════════════════════════════════════════════════════════ */
+.rp-count-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sd-text-muted, #5e7a68);
+    margin: 0 0 6px 2px;
+    animation: rpFadeUp 0.3s ease-out both;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   GRID DE TARJETAS
+   ══════════════════════════════════════════════════════════════════════════ */
+.rp-grid {
+    display: grid;
+    /* mínimo 280 px, se llena automáticamente — máximo 3 columnas en desktop */
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+    animation: rpFadeUp 0.45s ease-out both;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SKELETON LOADING
+   ══════════════════════════════════════════════════════════════════════════ */
+.rp-skeleton-hero {
+    height: 200px;
+    border-radius: 28px;
+    background: linear-gradient(90deg,
+        #e6f2eb 25%, #d4e8dc 50%, #e6f2eb 75%);
+    background-size: 200% 100%;
+    animation: rpShimmer 1.6s infinite;
+    margin-bottom: 0;   /* gap del sd-content ya maneja el espacio */
+}
+
+.rp-skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.rp-skeleton-card {
+    height: 300px;
+    border-radius: 24px;
+    background: linear-gradient(90deg,
+        #e6f2eb 25%, #d4e8dc 50%, #e6f2eb 75%);
+    background-size: 200% 100%;
+    animation: rpShimmer 1.6s infinite;
+}
+
+.rp-skeleton-card:nth-child(even) {
+    animation-delay: 0.15s;
+}
+
+@keyframes rpShimmer {
+    0%   { background-position:  200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   EMPTY STATE
+   ══════════════════════════════════════════════════════════════════════════ */
+.rp-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 60px 32px;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 28px;
+    box-shadow: var(--sd-shadow-md, 0 8px 24px rgba(43, 69, 53, 0.08));
+    animation: rpFadeUp 0.4s ease-out both;
+}
+
+.rp-empty-icon {
+    font-size: 50px;
+    line-height: 1;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.rp-empty-state h3 {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--sd-text-main, #2b4535);
+    margin: 0 0 8px 0;
+}
+
+.rp-empty-state p {
+    font-size: 14px;
+    color: var(--sd-text-muted, #5e7a68);
+    margin: 0 0 24px 0;
+    line-height: 1.6;
+}
+
+.rp-empty-btn {
+    background: linear-gradient(135deg,
+        var(--sd-primary, #5fa86e),
+        var(--sd-accent,  #7db89a));
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 16px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 6px 16px rgba(95, 168, 110, 0.28);
+}
+
+.rp-empty-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 24px rgba(95, 168, 110, 0.38);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ANIMACIONES
+   ══════════════════════════════════════════════════════════════════════════ */
+@keyframes rpFadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 920px) {
+    .rp-hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 32px 24px;
+        gap: 24px;
+    }
+    .rp-hero-text { max-width: 100%; }
+    .rp-hero-badges { justify-content: center; }
+    .rp-hero-illus  { display: none; }
+    .rp-hero-title  { font-size: 26px; }
+}
+
+@media (max-width: 600px) {
+    .rp-grid,
+    .rp-skeleton-grid {
+        grid-template-columns: 1fr;
+    }
+}

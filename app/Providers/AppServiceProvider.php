@@ -11,7 +11,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(
+            \App\Contracts\ResourceServiceInterface::class,
+            \App\Services\ResourceMockService::class   // Cambiar a Neo4jService cuando esté listo
+        );
     }
 
     /**

@@ -1,0 +1,73 @@
+/* ==========================================================================
+   SEARCH BAR – Wellness Premium
+   ========================================================================== */
+.rp-search-wrapper {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(95, 168, 110, 0.15);
+    border-radius: 20px;
+    padding: 4px 6px;
+    box-shadow: 0 4px 12px rgba(43, 69, 53, 0.04);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    margin: 28px 0 24px 0;
+    max-width: 520px;
+}
+
+.rp-search-wrapper:focus-within {
+    border-color: var(--sd-primary, #5fa86e);
+    box-shadow: 0 8px 24px rgba(95, 168, 110, 0.12);
+    transform: translateY(-1px);
+}
+
+.rp-search-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: var(--sd-primary-light, #e6f2eb);
+    color: var(--sd-primary, #5fa86e);
+    flex-shrink: 0;
+}
+
+.rp-search-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--sd-text-main, #2b4535);
+    padding: 12px 14px;
+    outline: none;
+}
+
+.rp-search-input::placeholder {
+    color: #93b3a0;
+    font-weight: 400;
+}
+
+.rp-search-clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(95, 168, 110, 0.1);
+    color: var(--sd-text-muted, #5e7a68);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-right: 4px;
+}
+
+.rp-search-clear:hover {
+    background: rgba(95, 168, 110, 0.2);
+    color: var(--sd-primary, #5fa86e);
+}

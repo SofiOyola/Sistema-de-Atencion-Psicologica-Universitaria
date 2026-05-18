@@ -8,6 +8,7 @@ import Register from './Pages/auth/Register';
 import StudentDashboard from './Pages/student/StudentDashboard';
 import MyAppointments from './Pages/student/MyAppointments';
 import ScheduleAppointment from './Pages/student/ScheduleAppointment';
+import ResourcesPage from './Pages/student/ResourcesPage';
 
 function App() {
     return (
@@ -15,12 +16,11 @@ function App() {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/" element={<MainLayout />}>
-                    <Route index element={<Home />} />
-                </Route>
+                <Route path="/" element={<Login/>}/>
                 <Route path="/student/dashboard" element={<StudentDashboard />} />
                 <Route path="/student/appointments" element={<MyAppointments />} />
                 <Route path="/student/schedule-appointment" element={<ScheduleAppointment />} />
+                <Route path="/student/resources" element={<ResourcesPage />} />
             </Routes>
         </BrowserRouter>
     );
