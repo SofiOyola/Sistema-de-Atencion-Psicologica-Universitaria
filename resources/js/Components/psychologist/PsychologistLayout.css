@@ -1,0 +1,223 @@
+/* ==========================================================================
+   VARIABLES & GLOBALS
+   ========================================================================== */
+.pd-root {
+    --pd-primary:        hsl(340, 55%, 72%);
+    --pd-primary-hover:  hsl(340, 55%, 62%);
+    --pd-primary-light:  hsl(340, 55%, 95%);
+    --pd-accent:         hsl(268, 35%, 76%);
+    --pd-accent-light:   hsl(268, 35%, 95%);
+    --pd-bg:             hsl(330, 28%, 97%);
+    --pd-text-main:      hsl(330, 22%, 22%);
+    --pd-text-muted:     hsl(330, 12%, 52%);
+    --pd-border:         rgba(210, 160, 175, 0.18);
+    --pd-card-bg:        rgba(255, 255, 255, 0.78);
+    --pd-sidebar-w:      272px;
+
+    --pd-shadow-sm:      0 4px 12px rgba(180, 100, 130, 0.05);
+    --pd-shadow-md:      0 8px 24px rgba(180, 100, 130, 0.09);
+    --pd-shadow-lg:      0 16px 40px rgba(180, 100, 130, 0.13);
+    --pd-shadow-hover:   0 20px 48px rgba(180, 100, 130, 0.18);
+    --pd-blur:           blur(16px);
+    --pd-transition:     all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--pd-bg);
+    color: var(--pd-text-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   BACKGROUND & DECORATIONS
+   ========================================================================== */
+.pd-bg-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    opacity: 0.6;
+}
+.pd-bg-blob--a {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(230,160,180,0.4) 0%, rgba(230,160,180,0) 70%);
+    top: -100px; right: -100px;
+}
+.pd-bg-blob--b {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(160,140,200,0.3) 0%, rgba(160,140,200,0) 70%);
+    bottom: -100px; left: 200px;
+}
+.pd-bg-blob--c {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(255,200,200,0.4) 0%, rgba(255,200,200,0) 70%);
+    top: 40%; right: 20%;
+}
+
+/* ==========================================================================
+   SIDEBAR
+   ========================================================================== */
+.pd-sidebar {
+    width: var(--pd-sidebar-w);
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
+    display: flex;
+    flex-direction: column;
+    padding: 24px 20px;
+    z-index: 100;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+}
+.pd-sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 0 10px;
+}
+.pd-sidebar-logo-mark {
+    width: 36px; height: 36px;
+    background: white;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 15px rgba(210, 160, 175, 0.3);
+}
+.pd-sidebar-logo-img { width: 22px; height: 22px; object-fit: contain; }
+.pd-sidebar-logo-text { font-size: 22px; font-weight: 800; color: var(--pd-text-main); letter-spacing: -0.5px; }
+
+.pd-sidebar-role {
+    margin: 0 10px 30px;
+    padding: 6px 12px;
+    background: var(--pd-primary-light);
+    color: var(--pd-primary);
+    border-radius: 20px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    display: inline-flex;
+}
+
+.pd-sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.pd-nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    color: var(--pd-text-muted);
+    text-decoration: none; font-size: 14px; font-weight: 600;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+.pd-nav-item:hover { background: rgba(255, 255, 255, 0.5); color: var(--pd-text-main); }
+.pd-nav-item--active {
+    background: white; color: var(--pd-primary);
+    border-color: rgba(210, 160, 175, 0.2);
+    box-shadow: 0 4px 15px rgba(210, 160, 175, 0.1);
+}
+.pd-nav-item--active .pd-nav-icon { color: var(--pd-primary); }
+.pd-nav-badge {
+    margin-left: auto;
+    background: var(--pd-primary); color: white;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px;
+}
+.pd-nav-logout { margin-top: auto; color: hsl(348, 60%, 50%); background: none; cursor: pointer; width: 100%; border: none; text-align: left;}
+.pd-nav-logout:hover { background: hsl(348, 60%, 95%); }
+
+/* ==========================================================================
+   MAIN CONTENT AREA
+   ========================================================================== */
+.pd-main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 10;
+    min-width: 0;
+}
+
+/* ==========================================================================
+   TOPBAR
+   ========================================================================== */
+.pd-topbar {
+    height: 72px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    position: sticky; top: 0; z-index: 90;
+}
+.pd-greeting { font-size: 18px; font-weight: 700; color: var(--pd-text-main); margin: 0; }
+.pd-topbar-right { display: flex; align-items: center; gap: 20px; }
+
+.pd-btn-notif {
+    position: relative; width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center;
+    color: var(--pd-text-muted); transition: all 0.2s; border: 1px solid rgba(255,255,255,0.8);
+    cursor: pointer;
+}
+.pd-btn-notif:hover { background: white; color: var(--pd-primary); box-shadow: 0 4px 15px rgba(210,160,175,0.15); }
+.pd-notif-badge {
+    position: absolute; top: -2px; right: -2px; background: hsl(348, 65%, 50%); color: white;
+    font-size: 10px; font-weight: 800; width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; border: 2px solid white;
+}
+
+.pd-topbar-user-wrapper { position: relative; }
+.pd-topbar-user {
+    display: flex; align-items: center; gap: 12px; padding: 6px 12px 6px 6px;
+    background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.8);
+    border-radius: 100px; cursor: pointer; transition: all 0.2s;
+}
+.pd-topbar-user:hover { background: white; box-shadow: 0 4px 15px rgba(210,160,175,0.15); }
+.pd-topbar-avatar {
+    width: 34px; height: 34px; border-radius: 50%; background: var(--pd-primary-light);
+    color: var(--pd-primary); display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px;
+}
+.pd-topbar-user-info { display: flex; flex-direction: column; text-align: left; }
+.pd-topbar-user-name { font-size: 13px; font-weight: 700; color: var(--pd-text-main); }
+.pd-topbar-user-specialty { font-size: 11px; color: var(--pd-text-muted); }
+
+.pd-user-dropdown {
+    position: absolute; top: calc(100% + 10px); right: 0;
+    background: white; border-radius: 16px; padding: 8px; width: 200px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 1px solid rgba(210,160,175,0.2);
+    display: flex; flex-direction: column; gap: 4px; z-index: 100;
+}
+.pd-user-menu-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--pd-text-muted);
+    background: none; border: none; cursor: pointer; text-align: left; transition: 0.2s;
+}
+.pd-user-menu-item:hover { background: rgba(210,160,175,0.1); color: var(--pd-primary); }
+
+/* ==========================================================================
+   PAGE CONTENT & TRANSITION
+   ========================================================================== */
+.pd-content {
+    padding: 32px 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.pd-page-transition {
+    animation: pdFadeInUp 0.4s ease-out forwards;
+}
+
+@keyframes pdFadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

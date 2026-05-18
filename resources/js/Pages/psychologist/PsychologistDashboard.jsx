@@ -38,7 +38,7 @@ const NAV_ITEMS = [
     { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard',           path: '/psychologist/dashboard' },
     { id: 'agenda',    icon: CalendarDays,    label: 'Agenda',              path: '/psychologist/agenda' },
     { id: 'patients',  icon: Users,           label: 'Pacientes',           path: '/psychologist/patients' },
-    { id: 'clinical',  icon: ClipboardList,   label: 'Seguimiento clínico', path: '/psychologist/clinical' },
+    { id: 'clinical',  icon: ClipboardList,   label: 'Seguimiento clínico', path: '/psychologist/clinical-followup' },
     { id: 'alerts',    icon: AlertTriangle,   label: 'Alertas emocionales', path: '/psychologist/alerts', badge: 3 },
     { id: 'resources', icon: BookOpen,        label: 'Recursos',            path: '/psychologist/resources' },
     { id: 'messages',  icon: MessageCircle,   label: 'Mensajes',            path: '/psychologist/messages', badge: 5 },

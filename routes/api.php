@@ -16,6 +16,8 @@ Route::prefix('resources')->group(function () {
     Route::get('/search', [ResourceController::class, 'search']);
 });
 
+use App\Http\Controllers\Api\ClinicalFollowUpController;
+
 // Agenda del psicólogo
 // TODO: Añadir middleware auth:sanctum cuando se implemente autenticación real
 Route::prefix('psychologist')->group(function () {
@@ -25,4 +27,9 @@ Route::prefix('psychologist')->group(function () {
     Route::put('/appointments/{id}/cancel',     [PsychologistAgendaController::class, 'cancel']);
     Route::get('/agenda/blocks',  [PsychologistAgendaController::class, 'getBlocks']);
     Route::post('/agenda/blocks', [PsychologistAgendaController::class, 'createBlock']);
+    
+    // Seguimiento clínico
+    Route::get('/patients', [ClinicalFollowUpController::class, 'getPatients']);
+    Route::get('/patients/{id}/notes', [ClinicalFollowUpController::class, 'getPatientNotes']);
+    Route::post('/patients/{id}/notes', [ClinicalFollowUpController::class, 'addNote']);
 });

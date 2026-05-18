@@ -1,0 +1,368 @@
+/* ==========================================================================
+   VARIABLES & GLOBALS
+   ========================================================================== */
+   .cf-root {
+    --pd-bg: hsl(340, 60%, 98%);
+    --pd-primary: hsl(340, 55%, 62%);
+    --pd-primary-light: hsl(340, 55%, 95%);
+    --pd-accent: hsl(268, 35%, 65%);
+    --pd-accent-light: hsl(268, 35%, 95%);
+    --pd-text-main: hsl(330, 22%, 22%);
+    --pd-text-muted: hsl(330, 15%, 45%);
+    --pd-sidebar-w: 272px;
+    
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--pd-bg);
+    color: var(--pd-text-main);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   BACKGROUND & DECORATIONS
+   ========================================================================== */
+.cf-bg-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    opacity: 0.6;
+}
+.cf-bg-blob--a {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(230,160,180,0.4) 0%, rgba(230,160,180,0) 70%);
+    top: -100px; right: -100px;
+}
+.cf-bg-blob--b {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(160,140,200,0.3) 0%, rgba(160,140,200,0) 70%);
+    bottom: -100px; left: 200px;
+}
+
+/* ==========================================================================
+   SIDEBAR (Reused base styles)
+   ========================================================================== */
+.pd-sidebar {
+    width: var(--pd-sidebar-w);
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-right: 1px solid rgba(210, 160, 175, 0.18);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 18px 24px;
+    box-shadow: 0 4px 12px rgba(180, 100, 130, 0.05);
+    z-index: 10;
+    position: relative;
+    height: auto;
+}
+.pd-sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 0 10px;
+}
+.pd-sidebar-logo-mark {
+    width: 36px; height: 36px;
+    background: white;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 15px rgba(210, 160, 175, 0.3);
+}
+.pd-sidebar-logo-img { width: 22px; height: 22px; object-fit: contain; }
+.pd-sidebar-logo-text { font-size: 22px; font-weight: 800; color: var(--pd-text-main); letter-spacing: -0.5px; }
+
+.pd-sidebar-role {
+    margin: 0 10px 30px;
+    padding: 6px 12px;
+    background: var(--pd-primary-light);
+    color: var(--pd-primary);
+    border-radius: 20px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    display: inline-flex;
+}
+
+.pd-sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.pd-nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    color: var(--pd-text-muted);
+    text-decoration: none; font-size: 14px; font-weight: 600;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+}
+.pd-nav-item:hover { background: rgba(255, 255, 255, 0.5); color: var(--pd-text-main); }
+.pd-nav-item--active {
+    background: white; color: var(--pd-primary);
+    border-color: rgba(210, 160, 175, 0.2);
+    box-shadow: 0 4px 15px rgba(210, 160, 175, 0.1);
+}
+.pd-nav-item--active .pd-nav-icon { color: var(--pd-primary); }
+.pd-nav-badge {
+    margin-left: auto;
+    background: var(--pd-primary); color: white;
+    font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px;
+}
+.pd-nav-logout { margin-top: auto; color: hsl(348, 60%, 50%); background: none; cursor: pointer; width: 100%; }
+.pd-nav-logout:hover { background: hsl(348, 60%, 95%); }
+
+/* ==========================================================================
+   MAIN CONTENT AREA
+   ========================================================================== */
+.cf-main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 10;
+    min-width: 0;
+}
+
+.pd-topbar {
+    height: 72px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    position: sticky; top: 0; z-index: 90;
+}
+.pd-greeting { font-size: 18px; font-weight: 700; color: var(--pd-text-main); }
+.pd-topbar-right { display: flex; align-items: center; gap: 20px; }
+
+.cf-content {
+    padding: 32px 40px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+.cf-hero {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 24px;
+    padding: 24px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(210, 160, 175, 0.08);
+    margin-bottom: 24px;
+}
+.cf-hero-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 700; text-transform: uppercase;
+    color: var(--pd-primary);
+    background: var(--pd-primary-light);
+    padding: 6px 12px; border-radius: 12px;
+    margin-bottom: 12px;
+}
+.cf-hero-title { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+.cf-hero-desc { color: var(--pd-text-muted); font-size: 15px; max-width: 600px; line-height: 1.5; }
+
+/* ==========================================================================
+   LAYOUT: LEFT / RIGHT PANELS
+   ========================================================================== */
+.cf-layout {
+    display: flex;
+    gap: 24px;
+    flex: 1;
+    min-height: 600px;
+}
+
+/* Left Panel */
+.cf-left-panel {
+    flex: 0 0 320px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(210, 160, 175, 0.08);
+}
+
+.cf-search-box {
+    position: relative;
+    margin-bottom: 16px;
+}
+.cf-search-icon {
+    position: absolute;
+    left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--pd-text-muted);
+}
+.cf-search-input {
+    width: 100%;
+    padding: 12px 12px 12px 36px;
+    border-radius: 12px;
+    border: 1px solid rgba(210,160,175,0.3);
+    background: rgba(255,255,255,0.8);
+    font-family: 'Inter', sans-serif;
+    outline: none;
+}
+.cf-search-input:focus { border-color: var(--pd-primary); }
+
+.cf-filters {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+}
+.cf-filter-btn {
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-size: 12px; font-weight: 600;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(210,160,175,0.2);
+    color: var(--pd-text-muted); cursor: pointer;
+}
+.cf-filter-btn.active {
+    background: var(--pd-primary); color: white; border-color: var(--pd-primary);
+}
+
+.cf-patient-list {
+    flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;
+}
+.cf-patient-card {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(210,160,175,0.2);
+    border-radius: 16px; padding: 16px;
+    text-align: left; cursor: pointer; transition: all 0.2s;
+}
+.cf-patient-card:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.cf-patient-card.active {
+    border-color: var(--pd-primary);
+    background: var(--pd-primary-light);
+    box-shadow: 0 4px 15px rgba(210, 160, 175, 0.2);
+}
+.cf-pc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.cf-pc-name { font-weight: 700; font-size: 15px; color: var(--pd-text-main); }
+.cf-pc-program { font-size: 13px; color: var(--pd-text-muted); }
+
+.cf-badge {
+    font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 8px; text-transform: uppercase;
+}
+.cf-badge--enproceso { background: hsl(200, 70%, 90%); color: hsl(200, 70%, 35%); }
+.cf-badge--pendiente { background: hsl(38, 90%, 90%); color: hsl(38, 80%, 38%); }
+.cf-badge--finalizado { background: hsl(148, 50%, 90%); color: hsl(148, 50%, 38%); }
+
+.cf-empty-patients { text-align: center; color: var(--pd-text-muted); font-size: 14px; margin-top: 20px; }
+
+/* Right Panel */
+.cf-right-panel {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 10px 30px rgba(210, 160, 175, 0.08);
+    overflow-y: auto;
+}
+
+.cf-empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; text-align: center; color: var(--pd-text-muted);
+}
+.cf-empty-icon {
+    width: 80px; height: 80px; background: rgba(255,255,255,0.8); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 20px;
+    color: var(--pd-primary); box-shadow: 0 10px 20px rgba(210, 160, 175, 0.15);
+}
+.cf-empty-state h3 { font-size: 20px; color: var(--pd-text-main); margin-bottom: 8px; }
+
+.cf-detail-header {
+    margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(210,160,175,0.2);
+}
+.cf-detail-name { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+.cf-detail-program { font-size: 15px; color: var(--pd-text-muted); }
+
+.cf-section-title {
+    font-size: 16px; font-weight: 700; color: var(--pd-primary);
+    display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+}
+
+.cf-history-section { margin-bottom: 40px; }
+.cf-no-notes { color: var(--pd-text-muted); font-size: 14px; font-style: italic; }
+.cf-notes-list { display: flex; flex-direction: column; gap: 16px; }
+.cf-note-card {
+    background: rgba(255,255,255,0.8); border: 1px solid rgba(210,160,175,0.2);
+    border-radius: 16px; padding: 20px;
+}
+.cf-note-header {
+    display: flex; justify-content: space-between; margin-bottom: 12px;
+}
+.cf-note-type { font-weight: 700; color: var(--pd-text-main); }
+.cf-note-date { color: var(--pd-text-muted); font-size: 13px; }
+.cf-note-desc { font-size: 14px; line-height: 1.5; margin-bottom: 12px; }
+.cf-note-meta { font-size: 13px; color: var(--pd-text-muted); margin-bottom: 4px; }
+
+/* Formulario */
+.cf-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.cf-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.cf-field label { font-size: 13px; font-weight: 700; color: var(--pd-text-main); }
+.cf-req { color: var(--pd-primary); }
+.cf-field input, .cf-field select, .cf-field textarea {
+    padding: 12px; border-radius: 12px; border: 1px solid rgba(210,160,175,0.3);
+    background: rgba(255,255,255,0.8); font-family: 'Inter', sans-serif;
+    outline: none; font-size: 14px;
+}
+.cf-field textarea { resize: vertical; min-height: 100px; }
+.cf-field input:focus, .cf-field select:focus, .cf-field textarea:focus { border-color: var(--pd-primary); }
+.cf-error { color: hsl(348, 65%, 50%); font-size: 12px; }
+
+.cf-form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+.cf-btn-cancel, .cf-btn-save {
+    padding: 12px 24px; border-radius: 12px; font-weight: 600; font-size: 14px; cursor: pointer; transition: all 0.2s;
+}
+.cf-btn-cancel { background: white; border: 1px solid rgba(210,160,175,0.3); color: var(--pd-text-muted); }
+.cf-btn-cancel:hover { background: rgba(210,160,175,0.1); }
+.cf-btn-save { background: var(--pd-primary); color: white; border: none; box-shadow: 0 4px 15px rgba(210,160,175,0.3); }
+.cf-btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(210,160,175,0.4); }
+
+/* Modal */
+.cf-modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+.cf-modal {
+    background: white; border-radius: 24px; padding: 32px; width: 400px; text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+.cf-modal h3 { font-size: 20px; margin-bottom: 12px; }
+.cf-modal p { color: var(--pd-text-muted); font-size: 14px; margin-bottom: 24px; }
+.cf-modal-actions { display: flex; flex-direction: column; gap: 12px; }
+.cf-btn-confirm { background: hsl(348, 65%, 50%); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+.cf-btn-continue { background: rgba(210,160,175,0.1); color: var(--pd-primary); border: none; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+
+.cf-content {
+    animation: cfFadeUp 0.55s ease-out both;
+}
+
+@keyframes cfFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cf-hero {
+    animation: cfFadeUp 0.55s ease-out both;
+}
+
+.cf-layout {
+    animation: cfFadeUp 0.65s ease-out both;
+    animation-delay: 0.08s;
+}
