@@ -1,0 +1,958 @@
+/* ==========================================================================
+   PSYCHOLOGIST AGENDA
+   Hereda las variables pd-* del layout raíz (definidas en PsychologistDashboard.css).
+   Este archivo solo agrega los estilos específicos de la agenda.
+   ========================================================================== */
+
+/* ── Reutiliza el layout base pd-* importando los valores del dashboard ── */
+/* Las clases pd-root, pd-sidebar, pd-topbar, pd-content, pd-bg-blob,
+   pd-deco-rose, pd-illus-dot, pd-illus-petal, etc.
+   se definen en PsychologistDashboard.css y se usan aquí igual.
+   Aquí solo se agregan las clases exclusivas de la agenda.           */
+
+/* ==========================================================================
+   HERO DE AGENDA
+   ========================================================================== */
+.ag-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+    min-height: 190px;
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.92) 0%,
+        rgba(250, 235, 242, 0.85) 100%);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 28px;
+    padding: 36px 44px;
+    box-shadow: 0 8px 24px rgba(180, 100, 130, 0.09);
+    position: relative;
+    overflow: hidden;
+    animation: pdFadeUp 0.5s ease-out both;
+}
+
+.ag-hero::before {
+    content: '';
+    position: absolute;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(220, 150, 175, 0.1), transparent 70%);
+    top: -70px; right: -50px;
+    pointer-events: none;
+}
+
+.ag-hero-text {
+    position: relative;
+    z-index: 2;
+    max-width: 520px;
+}
+
+.ag-hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--pd-primary, hsl(340, 55%, 72%));
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin: 0 0 10px 0;
+}
+
+.ag-hero-title {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 30px;
+    font-weight: 800;
+    color: var(--pd-text-main, hsl(330, 22%, 22%));
+    margin: 0 0 12px 0;
+    line-height: 1.15;
+}
+
+.ag-hero-desc {
+    font-size: 14px;
+    color: var(--pd-text-muted, hsl(330, 12%, 52%));
+    line-height: 1.65;
+    margin: 0 0 18px 0;
+}
+
+.ag-hero-badges {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.ag-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: white;
+    padding: 6px 14px;
+    border-radius: 18px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pd-accent, hsl(268, 35%, 76%));
+    box-shadow: 0 4px 12px rgba(180, 100, 130, 0.05);
+}
+
+/* Ilustración abstracta de mini-calendario */
+.ag-hero-illus {
+    position: relative;
+    width: 170px;
+    height: 150px;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.ag-illus-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 36px);
+    grid-template-rows: repeat(3, 30px);
+    gap: 6px;
+    position: absolute;
+    top: 16px;
+    right: 10px;
+}
+
+.ag-illus-cell {
+    border-radius: 8px;
+    background: rgba(220, 160, 185, 0.18);
+    border: 1px solid rgba(220, 160, 185, 0.22);
+    transition: all 0.3s;
+}
+
+.ag-illus-cell--active {
+    background: linear-gradient(135deg,
+        rgba(220, 140, 175, 0.55),
+        rgba(190, 155, 215, 0.4));
+    border-color: rgba(220, 140, 175, 0.35);
+    animation: agCellPulse 3s ease-in-out infinite;
+}
+
+@keyframes agCellPulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.65; }
+}
+
+/* ==========================================================================
+   GRID PRINCIPAL (calendario + citas)
+   ========================================================================== */
+.ag-main-grid {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 24px;
+    animation: pdFadeUp 0.55s ease-out both;
+    animation-delay: 0.08s;
+}
+
+/* ==========================================================================
+   PANEL CALENDARIO
+   ========================================================================== */
+.ag-calendar-panel {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 26px;
+    padding: 28px;
+    box-shadow: 0 8px 24px rgba(180, 100, 130, 0.09);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* ── Navegación de mes ── */
+.ag-month-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.ag-month-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--pd-text-main, hsl(330, 22%, 22%));
+    margin: 0;
+    text-transform: capitalize;
+    flex: 1;
+    text-align: center;
+}
+
+.ag-month-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(210, 160, 175, 0.2);
+    background: white;
+    color: var(--pd-text-muted, hsl(330, 12%, 52%));
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s;
+    box-shadow: 0 2px 8px rgba(180, 100, 130, 0.06);
+    flex-shrink: 0;
+}
+
+.ag-month-btn:hover {
+    background: var(--pd-primary, hsl(340, 55%, 72%));
+    color: white;
+    border-color: transparent;
+    transform: scale(1.06);
+    box-shadow: 0 4px 12px rgba(180, 100, 130, 0.22);
+}
+
+/* ── Leyenda ── */
+.ag-legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.ag-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--pd-text-muted, hsl(330, 12%, 52%));
+}
+
+.ag-legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.ag-legend-dot--appt    { background: hsl(340, 55%, 72%); }
+.ag-legend-dot--today   { background: hsl(268, 35%, 76%); }
+.ag-legend-dot--selected{ background: hsl(330, 22%, 22%); }
+
+/* ── Calendario ── */
+.ag-calendar {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ag-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.ag-weekday-label {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--pd-text-muted, hsl(330, 12%, 52%));
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 0;
+}
+
+.ag-calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+/* ── Celda de día ── */
+.ag-cell {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    border: 1.5px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Inter', system-ui, sans-serif;
+    transition: all 0.2s ease;
+    padding: 0;
+}
+
+.ag-cell:not(.ag-cell--empty):hover {
+    background: var(--pd-primary-light, hsl(340, 55%, 95%));
+    border-color: rgba(210, 160, 175, 0.25);
+    transform: scale(1.06);
+}
+
+.ag-cell--empty {
+    cursor: default;
+    pointer-events: none;
+}
+
+.ag-cell--today {
+    background: hsl(268, 35%, 93%);
+    border-color: hsl(268, 35%, 76%);
+}
+
+.ag-cell--today .ag-cell-number {
+    color: hsl(268, 35%, 55%);
+    font-weight: 800;
+}
+
+.ag-cell--has-appt {
+    background: rgba(220, 160, 185, 0.1);
+}
+
+.ag-cell--selected {
+    background: var(--pd-primary, hsl(340, 55%, 72%)) !important;
+    border-color: transparent !important;
+    box-shadow: 0 4px 14px rgba(180, 100, 130, 0.28);
+    transform: scale(1.06);
+}
+
+.ag-cell--selected .ag-cell-number {
+    color: white !important;
+    font-weight: 800;
+}
+
+.ag-cell--selected .ag-cell-star { color: white; }
+
+.ag-cell-number {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pd-text-main, hsl(330, 22%, 22%));
+    line-height: 1;
+}
+
+/* ── Estrella indicadora de citas ── */
+.ag-cell-star {
+    font-size: 9px;
+    line-height: 1;
+    color: var(--pd-primary, hsl(340, 55%, 72%));
+    position: absolute;
+    bottom: 4px;
+    letter-spacing: 0;
+}
+
+/* Leyenda estrella */
+.ag-legend-star {
+    font-size: 13px;
+    color: var(--pd-primary, hsl(340, 55%, 72%));
+    line-height: 1;
+}
+
+/* ==========================================================================
+   BADGES DE ESTADO
+   ========================================================================== */
+.ag-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: flex-start;
+}
+.ag-badge--ok     { background: #e6f7ee; color: #2e8b57; }
+.ag-badge--warn   { background: #fff5e6; color: #c5860a; }
+.ag-badge--danger { background: #fde8ef; color: #d95f7a; }
+.ag-badge--muted  { background: #f0f0f5; color: #8888aa; }
+.ag-badge--cancel { background: #fce8e8; color: #aa4444; }
+
+/* ==========================================================================
+   PANEL CITAS DEL DÍA
+   ========================================================================== */
+.ag-day-panel {
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 26px;
+    padding: 28px;
+    box-shadow: 0 8px 24px rgba(180, 100, 130, 0.09);
+    display: flex;
+    flex-direction: column;
+}
+
+.ag-day-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex: 1;
+    text-align: center;
+    padding: 40px 16px;
+    border-radius: 16px;
+    background: var(--pd-primary-light, hsl(340, 55%, 95%));
+}
+.ag-day-placeholder-icon { font-size: 44px; line-height: 1; opacity: 0.7; }
+.ag-day-placeholder p {
+    font-size: 14px;
+    color: var(--pd-text-muted, hsl(330, 12%, 52%));
+    max-width: 260px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.ag-day-section { display: flex; flex-direction: column; gap: 16px; }
+
+.ag-day-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(210, 160, 175, 0.15);
+}
+.ag-day-header svg { color: var(--pd-primary, hsl(340, 55%, 72%)); flex-shrink: 0; }
+.ag-day-title {
+    font-size: 16px; font-weight: 700;
+    color: var(--pd-text-main, hsl(330, 22%, 22%));
+    margin: 0; flex: 1; text-transform: capitalize;
+}
+.ag-day-count {
+    font-size: 12px; font-weight: 600;
+    background: var(--pd-primary-light, hsl(340, 55%, 95%));
+    color: var(--pd-primary, hsl(340, 55%, 72%));
+    padding: 3px 10px; border-radius: 12px;
+}
+
+.ag-day-empty {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 10px; padding: 36px 16px; border-radius: 16px;
+    background: var(--pd-primary-light, hsl(340, 55%, 95%));
+    text-align: center; font-size: 28px;
+}
+.ag-day-empty p { font-size: 13px; color: var(--pd-text-muted, hsl(330, 12%, 52%)); margin: 0; }
+
+.ag-citas-list { display: flex; flex-direction: column; gap: 14px; }
+
+/* ── Tarjeta de cita (layout columna) ── */
+.ag-cita-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 18px 20px;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.ag-cita-card:hover {
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 6px 20px rgba(180, 100, 130, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Borde izquierdo por estado */
+.ag-cita-card--confirmada { border-left: 4px solid hsl(148, 50%, 55%); }
+.ag-cita-card--pendiente  { border-left: 4px solid hsl(38, 90%, 55%);  }
+.ag-cita-card--urgente    { border-left: 4px solid hsl(348, 70%, 60%); }
+.ag-cita-card--atendida   { border-left: 4px solid hsl(240, 15%, 70%); }
+.ag-cita-card--cancelada  { border-left: 4px solid hsl(0, 50%, 65%);   }
+
+/* Fila superior de la tarjeta */
+.ag-cita-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.ag-cita-hora {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--pd-primary, hsl(340, 55%, 72%));
+    background: hsl(340, 55%, 95%);
+    padding: 8px 10px;
+    border-radius: 12px;
+    min-width: 54px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.ag-cita-hora svg { color: var(--pd-primary, hsl(340, 55%, 72%)); margin-bottom: 2px; }
+
+.ag-cita-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+.ag-cita-nombre {
+    font-size: 14px; font-weight: 700;
+    color: var(--pd-text-main, hsl(330, 22%, 22%));
+}
+.ag-cita-motivo {
+    font-size: 12px;
+    color: var(--pd-text-muted, hsl(330, 12%, 52%));
+}
+.ag-cita-modalidad {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px; font-weight: 600;
+    color: var(--pd-accent, hsl(268, 35%, 65%));
+}
+
+/* ── Fila de botones de acción ── */
+.ag-cita-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-top: 10px;
+    border-top: 1px solid rgba(210, 160, 175, 0.12);
+}
+
+.ag-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 13px;
+    border-radius: 12px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.22s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* Ver detalle */
+.ag-btn--detail {
+    background: hsl(340, 55%, 95%);
+    color: var(--pd-primary, hsl(340, 55%, 62%));
+    border-color: rgba(210, 140, 170, 0.2);
+}
+.ag-btn--detail:hover {
+    background: var(--pd-primary, hsl(340, 55%, 62%));
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(180, 100, 130, 0.22);
+}
+
+/* Atender */
+.ag-btn--attend {
+    background: hsl(148, 50%, 93%);
+    color: hsl(148, 50%, 38%);
+    border-color: rgba(60, 160, 100, 0.18);
+}
+.ag-btn--attend:not(:disabled):hover {
+    background: hsl(148, 50%, 42%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(60, 160, 100, 0.22);
+}
+
+/* Reagendar */
+.ag-btn--reschedule {
+    background: hsl(38, 90%, 93%);
+    color: hsl(38, 80%, 38%);
+    border-color: rgba(200, 140, 30, 0.18);
+}
+.ag-btn--reschedule:not(:disabled):hover {
+    background: hsl(38, 80%, 45%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(200, 140, 30, 0.22);
+}
+
+/* Cancelar */
+.ag-btn--cancel {
+    background: hsl(348, 70%, 94%);
+    color: hsl(348, 65%, 50%);
+    border-color: rgba(210, 80, 100, 0.18);
+}
+.ag-btn--cancel:not(:disabled):hover {
+    background: hsl(348, 65%, 52%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(210, 80, 100, 0.22);
+}
+
+/* Estado deshabilitado */
+.ag-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* ==========================================================================
+   BLOQUEOS TEMPORALES
+   ========================================================================== */
+.ag-top-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+.ag-cell-lock {
+    font-size: 8px;
+    margin-left: 2px;
+    opacity: 0.8;
+}
+
+.ag-cell-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    margin-top: 2px;
+}
+
+.ag-block-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: rgba(240, 235, 245, 0.65);
+    border: 1px dashed rgba(160, 140, 180, 0.5);
+    border-radius: 18px;
+    padding: 16px 18px;
+    border-left: 4px solid var(--pd-accent, hsl(268, 35%, 65%));
+    margin-bottom: 12px;
+}
+
+.ag-block-card .ag-cita-hora {
+    background: white;
+    color: var(--pd-accent, hsl(268, 35%, 65%));
+}
+.ag-block-card .ag-cita-hora svg {
+    color: var(--pd-accent, hsl(268, 35%, 65%));
+}
+
+.ag-field-select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid rgba(210,160,175,0.22);
+    border-radius: 12px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    color: var(--pd-text-main, hsl(330,22%,22%));
+    background: white;
+    outline: none;
+}
+.ag-field-select:focus {
+    border-color: var(--pd-primary, hsl(340,55%,72%));
+    box-shadow: 0 0 0 3px rgba(220,160,185,0.15);
+}
+
+/* ==========================================================================
+   MODAL OVERLAY + CARD
+   ========================================================================== */
+.ag-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(60, 30, 45, 0.42);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: agModalFadeIn 0.25s ease-out;
+}
+
+@keyframes agModalFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.ag-modal {
+    background: rgba(255, 255, 255, 0.97);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 26px;
+    box-shadow: 0 24px 60px rgba(120, 60, 80, 0.2);
+    width: 100%;
+    max-width: 460px;
+    padding: 34px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    animation: agModalSlideUp 0.3s ease-out;
+}
+
+@keyframes agModalSlideUp {
+    from { transform: translateY(24px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.ag-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ag-modal-header svg { color: var(--pd-primary, hsl(340,55%,72%)); flex-shrink: 0; }
+
+.ag-modal-title {
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--pd-text-main, hsl(330,22%,22%));
+    margin: 0;
+    flex: 1;
+}
+
+.ag-modal-close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid rgba(210,160,175,0.18);
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--pd-text-muted, hsl(330,12%,52%));
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.ag-modal-close:hover {
+    background: hsl(348,70%,94%);
+    color: hsl(348,65%,50%);
+}
+
+.ag-modal-body { display: flex; flex-direction: column; gap: 16px; }
+
+.ag-modal-cita-info {
+    background: var(--pd-primary-light, hsl(340,55%,95%));
+    padding: 14px 16px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ag-modal-cita-name {
+    font-size: 14px; font-weight: 700;
+    color: var(--pd-text-main, hsl(330,22%,22%));
+}
+.ag-modal-cita-meta {
+    font-size: 12px;
+    color: var(--pd-text-muted, hsl(330,12%,52%));
+}
+
+/* Form fields */
+.ag-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.ag-field-label {
+    font-size: 12px; font-weight: 700;
+    color: var(--pd-text-muted, hsl(330,12%,52%));
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ag-field-input,
+.ag-field-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid rgba(210,160,175,0.22);
+    border-radius: 12px;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    color: var(--pd-text-main, hsl(330,22%,22%));
+    background: white;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.ag-field-input:focus,
+.ag-field-textarea:focus {
+    border-color: var(--pd-primary, hsl(340,55%,72%));
+    box-shadow: 0 0 0 3px rgba(220,160,185,0.15);
+}
+
+.ag-field-textarea { resize: vertical; min-height: 80px; }
+
+.ag-field-error {
+    font-size: 11px;
+    color: hsl(348,65%,50%);
+    font-weight: 600;
+}
+
+/* Modal actions row */
+.ag-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding-top: 6px;
+}
+
+.ag-modal-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: 14px;
+    border: 1.5px solid transparent;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.22s;
+}
+
+.ag-modal-btn--secondary {
+    background: white;
+    color: var(--pd-text-muted, hsl(330,12%,52%));
+    border-color: rgba(210,160,175,0.22);
+}
+.ag-modal-btn--secondary:hover {
+    background: hsl(340,55%,95%);
+    color: var(--pd-primary, hsl(340,55%,62%));
+}
+
+.ag-modal-btn--primary {
+    background: var(--pd-primary, hsl(340,55%,72%));
+    color: white;
+}
+.ag-modal-btn--primary:hover {
+    background: hsl(340,55%,62%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(180,100,130,0.25);
+}
+.ag-modal-btn--primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.ag-modal-btn--danger {
+    background: hsl(348,70%,94%);
+    color: hsl(348,65%,50%);
+    border-color: rgba(210,80,100,0.18);
+}
+.ag-modal-btn--danger:hover {
+    background: hsl(348,65%,52%);
+    color: white;
+    transform: translateY(-1px);
+}
+
+/* Cancel modal choice buttons */
+.ag-cancel-choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ag-cancel-choice {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1.5px solid rgba(210,160,175,0.2);
+    background: white;
+    cursor: pointer;
+    font-family: 'Inter', system-ui, sans-serif;
+    transition: all 0.22s;
+    text-align: left;
+    width: 100%;
+}
+.ag-cancel-choice:hover {
+    border-color: var(--pd-primary, hsl(340,55%,72%));
+    background: hsl(340,55%,97%);
+    transform: translateX(4px);
+}
+
+.ag-cancel-choice-icon {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+
+.ag-cancel-choice-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.ag-cancel-choice-title {
+    font-size: 14px; font-weight: 700;
+    color: var(--pd-text-main, hsl(330,22%,22%));
+}
+.ag-cancel-choice-desc {
+    font-size: 12px;
+    color: var(--pd-text-muted, hsl(330,12%,52%));
+}
+
+/* ==========================================================================
+   TOAST NOTIFICATION
+   ========================================================================== */
+.ag-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 1100;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(255,255,255,0.85);
+    border-radius: 18px;
+    box-shadow: 0 12px 36px rgba(120,60,80,0.16);
+    padding: 16px 22px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 380px;
+    animation: agToastIn 0.3s ease-out;
+}
+
+.ag-toast--success { border-left: 4px solid hsl(148,50%,50%); }
+.ag-toast--error   { border-left: 4px solid hsl(348,65%,55%); }
+
+.ag-toast-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.ag-toast-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pd-text-main, hsl(330,22%,22%));
+    line-height: 1.4;
+}
+
+@keyframes agToastIn {
+    from { transform: translateY(20px) scale(0.96); opacity: 0; }
+    to   { transform: translateY(0)    scale(1);    opacity: 1; }
+}
+
+/* ==========================================================================
+   SPINNER
+   ========================================================================== */
+.ag-spinner {
+    animation: agSpin 1s linear infinite;
+    color: var(--pd-primary, hsl(340,55%,72%));
+}
+@keyframes agSpin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+.ag-btn-spinner {
+    animation: agSpin 0.8s linear infinite;
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1100px) {
+    .ag-main-grid { grid-template-columns: 1fr; }
+    .ag-hero { flex-direction: column; text-align: center; padding: 28px 20px; }
+    .ag-hero-illus { display: none; }
+    .ag-hero-badges { justify-content: center; }
+}
+
+@media (max-width: 500px) {
+    .ag-calendar-panel, .ag-day-panel { padding: 18px; }
+    .ag-cita-actions { gap: 6px; }
+    .ag-btn { flex: 1; justify-content: center; }
+    .ag-modal { padding: 22px; max-width: 100%; }
+}
