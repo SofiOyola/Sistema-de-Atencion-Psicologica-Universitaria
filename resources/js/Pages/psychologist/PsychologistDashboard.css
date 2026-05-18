@@ -1,0 +1,1278 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ==========================================================================
+   VARIABLES – Paleta del Psicólogo (rosa pastel / lavanda / blanco cálido)
+   ========================================================================== */
+.pd-root {
+    /* Colores principales */
+    --pd-primary:        hsl(340, 55%, 72%);   /* Rosa salvia principal */
+    --pd-primary-hover:  hsl(340, 55%, 62%);
+    --pd-primary-light:  hsl(340, 55%, 95%);
+    --pd-accent:         hsl(268, 35%, 76%);   /* Lavanda suave */
+    --pd-accent-light:   hsl(268, 35%, 95%);
+    --pd-bg:             hsl(330, 28%, 97%);   /* Fondo cálido */
+    --pd-text-main:      hsl(330, 22%, 22%);   /* Texto oscuro rosado */
+    --pd-text-muted:     hsl(330, 12%, 52%);   /* Texto apagado */
+    --pd-border:         rgba(210, 160, 175, 0.18);
+    --pd-card-bg:        rgba(255, 255, 255, 0.78);
+
+    /* Sombras */
+    --pd-shadow-sm:      0 4px 12px rgba(180, 100, 130, 0.05);
+    --pd-shadow-md:      0 8px 24px rgba(180, 100, 130, 0.09);
+    --pd-shadow-lg:      0 16px 40px rgba(180, 100, 130, 0.13);
+    --pd-shadow-hover:   0 20px 48px rgba(180, 100, 130, 0.18);
+
+    /* Glassmorphism */
+    --pd-blur:           blur(16px);
+
+    /* Transición global */
+    --pd-transition:     all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* ==========================================================================
+   LAYOUT RAÍZ
+   ========================================================================== */
+.pd-root {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+    background-color: var(--pd-bg);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--pd-text-main);
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* ==========================================================================
+   BLOBS DE FONDO
+   ========================================================================== */
+.pd-bg-blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.55;
+    pointer-events: none;
+    z-index: 0;
+    animation: pdBlobFloat 22s infinite alternate ease-in-out;
+}
+
+.pd-bg-blob--a {
+    width: 560px;
+    height: 560px;
+    background: radial-gradient(circle, rgba(230, 160, 185, 0.38), transparent 70%);
+    top: -120px;
+    left: -80px;
+}
+
+.pd-bg-blob--b {
+    width: 480px;
+    height: 480px;
+    background: radial-gradient(circle, rgba(190, 170, 220, 0.30), transparent 70%);
+    bottom: -100px;
+    right: -60px;
+    animation-delay: -6s;
+    animation-duration: 28s;
+}
+
+.pd-bg-blob--c {
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(255, 220, 230, 0.40), transparent 70%);
+    top: 35%;
+    right: 22%;
+    animation-delay: -12s;
+}
+
+@keyframes pdBlobFloat {
+    0%   { transform: translate(0, 0) scale(1); }
+    50%  { transform: translate(28px, -48px) scale(1.06); }
+    100% { transform: translate(-18px, 22px) scale(0.95); }
+}
+
+/* ==========================================================================
+   FLORES DECORATIVAS CSS
+   ========================================================================== */
+.pd-deco-rose {
+    position: fixed;
+    width: 110px;
+    height: 110px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.45;
+}
+
+.pd-deco-rose span {
+    position: absolute;
+    width: 36px;
+    height: 54px;
+    left: 37px;
+    top: 12px;
+    background: linear-gradient(180deg,
+        rgba(230, 160, 185, 0.75),
+        rgba(200, 130, 160, 0.35));
+    border-radius: 60% 60% 45% 45%;
+    transform-origin: 18px 42px;
+}
+
+.pd-deco-rose span:nth-child(1) { transform: rotate(0deg); }
+.pd-deco-rose span:nth-child(2) { transform: rotate(72deg); }
+.pd-deco-rose span:nth-child(3) { transform: rotate(144deg); }
+.pd-deco-rose span:nth-child(4) { transform: rotate(216deg); }
+.pd-deco-rose span:nth-child(5) { transform: rotate(288deg); }
+
+.pd-deco-rose::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 45px;
+    top: 40px;
+    background: hsl(340, 70%, 88%);
+    border-radius: 50%;
+}
+
+.pd-deco-rose--1 {
+    top: -16px;
+    right: 18%;
+    transform: rotate(12deg) scale(0.9);
+}
+
+.pd-deco-rose--2 {
+    bottom: 60px;
+    left: -24px;
+    transform: rotate(-22deg) scale(0.65);
+}
+
+/* ==========================================================================
+   SIDEBAR
+   ========================================================================== */
+.pd-sidebar {
+    width: 272px;
+    flex-shrink: 0;
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: var(--pd-blur);
+    -webkit-backdrop-filter: var(--pd-blur);
+    border-right: 1px solid var(--pd-border);
+    display: flex;
+    flex-direction: column;
+    padding: 28px 18px 24px;
+    box-shadow: var(--pd-shadow-sm);
+    z-index: 10;
+    position: relative;
+}
+
+/* Logo */
+.pd-sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 10px 20px;
+    border-bottom: 1px solid var(--pd-border);
+    margin-bottom: 8px;
+}
+
+.pd-sidebar-logo-mark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+    width: auto;
+    height: auto;
+}
+
+.pd-sidebar-logo-text {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--pd-primary);
+    letter-spacing: 1px;
+}
+
+/* Rol */
+.pd-sidebar-role {
+    padding: 8px 12px 16px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--pd-text-muted);
+}
+
+/* Nav items */
+.pd-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-grow: 1;
+}
+
+.pd-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px 14px;
+    border-radius: 14px;
+    border: none;
+    background: transparent;
+    color: var(--pd-text-muted);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: var(--pd-transition);
+    position: relative;
+    white-space: nowrap;
+}
+
+.pd-nav-item:hover {
+    background: var(--pd-primary-light);
+    color: var(--pd-primary);
+    transform: translateX(4px);
+}
+
+.pd-nav-item--active {
+    background: var(--pd-primary-light);
+    color: var(--pd-primary);
+    font-weight: 700;
+}
+
+.pd-nav-item--active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 22px;
+    border-radius: 0 4px 4px 0;
+    background: var(--pd-primary);
+}
+
+.pd-nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.pd-nav-label { flex: 1; }
+
+.pd-nav-badge {
+    background: var(--pd-primary);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    margin-left: auto;
+}
+
+.pd-nav-logout {
+    margin-top: 12px;
+    color: #d95f7a;
+    width: 100%;
+    text-align: left;
+}
+
+.pd-nav-logout:hover {
+    background: rgba(217, 95, 122, 0.09);
+    color: #c0385a;
+    transform: translateX(4px);
+}
+
+/* ==========================================================================
+   ÁREA PRINCIPAL
+   ========================================================================== */
+.pd-main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    z-index: 1;
+}
+
+/* ==========================================================================
+   TOPBAR
+   ========================================================================== */
+.pd-topbar {
+    height: 76px;
+    padding: 0 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.62);
+    backdrop-filter: var(--pd-blur);
+    -webkit-backdrop-filter: var(--pd-blur);
+    border-bottom: 1px solid var(--pd-border);
+    z-index: 5;
+    flex-shrink: 0;
+}
+
+.pd-topbar-greeting {
+    display: flex;
+    align-items: center;
+}
+
+.pd-topbar-greeting-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--pd-text-muted);
+}
+
+.pd-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Botón icono redondo */
+.pd-topbar-icon-btn {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid var(--pd-border);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pd-text-muted);
+    cursor: pointer;
+    transition: var(--pd-transition);
+    box-shadow: var(--pd-shadow-sm);
+}
+
+.pd-topbar-icon-btn:hover {
+    transform: scale(1.06) translateY(-1px);
+    box-shadow: var(--pd-shadow-md);
+    color: var(--pd-primary);
+    border-color: var(--pd-primary);
+}
+
+.pd-topbar-notif-dot {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    width: 8px;
+    height: 8px;
+    background: var(--pd-primary);
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+/* Usuario */
+.pd-topbar-notif-wrapper,
+.pd-topbar-user-wrapper {
+    position: relative;
+}
+
+.pd-topbar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border: 1px solid var(--pd-border);
+    padding: 5px 14px 5px 5px;
+    border-radius: 28px;
+    cursor: pointer;
+    transition: var(--pd-transition);
+    box-shadow: var(--pd-shadow-sm);
+}
+
+.pd-topbar-user:hover {
+    transform: scale(1.02);
+    box-shadow: var(--pd-shadow-md);
+    border-color: rgba(210, 160, 175, 0.4);
+}
+
+.pd-topbar-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--pd-primary), var(--pd-accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.pd-topbar-user-info {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.pd-topbar-user-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pd-text-main);
+    line-height: 1.2;
+}
+
+.pd-topbar-user-specialty {
+    font-size: 11px;
+    color: var(--pd-text-muted);
+}
+
+.pd-topbar-chevron {
+    color: var(--pd-text-muted);
+}
+
+/* Dropdowns */
+.pd-notif-dropdown,
+.pd-user-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: var(--pd-blur);
+    border: 1px solid var(--pd-border);
+    border-radius: 16px;
+    box-shadow: var(--pd-shadow-lg);
+    padding: 10px;
+    min-width: 240px;
+    z-index: 20;
+    animation: pdDropFade 0.2s ease-out;
+}
+
+.pd-user-dropdown { min-width: 190px; }
+
+@keyframes pdDropFade {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.pd-notif-item {
+    font-size: 13px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin: 0;
+    color: var(--pd-text-main);
+}
+
+.pd-notif-item:hover { background: var(--pd-primary-light); }
+
+.pd-user-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--pd-text-main);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-align: left;
+}
+
+.pd-user-menu-item:hover {
+    background: var(--pd-primary-light);
+    color: var(--pd-primary);
+}
+
+.pd-user-menu-item--danger:hover {
+    background: rgba(217, 95, 122, 0.1);
+    color: #d95f7a;
+}
+
+.pd-user-menu-divider {
+    border: none;
+    border-top: 1px solid var(--pd-border);
+    margin: 6px 0;
+}
+
+/* ==========================================================================
+   CONTENIDO PRINCIPAL
+   ========================================================================== */
+.pd-content {
+    flex: 1;
+    padding: 36px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* ==========================================================================
+   HERO SECTION
+   ========================================================================== */
+.pd-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    min-height: 210px;
+    background: linear-gradient(135deg,
+        rgba(255, 255, 255, 0.92) 0%,
+        rgba(250, 235, 242, 0.85) 100%);
+    backdrop-filter: var(--pd-blur);
+    -webkit-backdrop-filter: var(--pd-blur);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 28px;
+    padding: 40px 44px;
+    box-shadow: var(--pd-shadow-md);
+    position: relative;
+    overflow: hidden;
+    animation: pdFadeUp 0.5s ease-out both;
+}
+
+/* Halo decorativo */
+.pd-hero::before {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle,
+        rgba(220, 150, 175, 0.12) 0%,
+        transparent 70%);
+    top: -80px;
+    right: -60px;
+    pointer-events: none;
+}
+
+.pd-hero-text {
+    position: relative;
+    z-index: 2;
+    max-width: 560px;
+}
+
+.pd-hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--pd-primary);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin: 0 0 12px 0;
+}
+
+.pd-hero-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--pd-text-main);
+    margin: 0 0 14px 0;
+    line-height: 1.15;
+}
+
+.pd-hero-desc {
+    font-size: 15px;
+    color: var(--pd-text-muted);
+    line-height: 1.65;
+    margin: 0 0 22px 0;
+    max-width: 480px;
+}
+
+.pd-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pd-accent);
+    box-shadow: var(--pd-shadow-sm);
+    text-transform: capitalize;
+}
+
+/* ── Ilustración CSS – cerebro abstracto ── */
+.pd-hero-illus {
+    position: relative;
+    width: 200px;
+    height: 180px;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+.pd-illus-brain {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 110px;
+    height: 110px;
+}
+
+.pd-illus-brain-shape {
+    width: 100%;
+    height: 100%;
+    border-radius: 50% 40% 50% 40%;
+    background: linear-gradient(135deg,
+        rgba(220, 160, 185, 0.35),
+        rgba(190, 160, 215, 0.25));
+    border: 2px solid rgba(220, 160, 185, 0.3);
+    animation: pdBrainPulse 5s ease-in-out infinite;
+}
+
+@keyframes pdBrainPulse {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.04); }
+}
+
+.pd-illus-brain-line {
+    position: absolute;
+    background: rgba(200, 140, 170, 0.4);
+    border-radius: 4px;
+}
+
+.pd-illus-brain-line--1 {
+    width: 40px; height: 3px;
+    top: 36px; left: 20px;
+    transform: rotate(-15deg);
+}
+
+.pd-illus-brain-line--2 {
+    width: 30px; height: 3px;
+    top: 52px; left: 30px;
+}
+
+.pd-illus-brain-line--3 {
+    width: 35px; height: 3px;
+    top: 68px; left: 22px;
+    transform: rotate(10deg);
+}
+
+.pd-illus-dot {
+    position: absolute;
+    border-radius: 50%;
+}
+
+.pd-illus-dot--1 {
+    width: 12px; height: 12px;
+    background: var(--pd-primary);
+    opacity: 0.5;
+    top: 12px; left: 20px;
+}
+
+.pd-illus-dot--2 {
+    width: 8px; height: 8px;
+    background: var(--pd-accent);
+    opacity: 0.45;
+    top: 130px; right: 30px;
+}
+
+.pd-illus-dot--3 {
+    width: 6px; height: 6px;
+    background: var(--pd-primary);
+    opacity: 0.35;
+    top: 60px; left: 5px;
+}
+
+.pd-illus-petal {
+    position: absolute;
+    width: 22px;
+    height: 32px;
+    border-radius: 60% 60% 45% 45%;
+    opacity: 0.5;
+}
+
+.pd-illus-petal--1 {
+    background: rgba(220, 150, 175, 0.55);
+    bottom: 20px;
+    left: 10px;
+    transform: rotate(20deg);
+}
+
+.pd-illus-petal--2 {
+    background: rgba(190, 155, 215, 0.45);
+    bottom: 28px;
+    left: 30px;
+    transform: rotate(50deg);
+}
+
+/* ==========================================================================
+   STAT CARDS
+   ========================================================================== */
+.pd-stats-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    animation: pdFadeUp 0.55s ease-out both;
+    animation-delay: 0.08s;
+}
+
+.pd-stat-card {
+    background: var(--pd-card-bg);
+    backdrop-filter: var(--pd-blur);
+    -webkit-backdrop-filter: var(--pd-blur);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 22px;
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    box-shadow: var(--pd-shadow-md);
+    transition: var(--pd-transition);
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+}
+
+.pd-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 5px;
+    height: 100%;
+    background: var(--card-color);
+    border-radius: 22px 0 0 22px;
+}
+
+.pd-stat-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: var(--pd-shadow-hover);
+}
+
+.pd-stat-icon-box {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: var(--card-bg);
+    color: var(--card-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.pd-stat-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.pd-stat-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--pd-text-main);
+    line-height: 1.1;
+}
+
+.pd-stat-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pd-text-muted);
+}
+
+/* ==========================================================================
+   LOWER GRID
+   ========================================================================== */
+.pd-lower-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 24px;
+    animation: pdFadeUp 0.6s ease-out both;
+    animation-delay: 0.14s;
+}
+
+/* ==========================================================================
+   PANELS (contenedores genéricos)
+   ========================================================================== */
+.pd-panel {
+    background: var(--pd-card-bg);
+    backdrop-filter: var(--pd-blur);
+    -webkit-backdrop-filter: var(--pd-blur);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 24px;
+    padding: 28px;
+    box-shadow: var(--pd-shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: pdFadeUp 0.65s ease-out both;
+    animation-delay: 0.18s;
+}
+
+.pd-panel--alert {
+    border-left: 4px solid hsl(340, 55%, 80%);
+}
+
+.pd-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--pd-text-main);
+}
+
+.pd-panel-header svg {
+    color: var(--pd-primary);
+}
+
+.pd-panel-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0;
+    flex: 1;
+}
+
+.pd-panel-badge {
+    background: var(--pd-primary);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 20px;
+}
+
+/* Placeholder */
+.pd-panel-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 32px 16px;
+    border-radius: 16px;
+    background: var(--pd-primary-light);
+    text-align: center;
+}
+
+.pd-placeholder-icon {
+    font-size: 32px;
+    line-height: 1;
+    opacity: 0.7;
+}
+
+.pd-panel-placeholder p {
+    font-size: 13px;
+    color: var(--pd-text-muted);
+    margin: 0;
+}
+
+/* ==========================================================================
+   PANEL COUNT LABEL
+   ========================================================================== */
+.pd-panel-count {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--pd-text-muted);
+    background: var(--pd-primary-light);
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-left: auto;
+}
+
+/* ==========================================================================
+   BADGES (estado / riesgo)
+   ========================================================================== */
+.pd-badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    text-transform: capitalize;
+    white-space: nowrap;
+    line-height: 1.3;
+}
+
+.pd-badge--ok {
+    background: #e6f7ee;
+    color: #2e8b57;
+}
+
+.pd-badge--warn {
+    background: #fff5e6;
+    color: #c5860a;
+}
+
+.pd-badge--danger {
+    background: #fde8ef;
+    color: #d95f7a;
+}
+
+/* ==========================================================================
+   ACTION BUTTONS (shared)
+   ========================================================================== */
+.pd-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--pd-border);
+    background: white;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--pd-primary);
+    cursor: pointer;
+    transition: var(--pd-transition);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.pd-action-btn:hover {
+    background: var(--pd-primary);
+    color: white;
+    border-color: var(--pd-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(180, 100, 130, 0.2);
+}
+
+.pd-action-btn--full {
+    width: 100%;
+    justify-content: center;
+    margin-top: 4px;
+}
+
+/* Botón icono circular (chevron) */
+.pd-icon-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--pd-border);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--pd-text-muted);
+    cursor: pointer;
+    transition: var(--pd-transition);
+    flex-shrink: 0;
+}
+
+.pd-icon-btn:hover {
+    background: var(--pd-primary);
+    color: white;
+    border-color: var(--pd-primary);
+    transform: translateX(3px);
+    box-shadow: 0 4px 10px rgba(180, 100, 130, 0.2);
+}
+
+/* ==========================================================================
+   AGENDA DEL DÍA
+   ========================================================================== */
+.pd-agenda-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pd-agenda-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    transition: var(--pd-transition);
+}
+
+.pd-agenda-row:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateX(4px);
+    box-shadow: var(--pd-shadow-sm);
+}
+
+.pd-agenda-hora {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--pd-primary);
+    min-width: 48px;
+    flex-shrink: 0;
+    padding: 6px 10px;
+    background: var(--pd-primary-light);
+    border-radius: 10px;
+    text-align: center;
+}
+
+.pd-agenda-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.pd-agenda-nombre {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--pd-text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pd-agenda-motivo {
+    font-size: 12px;
+    color: var(--pd-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ==========================================================================
+   ALERTAS EMOCIONALES
+   ========================================================================== */
+.pd-alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.pd-alert-card {
+    background: rgba(253, 232, 239, 0.35);
+    border: 1px solid rgba(230, 160, 185, 0.2);
+    border-radius: 18px;
+    padding: 16px;
+    transition: var(--pd-transition);
+}
+
+.pd-alert-card:hover {
+    background: rgba(253, 232, 239, 0.55);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(217, 95, 122, 0.1);
+}
+
+.pd-alert-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.pd-alert-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--pd-primary), #d95f7a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.pd-alert-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.pd-alert-nombre {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pd-text-main);
+}
+
+.pd-alert-emocion {
+    font-size: 12px;
+    font-weight: 600;
+    color: #d95f7a;
+}
+
+.pd-alert-fecha {
+    font-size: 11px;
+    color: var(--pd-text-muted);
+}
+
+/* ==========================================================================
+   PACIENTES RECIENTES
+   ========================================================================== */
+.pd-patients-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pd-patient-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: rgba(255, 255, 255, 0.55);
+    padding: 14px 16px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    transition: var(--pd-transition);
+}
+
+.pd-patient-row:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateX(4px);
+    box-shadow: var(--pd-shadow-sm);
+}
+
+.pd-patient-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.pd-patient-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.pd-patient-nombre {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--pd-text-main);
+}
+
+.pd-patient-meta {
+    font-size: 12px;
+    color: var(--pd-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pd-patient-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.pd-patient-sesion {
+    font-size: 11px;
+    color: var(--pd-text-muted);
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   ACCESOS RÁPIDOS
+   ========================================================================== */
+.pd-quick-section {
+    animation: pdFadeUp 0.6s ease-out both;
+    animation-delay: 0.1s;
+}
+
+.pd-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 14px;
+}
+
+.pd-quick-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 24px 16px;
+    background: var(--pd-card-bg);
+    backdrop-filter: var(--pd-blur);
+    -webkit-backdrop-filter: var(--pd-blur);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 20px;
+    box-shadow: var(--pd-shadow-sm);
+    cursor: pointer;
+    font-family: inherit;
+    transition: var(--pd-transition);
+}
+
+.pd-quick-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: var(--pd-shadow-hover);
+    border-color: rgba(210, 160, 175, 0.4);
+}
+
+.pd-quick-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    background: var(--qc-bg);
+    color: var(--qc-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pd-quick-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pd-text-main);
+    text-align: center;
+    line-height: 1.3;
+}
+
+.pd-sidebar-logo-img {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    display: block;
+}
+
+/* ==========================================================================
+   ANIMACIONES
+   ========================================================================== */
+@keyframes pdFadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ==========================================================================
+   RESPONSIVE
+   ========================================================================== */
+@media (max-width: 1100px) {
+    .pd-lower-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 860px) {
+    .pd-sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        height: 100vh;
+        transition: left 0.3s ease;
+        z-index: 100;
+    }
+
+    .pd-content {
+        padding: 20px;
+    }
+
+    .pd-topbar {
+        padding: 0 20px;
+    }
+
+    .pd-hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 28px 20px;
+    }
+
+    .pd-hero-illus { display: none; }
+    .pd-hero-title  { font-size: 24px; }
+}
+
+@media (max-width: 500px) {
+    .pd-stats-section {
+        grid-template-columns: 1fr 1fr;
+    }
+}

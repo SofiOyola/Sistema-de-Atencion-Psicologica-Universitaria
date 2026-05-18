@@ -8,6 +8,7 @@ import Register from './Pages/auth/Register';
 import StudentDashboard from './Pages/student/StudentDashboard';
 import MyAppointments from './Pages/student/MyAppointments';
 import ScheduleAppointment from './Pages/student/ScheduleAppointment';
+import PsychologistDashboard from './Pages/psychologist/PsychologistDashboard';
 import ResourcesPage from './Pages/student/ResourcesPage';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
                 <Route path="/student/appointments" element={<MyAppointments />} />
                 <Route path="/student/schedule-appointment" element={<ScheduleAppointment />} />
                 <Route path="/student/resources" element={<ResourcesPage />} />
+                <Route path="/psychologist/dashboard" element={<PsychologistDashboard />} />
             </Routes>
         </BrowserRouter>
     );
