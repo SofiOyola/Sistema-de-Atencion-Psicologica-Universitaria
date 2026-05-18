@@ -42,8 +42,16 @@ Route::prefix('psychologist')->group(function () {
 });
 
 use App\Http\Controllers\Api\AdminDashboardController;
+use App\Http\Controllers\Api\AdminPsychologistController;
 
 // Panel Administrativo
 Route::prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'getDashboardData']);
+    
+    // Gestión de Psicólogos
+    Route::get('/psychologists', [AdminPsychologistController::class, 'index']);
+    Route::post('/psychologists', [AdminPsychologistController::class, 'store']);
+    Route::put('/psychologists/{id}', [AdminPsychologistController::class, 'update']);
+    Route::patch('/psychologists/{id}/toggle-status', [AdminPsychologistController::class, 'toggleStatus']);
+    Route::delete('/psychologists/{id}', [AdminPsychologistController::class, 'destroy']);
 });
