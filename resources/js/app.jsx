@@ -7,6 +7,7 @@ import Login from './Pages/auth/Login';
 import Register from './Pages/auth/Register';
 import StudentDashboard from './Pages/student/StudentDashboard';
 import MyAppointments from './Pages/student/MyAppointments';
+import ScheduleAppointment from './Pages/student/ScheduleAppointment';
 
 function App() {
     return (
@@ -19,6 +20,7 @@ function App() {
                 </Route>
                 <Route path="/student/dashboard" element={<StudentDashboard />} />
                 <Route path="/student/appointments" element={<MyAppointments />} />
+                <Route path="/student/schedule-appointment" element={<ScheduleAppointment />} />
             </Routes>
         </BrowserRouter>
     );

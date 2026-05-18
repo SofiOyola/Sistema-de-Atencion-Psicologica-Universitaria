@@ -1,0 +1,246 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Re‑usamos las mismas variables del dashboard */
+    --sd-bg-color: #f7fbf8;        /* blanco crema verdoso */
+    --sd-text-main: #2b4535;       /* verde oscuro */
+    --sd-text-muted: #5e7a68;      /* verde salvia medio */
+    --sd-primary: #5fa86e;         /* verde salvia */
+    --sd-primary-light: #e6f2eb;   
+    --sd-accent: #7db89a;          
+    --sd-card-bg: rgba(255,255,255,0.75);
+    --sd-glass-blur: blur(16px);
+    --sd-shadow-sm: 0 4px 12px rgba(43,69,53,0.04);
+    --sd-shadow-md: 0 8px 24px rgba(43,69,53,0.08);
+    --sd-shadow-lg: 0 16px 40px rgba(43,69,53,0.12);
+    --sd-shadow-hover: 0 20px 48px rgba(43,69,53,0.16);
+    --sd-transition: all 0.3s cubic-bezier(0.25,0.8,0.25,1);
+}
+
+/* ------------------------------------------------------------------
+   Contenedor principal (hereda del layout) 
+------------------------------------------------------------------ */
+.sa-root {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--sd-text-main);
+}
+
+.sa-header {
+    text-align: center;
+    margin-bottom: 12px;
+}
+.sa-title {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--sd-primary);
+    margin: 0;
+}
+.sa-subtitle {
+    font-size: 16px;
+    color: var(--sd-text-muted);
+    margin-top: 8px;
+}
+
+/* ------------------------------------------------------------------
+   Formulario y secciones 
+------------------------------------------------------------------ */
+.sa-section {
+    background: var(--sd-card-bg);
+    backdrop-filter: var(--sd-glass-blur);
+    border-radius: 24px;
+    padding: 24px 28px;
+    box-shadow: var(--sd-shadow-md);
+    transition: var(--sd-transition);
+}
+
+.sa-section-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--sd-primary);
+}
+
+/* ---------- Catálogo de psicólogos ---------- */
+.sa-psych-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+.sa-psych-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--sd-card-bg);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 20px;
+    padding: 16px;
+    cursor: pointer;
+    transition: var(--sd-transition);
+    position: relative;
+}
+.sa-psych-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: var(--sd-shadow-hover);
+}
+.sa-psych-card--active {
+    border-color: var(--sd-primary);
+    background: var(--sd-primary-light);
+}
+.sa-psych-avatar {
+    width: 48px;
+    height: 48px;
+    background: var(--sd-primary);
+    border-radius: 50%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+.sa-psych-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.sa-psych-name {font-weight: 700; font-size: 15px; color: var(--sd-text-main);}
+.sa-psych-specialty, .sa-psych-exp {font-size: 13px; color: var(--sd-text-muted);}
+
+/* ---------- Motivo ---------- */
+.sa-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(95,168,110,0.2);
+    background: rgba(255,255,255,0.85);
+    font-family: inherit;
+    resize: vertical;
+    transition: var(--sd-transition);
+}
+.sa-textarea:focus {
+    outline: none;
+    border-color: var(--sd-primary);
+    box-shadow: 0 0 0 4px rgba(95,168,110,0.12);
+    background: white;
+}
+
+/* ---------- Fecha ---------- */
+.sa-date-input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(95,168,110,0.2);
+    background: rgba(255,255,255,0.85);
+    font-family: inherit;
+    transition: var(--sd-transition);
+}
+.sa-date-input:focus {
+    outline: none;
+    border-color: var(--sd-primary);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(95,168,110,0.12);
+}
+.sa-error {color: #e53935; font-size: 14px; margin-top: 8px;}
+
+/* ---------- Horario ---------- */
+.sa-time-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+}
+.sa-time-slot {
+    padding: 12px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.85);
+    border: 1px solid rgba(95,168,110,0.2);
+    cursor: pointer;
+    transition: var(--sd-transition);
+    text-align: center;
+    font-weight: 600;
+    color: var(--sd-text-main);
+}
+.sa-time-slot:hover {
+    background: white;
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: var(--sd-shadow-sm);
+}
+.sa-time-slot:disabled {
+    background: rgba(200,200,200,0.4);
+    color: #999;
+    cursor: not-allowed;
+}
+.sa-time-slot--selected {
+    background: var(--sd-primary);
+    color: white;
+    border-color: var(--sd-primary);
+    box-shadow: var(--sd-shadow-hover);
+}
+
+/* ---------- Resumen ---------- */
+.sa-summary {
+    background: var(--sd-primary-light);
+    border-left: 4px solid var(--sd-primary);
+}
+.sa-summary-list {list-style: none; padding: 0; margin: 0; font-size: 15px;}
+.sa-summary-list li {margin-bottom: 8px;}
+
+/* ---------- Botón principal ---------- */
+.sa-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+.sa-primary-btn {
+    background: linear-gradient(135deg, var(--sd-primary), var(--sd-accent));
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--sd-transition);
+    box-shadow: var(--sd-shadow-sm);
+}
+.sa-primary-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--sd-shadow-md);
+}
+.sa-primary-btn:disabled {
+    background: #c8d6c5;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* ---------- Toast de éxito ---------- */
+.sa-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--sd-primary);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: var(--sd-shadow-lg);
+    animation: fadeInUp 0.3s ease;
+    z-index: 100;
+}
+.sa-toast--success {background: var(--sd-primary);}
+.sa-toast-icon {stroke: white;}
+@keyframes fadeInUp {from {opacity: 0; transform: translateY(20px);} to {opacity: 1; transform: translateY(0);} }
+
+/* ------------------------------------------------------------------
+   Responsivo
+------------------------------------------------------------------ */
+@media (max-width: 900px) {
+    .sa-root {padding: 24px;}
+    .sa-psych-list {grid-template-columns: 1fr;}
+    .sa-time-grid {grid-template-columns: 1fr;}
+}
