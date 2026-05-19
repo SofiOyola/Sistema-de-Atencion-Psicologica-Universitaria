@@ -46,6 +46,7 @@ use App\Http\Controllers\Api\AdminPsychologistController;
 use App\Http\Controllers\Api\AdminStudentController;
 use App\Http\Controllers\Api\AdminResourceController;
 use App\Http\Controllers\Api\AdminReportController;
+use App\Http\Controllers\Api\AdminSettingsController;
 
 
 
@@ -77,4 +78,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/reports/types', [AdminReportController::class, 'types']);
     Route::get('/reports/generate', [AdminReportController::class, 'generate']);
     Route::post('/reports/export-pdf', [AdminReportController::class, 'exportPdf']);
+
+    // Configuración del Administrador
+    Route::get('/settings/profile', [AdminSettingsController::class, 'getProfile']);
+    Route::put('/settings/profile', [AdminSettingsController::class, 'updateProfile']);
 });
