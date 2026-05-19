@@ -7,12 +7,9 @@ const Sidebar = () => {
     { name: 'Inicio', icon: <Home size={20} />, path: '/student/dashboard' },
     { name: 'Mis citas', icon: <Calendar size={20} />, path: '/student/appointments' },
     { name: 'Mi seguimiento', icon: <TrendingUp size={20} />, path: '/student/tracking' },
-    { name: 'Historial clínico', icon: <FileText size={20} />, path: '/student/history' },
     { name: 'Recursos', icon: <BookOpen size={20} />, path: '/student/resources' },
     { name: 'Bienestar emocional', icon: <Heart size={20} />, path: '/student/wellness' },
-    { name: 'Mensajes', icon: <MessageCircle size={20} />, path: '/student/messages' },
     { name: 'Perfil', icon: <User size={20} />, path: '/student/profile' },
-    { name: 'Configuración', icon: <Settings size={20} />, path: '/student/settings' },
     ];
 
     return (

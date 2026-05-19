@@ -17,12 +17,9 @@ const NAV_ITEMS = [
     { id: 'inicio',      icon: Home,          label: 'Inicio',              path: '/student/dashboard' },
     { id: 'citas',       icon: Calendar,      label: 'Mis citas',           path: '/student/appointments' },
     { id: 'seguimiento', icon: TrendingUp,    label: 'Mi seguimiento',      path: '/student/tracking' },
-    { id: 'historial',   icon: FileText,      label: 'Historial clínico',   path: '/student/history' },
     { id: 'recursos',    icon: BookOpen,      label: 'Recursos',            path: '/student/resources' },
     { id: 'bienestar',   icon: Heart,         label: 'Bienestar emocional', path: '/student/wellness' },
-    { id: 'mensajes',    icon: MessageCircle, label: 'Mensajes',            path: '/student/messages', badge: 3 },
     { id: 'perfil',      icon: User,          label: 'Perfil',              path: '/student/profile' },
-    { id: 'config',      icon: Settings,      label: 'Configuración',       path: '/student/settings' },
 ];
 
 const StudentSidebar = () => {

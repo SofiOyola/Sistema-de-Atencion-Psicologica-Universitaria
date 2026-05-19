@@ -18,9 +18,7 @@ const NAV_ITEMS = [
     { id: 'clinical',  icon: ClipboardList,   label: 'Seguimiento clínico', path: '/psychologist/clinical-followup' },
     { id: 'alerts',    icon: AlertTriangle,   label: 'Alertas emocionales', path: '/psychologist/alerts', badge: 3 },
     { id: 'resources', icon: BookOpen,        label: 'Recursos',            path: '/psychologist/resources' },
-    { id: 'messages',  icon: MessageCircle,   label: 'Mensajes',            path: '/psychologist/messages', badge: 5 },
     { id: 'profile',   icon: User,            label: 'Perfil',              path: '/psychologist/profile' },
-    { id: 'settings',  icon: Settings,        label: 'Configuración',       path: '/psychologist/settings' },
 ];
 
 const getGreeting = () => {
