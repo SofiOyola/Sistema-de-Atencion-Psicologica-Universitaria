@@ -1,0 +1,418 @@
+/* ─────────────────────────────────────────────────────────────────────────
+   REPORTE ADMINISTRATIVOS - VISTA BASE CSS (Clases arep-*)
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+    --arep-primary: #f97316; /* Naranja principal */
+    --arep-primary-light: #fff7ed; /* Naranja crema suave */
+    --arep-accent: #fbbf24; /* Amarillo oro */
+    --arep-accent-light: #fefbeb;
+    --arep-text-main: #292524;
+    --arep-text-muted: #78716c;
+    --arep-card-bg: rgba(255, 254, 252, 0.7);
+    --arep-card-border: rgba(240, 180, 150, 0.18);
+    --arep-shadow-sm: 0 4px 14px rgba(240, 180, 150, 0.05);
+    --arep-shadow-md: 0 10px 25px rgba(240, 180, 150, 0.08);
+    --arep-shadow-lg: 0 20px 45px rgba(240, 180, 150, 0.15);
+}
+
+.arep-root {
+    display: flex;
+    min-height: 100vh;
+    background: #fffcf9;
+    color: var(--arep-text-main);
+    font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ── Decoraciones Orgánicas de Fondo (Flores, Hojas y Documentos) ── */
+.arep-bg-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(130px);
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.45;
+}
+.arep-bg-blob--a {
+    top: -120px;
+    right: -100px;
+    width: 550px;
+    height: 550px;
+    background: radial-gradient(circle, rgba(249, 115, 22, 0.16) 0%, rgba(251, 191, 36, 0.04) 100%);
+}
+.arep-bg-blob--b {
+    bottom: -150px;
+    left: -150px;
+    width: 650px;
+    height: 650px;
+    background: radial-gradient(circle, rgba(251, 191, 36, 0.16) 0%, rgba(249, 115, 22, 0.04) 100%);
+}
+
+.arep-bg-deco {
+    position: absolute;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0.08;
+    color: var(--arep-primary);
+}
+.arep-bg-deco--1 {
+    top: 8%;
+    right: 6%;
+    animation: arepFloat 8s ease-in-out infinite;
+}
+.arep-bg-deco--2 {
+    bottom: 15%;
+    left: 18%;
+    animation: arepFloat 10s ease-in-out infinite reverse;
+}
+
+@keyframes arepFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+    50% { transform: translateY(-20px) rotate(6deg) scale(1.05); }
+}
+
+/* ── Estructura de Panel ── */
+.arep-main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    z-index: 3;
+}
+
+.arep-content {
+    padding: 30px 40px 60px 40px;
+    flex: 1;
+}
+
+/* ── Hero / Encabezado ── */
+.arep-hero {
+    margin-bottom: 28px;
+    animation: arepFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.arep-hero-text {
+    max-width: 750px;
+}
+.arep-hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--arep-primary-light);
+    color: var(--arep-primary);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(249, 115, 22, 0.12);
+}
+.arep-hero-title {
+    font-size: 32px;
+    font-weight: 900;
+    letter-spacing: -0.8px;
+    color: var(--arep-text-main);
+    margin-bottom: 8px;
+}
+.arep-hero-desc {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--arep-text-muted);
+    font-weight: 550;
+}
+
+@keyframes arepFadeUp {
+    from { transform: translateY(15px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* ── Panel de Filtros y Configuración ── */
+.arep-filters-panel {
+    background: var(--arep-card-bg);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--arep-card-border);
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: var(--arep-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    animation: arepFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.arep-filters-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+}
+
+.arep-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.arep-filter-group label {
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--arep-text-main);
+}
+
+.arep-select, .arep-input-date {
+    width: 100%;
+    background: white;
+    border: 1px solid rgba(240, 180, 150, 0.28);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--arep-text-main);
+    outline: none;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+.arep-select:focus, .arep-input-date:focus {
+    border-color: var(--arep-primary);
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.06);
+}
+
+.arep-actions-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-top: 1px solid rgba(240, 180, 150, 0.08);
+    padding-top: 16px;
+}
+
+.arep-btn-generate {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--arep-primary);
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 22px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(249, 115, 22, 0.16);
+    transition: all 0.2s ease;
+}
+.arep-btn-generate:hover {
+    background: hsl(24, 85%, 54%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(249, 115, 22, 0.24);
+}
+
+.arep-btn-export {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid rgba(240, 180, 150, 0.35);
+    color: var(--arep-text-main);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.arep-btn-export:hover {
+    background: var(--arep-primary-light);
+    color: var(--arep-primary);
+    border-color: var(--arep-primary);
+}
+
+/* ── Grilla de Gráficos y Reportes ── */
+.arep-reports-layout {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 24px;
+    margin-bottom: 30px;
+    animation: arepFadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.arep-charts-section {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.arep-chart-card {
+    background: var(--arep-card-bg);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--arep-card-border);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: var(--arep-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: all 0.25s ease;
+}
+.arep-chart-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--arep-shadow-md);
+    background: white;
+}
+
+.arep-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.arep-card-title {
+    font-size: 15px;
+    font-weight: 850;
+    color: var(--arep-text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.arep-card-subtitle {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--arep-text-muted);
+}
+
+/* ── Estilos para Gráficos Vectoriales SVG ── */
+.arep-svg-container {
+    width: 100%;
+    height: 180px;
+    position: relative;
+}
+.arep-svg-container svg {
+    width: 100%;
+    height: 100%;
+}
+
+.arep-chart-tooltip {
+    position: absolute;
+    background: var(--arep-text-main);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 6px;
+    pointer-events: none;
+    transform: translate(-50%, -100%);
+    margin-top: -10px;
+    display: none;
+}
+
+/* ── Gráficos de Barras / Torta ── */
+.arep-bar-label {
+    font-size: 10px;
+    font-weight: 700;
+    fill: var(--arep-text-muted);
+}
+.arep-bar-value {
+    font-size: 10px;
+    font-weight: 800;
+    fill: var(--arep-text-main);
+}
+
+.arep-legend-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    font-size: 11.5px;
+    font-weight: 650;
+}
+.arep-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.arep-legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+/* ── Espacio para Tablas de Datos ── */
+.arep-table-card {
+    background: var(--arep-card-bg);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--arep-card-border);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: var(--arep-shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.arep-table-wrapper {
+    overflow-x: auto;
+}
+
+.arep-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+    text-align: left;
+}
+
+.arep-table th {
+    padding: 12px 14px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--arep-text-muted);
+    border-bottom: 2px solid rgba(240, 180, 150, 0.12);
+}
+
+.arep-table td {
+    padding: 14px;
+    font-weight: 600;
+    color: var(--arep-text-main);
+    border-bottom: 1px solid rgba(240, 180, 150, 0.08);
+}
+
+.arep-table tr:last-child td {
+    border-bottom: none;
+}
+
+.arep-badge {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: inline-flex;
+    align-items: center;
+}
+.arep-badge--success {
+    background: #f0fdf4; color: #16a34a; border: 1px solid rgba(22, 163, 74, 0.15);
+}
+.arep-badge--warning {
+    background: #fefbeb; color: #d97706; border: 1px solid rgba(217, 119, 6, 0.15);
+}
+.arep-badge--danger {
+    background: #fef2f2; color: #dc2626; border: 1px solid rgba(220, 38, 38, 0.15);
+}
+
+/* ── Media Queries / Responsive ── */
+@media (max-width: 1024px) {
+    .arep-reports-layout {
+        grid-template-columns: 1fr;
+    }
+    .arep-filters-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 640px) {
+    .arep-filters-grid {
+        grid-template-columns: 1fr;
+    }
+}

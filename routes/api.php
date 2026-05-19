@@ -45,6 +45,8 @@ use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\AdminPsychologistController;
 use App\Http\Controllers\Api\AdminStudentController;
 use App\Http\Controllers\Api\AdminResourceController;
+use App\Http\Controllers\Api\AdminReportController;
+
 
 
 // Panel Administrativo
@@ -70,4 +72,9 @@ Route::prefix('admin')->group(function () {
     Route::put('/resources/{id}', [AdminResourceController::class, 'update']);
     Route::patch('/resources/{id}/toggle-status', [AdminResourceController::class, 'toggleStatus']);
     Route::delete('/resources/{id}', [AdminResourceController::class, 'destroy']);
+
+    // Reportes Administrativos
+    Route::get('/reports/types', [AdminReportController::class, 'types']);
+    Route::get('/reports/generate', [AdminReportController::class, 'generate']);
+    Route::post('/reports/export-pdf', [AdminReportController::class, 'exportPdf']);
 });
