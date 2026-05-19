@@ -13,13 +13,10 @@ const ADMIN = { name: 'Dr. Roberto Alarcón', role: 'Director General · SAPU', 
 
 const NAV_ITEMS = [
     { id: 'dashboard',    icon: LayoutDashboard, label: 'Dashboard',      path: '/admin/dashboard' },
-    { id: 'users',        icon: UserCheck,       label: 'Usuarios',       path: '/admin/users' },
     { id: 'students',     icon: Users,           label: 'Estudiantes',    path: '/admin/students' },
     { id: 'psychologists',icon: Award,           label: 'Psicólogos',     path: '/admin/psychologists' },
-    { id: 'appointments', icon: CalendarDays,    label: 'Citas',          path: '/admin/appointments' },
     { id: 'resources',    icon: BookOpen,        label: 'Recursos',       path: '/admin/resources' },
     { id: 'reports',      icon: BarChart3,       label: 'Reportes',       path: '/admin/reports' },
-    { id: 'trazabilidad', icon: ShieldAlert,     label: 'Trazabilidad',   path: '/admin/logs' },
     { id: 'settings',     icon: Settings,        label: 'Configuración',  path: '/admin/settings' },
 ];
 
