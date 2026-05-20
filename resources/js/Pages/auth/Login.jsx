@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './Login.css';
 
 const Login = () => {
+    const navigate = useNavigate();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        console.log("Iniciando sesión con:", { email, password });
+        setError('');
+
+        try {
+            const response = await axios.post('/api/auth/login', { email, password });
+            const token = response.data.token;
+            if (token) {
+                localStorage.setItem('sap_token', token);
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            }
+            navigate('/student/dashboard');
+        } catch (err) {
+            setError(err.response?.data?.message || 'No se pudo iniciar sesión.');
+        }
     };
 
     return (
@@ -69,6 +84,7 @@ const Login = () => {
                         <button type="submit" className="login-button">Ingresar</button>
                         <Link to="/register" className="create-account">Crear cuenta</Link>
                     </div>
+                    {error && <div className="login-error">{error}</div>}
                 </form>
             </div>
         </div>

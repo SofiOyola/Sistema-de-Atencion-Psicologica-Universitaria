@@ -43,7 +43,11 @@ services:
       - neo4j
     volumes:
       - ./:/var/www/html
+      - vendor:/var/www/html/vendor
+      - public_build:/var/www/html/public/build
     command: php artisan serve --host=0.0.0.0 --port=8000
 
 volumes:
   neo4j_data:
+  vendor:
+  public_build:

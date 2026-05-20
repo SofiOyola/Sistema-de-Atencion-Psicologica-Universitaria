@@ -10,6 +10,12 @@ if [ ! -f ".env" ]; then
   fi
 fi
 
+# Ensure APP_KEY exists
+APP_KEY=$(grep -m1 '^APP_KEY=' .env | cut -d '=' -f2- || true)
+if [ -z "$APP_KEY" ]; then
+  php artisan key:generate --force
+fi
+
 # Try running migrations up to 10 times (some services may take time to be ready)
 attempts=0
 until php artisan migrate --force; do

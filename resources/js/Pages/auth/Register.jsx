@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import './Register.css';
 
 const PROGRAMAS = [
@@ -21,10 +22,14 @@ const Register = () => {
         identificacion: '',
         programa: '',
         correo: '',
+        password: '',
+        confirmPassword: '',
     });
 
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
+    const [submitError, setSubmitError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     /* ── Validaciones ─────────────────────────────────────── */
     const validate = (fields) => {
@@ -41,6 +46,12 @@ const Register = () => {
             e.correo = 'El correo institucional es requerido.';
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.correo))
             e.correo = 'Ingresa un correo electrónico válido.';
+        if (!fields.password)
+            e.password = 'La contraseña es requerida.';
+        else if (fields.password.length < 8)
+            e.password = 'La contraseña debe tener al menos 8 caracteres.';
+        if (!fields.confirmPassword)
+            e.confirmPassword = 'Confirma tu contraseña.';
         return e;
     };
 
@@ -59,19 +70,47 @@ const Register = () => {
         setErrors(validate(form));
     };
 
-    /* ── SSO Google — conectar con Laravel Socialite después ─ */
-    const handleGoogleSSO = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
         const validationErrors = validate(form);
         setErrors(validationErrors);
-        setTouched({ nombre: true, identificacion: true, programa: true, correo: true });
-        if (Object.keys(validationErrors).length > 0) return;
+        setTouched({
+            nombre: true,
+            identificacion: true,
+            programa: true,
+            correo: true,
+            password: true,
+            confirmPassword: true,
+        });
+        setSubmitError('');
+        setSuccessMessage('');
 
-        // Datos listos → redirigir a Laravel para iniciar OAuth con Google.
-        // Laravel Socialite construirá la URL de Google y redirigirá al usuario.
-        // Usamos window.location.href porque es una redirección de servidor completa
-        // (salimos de la SPA React hacia Google y de vuelta).
-        window.location.href = '/auth/google/redirect';
+        if (Object.keys(validationErrors).length > 0) {
+            return;
+        }
+
+        if (form.password !== form.confirmPassword) {
+            setErrors((prev) => ({
+                ...prev,
+                confirmPassword: 'Las contraseñas no coinciden.',
+            }));
+            return;
+        }
+
+        try {
+            await axios.post('/api/auth/register', {
+                name: form.nombre,
+                email: form.correo,
+                password: form.password,
+                programa: form.programa,
+                identificacion: form.identificacion,
+            });
+
+            setSuccessMessage('Registro exitoso. Ya puedes iniciar sesión.');
+            setForm({ nombre: '', identificacion: '', programa: '', correo: '', password: '', confirmPassword: '' });
+        } catch (err) {
+            setSubmitError(err.response?.data?.message || 'No se pudo completar el registro.');
+        }
     };
 
     const fieldClass = (key) =>
@@ -106,11 +145,11 @@ const Register = () => {
                     <img src="/images/logo.png" alt="Logo SAPU" className="reg-logo" />
                     <h1 className="reg-title">Crear cuenta</h1>
                     <p className="reg-subtitle">
-                        Completa tus datos y accede con tu cuenta Google institucional
+                        Completa tus datos para crear una cuenta y acceder al sistema.
                     </p>
                 </div>
 
-                <form onSubmit={handleGoogleSSO} className="reg-form" noValidate>
+                <form onSubmit={handleRegister} className="reg-form" noValidate>
                     {/* Nombre completo */}
                     <div className="reg-field">
                         <label htmlFor="nombre">Nombre Completo</label>
@@ -186,17 +225,44 @@ const Register = () => {
                         )}
                     </div>
 
-                    {/* SSO Google */}
-                    <button type="submit" className="reg-google-btn">
-                        <svg className="reg-google-icon" viewBox="0 0 48 48" aria-hidden="true">
-                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                            <path fill="none" d="M0 0h48v48H0z"/>
-                        </svg>
-                        Continuar con Google
-                    </button>
+                    <div className="reg-field">
+                        <label htmlFor="password">Contraseña</label>
+                        <input
+                            id="password"
+                            type="password"
+                            className={fieldClass('password')}
+                            value={form.password}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            placeholder="••••••••"
+                            autoComplete="new-password"
+                        />
+                        {errors.password && touched.password && (
+                            <span className="reg-error">{errors.password}</span>
+                        )}
+                    </div>
+
+                    <div className="reg-field">
+                        <label htmlFor="confirmPassword">Confirmar contraseña</label>
+                        <input
+                            id="confirmPassword"
+                            type="password"
+                            className={fieldClass('confirmPassword')}
+                            value={form.confirmPassword}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            placeholder="Repite tu contraseña"
+                            autoComplete="new-password"
+                        />
+                        {errors.confirmPassword && touched.confirmPassword && (
+                            <span className="reg-error">{errors.confirmPassword}</span>
+                        )}
+                    </div>
+
+                    {submitError && <div className="reg-error reg-form-message">{submitError}</div>}
+                    {successMessage && <div className="reg-success reg-form-message">{successMessage}</div>}
+
+                    <button type="submit" className="reg-google-btn">Registrarse</button>
                 </form>
 
                 <p className="reg-login-link">

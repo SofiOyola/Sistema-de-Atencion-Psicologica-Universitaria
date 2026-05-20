@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Laudis\Neo4j\ClientBuilder;
+use Laudis\Neo4j\Databags\SessionConfiguration;
 use Laudis\Neo4j\Exceptions\Neo4jException;
 use Illuminate\Support\Facades\Log;
 use Laudis\Neo4j\Authentication\Authenticate;
@@ -24,19 +25,19 @@ class Neo4jService
 
     public function __construct()
     {
-        $uri      = env('NEO4J_URI');
-        $user     = env('NEO4J_USERNAME');
-        $pass     = env('NEO4J_PASSWORD');
-        $database = env('NEO4J_DATABASE');
+        $uri      = env('NEO4J_URI', 'bolt://neo4j:7687');
+        $user     = env('NEO4J_USERNAME', 'neo4j');
+        $pass     = env('NEO4J_PASSWORD', 'secret1234');
+        $database = env('NEO4J_DATABASE', 'neo4j');
 
-        // Build the client with authentication and default database
-        $this->client = ClientBuilder::create()
-            ->withDriver(
-                'default',
-                'bolt://neo4j:7687',
-                Authenticate::basic('neo4j', 'secret1234')
-            )
-            ->build();
+        $builder = ClientBuilder::create()
+            ->withDriver('default', $uri, Authenticate::basic($user, $pass));
+
+        if ($database) {
+            $builder = $builder->withDefaultSessionConfiguration(SessionConfiguration::create($database));
+        }
+
+        $this->client = $builder->build();
     }
 
     /**
