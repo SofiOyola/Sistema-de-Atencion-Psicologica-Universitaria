@@ -102,4 +102,39 @@ class AppointmentController extends Controller
             'id' => $result->first()->get('id'),
         ], 201);
     }
+
+    public function reschedule($id, Request $request, Neo4jService $neo4j)
+    {
+        $validated = $request->validate([
+            'date' => 'required',
+        ]);
+
+        $neo4j->run("
+            MATCH (c:Cita {id_cita: \$id})
+            SET c.fecha = \$date
+            RETURN c
+        ", [
+            'id' => (int) $id,
+            'date' => $validated['date'],
+        ]);
+
+        return response()->json([
+            'message' => 'Cita reprogramada correctamente'
+        ]);
+    }
+
+    public function cancel($id, Neo4jService $neo4j)
+    {
+        $neo4j->run("
+            MATCH (c:Cita {id_cita: \$id})
+            SET c.estado_cita = 'Cancelada'
+            RETURN c
+        ", [
+            'id' => (int) $id,
+        ]);
+
+        return response()->json([
+            'message' => 'Cita cancelada correctamente'
+        ]);
+    }
 }

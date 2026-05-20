@@ -21,6 +21,8 @@ Route::prefix('resources')->group(function () {
 Route::get('/psychologists', [AppointmentController::class, 'psychologists']);
 Route::get('/appointments', [AppointmentController::class, 'index']);
 Route::post('/appointments', [AppointmentController::class, 'store']);
+Route::put('/appointments/{id}/reschedule', [AppointmentController::class, 'reschedule']);
+Route::put('/appointments/{id}/cancel', [AppointmentController::class, 'cancel']);
 
 use App\Http\Controllers\Api\ClinicalFollowUpController;
 use App\Http\Controllers\Api\EmotionalAlertController;
