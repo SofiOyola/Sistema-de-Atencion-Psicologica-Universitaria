@@ -1,0 +1,617 @@
+// =====================================================
+// 0. LIMPIAR BASE
+// =====================================================
+MATCH (n) DETACH DELETE n;
+
+// ==============ls -la | grep Script=======================================
+// 1. CONSTRAINTS (NODE KEY + UNIQUE + EXISTS)
+// =====================================================
+
+// ---------- ESTUDIANTE ----------
+CREATE CONSTRAINT estudiante_pk IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE (e.id_estudiante) IS NODE KEY;
+
+CREATE CONSTRAINT estudiante_identificacion_unique IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE e.identificacion IS UNIQUE;
+
+CREATE CONSTRAINT estudiante_correo_unique IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE e.correo_institucional IS UNIQUE;
+
+CREATE CONSTRAINT estudiante_nombre_exists IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE e.nombre IS NOT NULL;
+
+CREATE CONSTRAINT estudiante_identificacion_exists IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE e.identificacion IS NOT NULL;
+
+CREATE CONSTRAINT estudiante_correo_exists IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE e.correo_institucional IS NOT NULL;
+
+CREATE CONSTRAINT estudiante_programa_exists IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE e.programa_academico IS NOT NULL;
+
+CREATE CONSTRAINT estudiante_estado_proc_exists IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE e.estado_proceso_psicologico IS NOT NULL;
+
+// ---------- CITA ----------
+CREATE CONSTRAINT cita_pk IF NOT EXISTS
+FOR (c:Cita)
+REQUIRE (c.id_cita) IS NODE KEY;
+
+CREATE CONSTRAINT cita_fecha_exists IF NOT EXISTS
+FOR (c:Cita)
+REQUIRE c.fecha IS NOT NULL;
+
+CREATE CONSTRAINT cita_hora_exists IF NOT EXISTS
+FOR (c:Cita)
+REQUIRE c.hora IS NOT NULL;
+
+CREATE CONSTRAINT cita_estado_exists IF NOT EXISTS
+FOR (c:Cita)
+REQUIRE c.estado_cita IS NOT NULL;
+
+CREATE CONSTRAINT cita_motivo_exists IF NOT EXISTS
+FOR (c:Cita)
+REQUIRE c.motivo_consulta IS NOT NULL;
+
+// ---------- NOTA_SEGUIMIENTO ----------
+CREATE CONSTRAINT nota_pk IF NOT EXISTS
+FOR (n:Nota_Seguimiento)
+REQUIRE (n.id_nota) IS NODE KEY;
+
+CREATE CONSTRAINT nota_tipo_exists IF NOT EXISTS
+FOR (n:Nota_Seguimiento)
+REQUIRE n.tipo_nota IS NOT NULL;
+
+CREATE CONSTRAINT nota_contenido_exists IF NOT EXISTS
+FOR (n:Nota_Seguimiento)
+REQUIRE n.contenido_nota IS NOT NULL;
+
+CREATE CONSTRAINT nota_fecha_exists IF NOT EXISTS
+FOR (n:Nota_Seguimiento)
+REQUIRE n.fecha_creacion IS NOT NULL;
+
+// ---------- PSICOLOGO ----------
+CREATE CONSTRAINT psicologo_pk IF NOT EXISTS
+FOR (p:Psicologo)
+REQUIRE (p.id_psicologo) IS NODE KEY;
+
+CREATE CONSTRAINT psicologo_nombre_exists IF NOT EXISTS
+FOR (p:Psicologo)
+REQUIRE p.nombre IS NOT NULL;
+
+CREATE CONSTRAINT psicologo_especialidad_exists IF NOT EXISTS
+FOR (p:Psicologo)
+REQUIRE p.especialidad IS NOT NULL;
+
+CREATE CONSTRAINT psicologo_estado_exists IF NOT EXISTS
+FOR (p:Psicologo)
+REQUIRE p.estado IS NOT NULL;
+
+CREATE CONSTRAINT psicologo_experiencia_exists IF NOT EXISTS
+FOR (p:Psicologo)
+REQUIRE p.experiencia IS NOT NULL;
+
+// ---------- HISTORIAL_CLINICO ----------
+CREATE CONSTRAINT historial_pk IF NOT EXISTS
+FOR (h:Historial_Clinico)
+REQUIRE (h.id_historial) IS NODE KEY;
+
+CREATE CONSTRAINT historial_fecha_exists IF NOT EXISTS
+FOR (h:Historial_Clinico)
+REQUIRE h.fecha_creacion IS NOT NULL;
+
+CREATE CONSTRAINT historial_obs_exists IF NOT EXISTS
+FOR (h:Historial_Clinico)
+REQUIRE h.observaciones_generales IS NOT NULL;
+
+// ---------- MODIFICACION_CITA ----------
+CREATE CONSTRAINT mod_cita_pk IF NOT EXISTS
+FOR (m:Modificacion_Cita)
+REQUIRE (m.id_modificacion) IS NODE KEY;
+
+CREATE CONSTRAINT mod_cita_fecha_orig_exists IF NOT EXISTS
+FOR (m:Modificacion_Cita)
+REQUIRE m.fecha_original IS NOT NULL;
+
+CREATE CONSTRAINT mod_cita_nueva_fecha_exists IF NOT EXISTS
+FOR (m:Modificacion_Cita)
+REQUIRE m.nueva_fecha IS NOT NULL;
+
+CREATE CONSTRAINT mod_cita_motivo_exists IF NOT EXISTS
+FOR (m:Modificacion_Cita)
+REQUIRE m.motivo_cambio IS NOT NULL;
+
+CREATE CONSTRAINT mod_cita_tipo_exists IF NOT EXISTS
+FOR (m:Modificacion_Cita)
+REQUIRE m.tipo_modificacion IS NOT NULL;
+
+// ---------- DISPONIBILIDAD ----------
+CREATE CONSTRAINT dispo_pk IF NOT EXISTS
+FOR (d:Disponibilidad)
+REQUIRE (d.id_disponibilidad) IS NODE KEY;
+
+CREATE CONSTRAINT dispo_fecha_exists IF NOT EXISTS
+FOR (d:Disponibilidad)
+REQUIRE d.fecha_dispo IS NOT NULL;
+
+CREATE CONSTRAINT dispo_hora_ini_exists IF NOT EXISTS
+FOR (d:Disponibilidad)
+REQUIRE d.hora_inicio IS NOT NULL;
+
+CREATE CONSTRAINT dispo_hora_fin_exists IF NOT EXISTS
+FOR (d:Disponibilidad)
+REQUIRE d.hora_fin IS NOT NULL;
+
+CREATE CONSTRAINT dispo_estado_exists IF NOT EXISTS
+FOR (d:Disponibilidad)
+REQUIRE d.estado_dispo IS NOT NULL;
+
+// ---------- RECURSO_PSICOEDUCATIVO ----------
+CREATE CONSTRAINT recurso_pk IF NOT EXISTS
+FOR (r:Recurso_Psicoeducativo)
+REQUIRE (r.id_recurso) IS NODE KEY;
+
+CREATE CONSTRAINT recurso_titulo_exists IF NOT EXISTS
+FOR (r:Recurso_Psicoeducativo)
+REQUIRE r.titulo IS NOT NULL;
+
+CREATE CONSTRAINT recurso_categoria_exists IF NOT EXISTS
+FOR (r:Recurso_Psicoeducativo)
+REQUIRE r.categoria IS NOT NULL;
+
+CREATE CONSTRAINT recurso_tipo_exists IF NOT EXISTS
+FOR (r:Recurso_Psicoeducativo)
+REQUIRE r.tipo_recurso IS NOT NULL;
+
+CREATE CONSTRAINT recurso_fecha_exists IF NOT EXISTS
+FOR (r:Recurso_Psicoeducativo)
+REQUIRE r.fecha_publicacion IS NOT NULL;
+
+// ---------- ESTADO_EMOCIONAL ----------
+CREATE CONSTRAINT estado_emocional_pk IF NOT EXISTS
+FOR (e:Estado_Emocional)
+REQUIRE (e.id_estado_emocional) IS NODE KEY;
+
+CREATE CONSTRAINT estado_emocional_nivel_exists IF NOT EXISTS
+FOR (e:Estado_Emocional)
+REQUIRE e.nivel_emocional IS NOT NULL;
+
+CREATE CONSTRAINT estado_emocional_fecha_exists IF NOT EXISTS
+FOR (e:Estado_Emocional)
+REQUIRE e.fecha_est IS NOT NULL;
+
+CREATE CONSTRAINT estado_emocional_criticidad_exists IF NOT EXISTS
+FOR (e:Estado_Emocional)
+REQUIRE e.nivel_criticidad IS NOT NULL;
+
+CREATE CONSTRAINT estado_emocional_hora_exists IF NOT EXISTS
+FOR (e:Estado_Emocional)
+REQUIRE e.hora_est IS NOT NULL;
+
+// ---------- ALERTA_EMOCIONAL ----------
+CREATE CONSTRAINT alerta_pk IF NOT EXISTS
+FOR (a:Alerta_Emocional)
+REQUIRE (a.id_alerta) IS NODE KEY;
+
+CREATE CONSTRAINT alerta_fecha_exists IF NOT EXISTS
+FOR (a:Alerta_Emocional)
+REQUIRE a.fecha_generacion IS NOT NULL;
+
+CREATE CONSTRAINT alerta_nivel_exists IF NOT EXISTS
+FOR (a:Alerta_Emocional)
+REQUIRE a.nivel_alerta IS NOT NULL;
+
+CREATE CONSTRAINT alerta_desc_exists IF NOT EXISTS
+FOR (a:Alerta_Emocional)
+REQUIRE a.descripcion_alerta IS NOT NULL;
+
+CREATE CONSTRAINT alerta_estado_exists IF NOT EXISTS
+FOR (a:Alerta_Emocional)
+REQUIRE a.estado_alerta IS NOT NULL;
+
+// ---------- ADMINISTRADOR ----------
+CREATE CONSTRAINT admin_pk IF NOT EXISTS
+FOR (ad:Administrador)
+REQUIRE (ad.id_administrativo) IS NODE KEY;
+
+CREATE CONSTRAINT admin_depto_exists IF NOT EXISTS
+FOR (ad:Administrador)
+REQUIRE ad.departamento IS NOT NULL;
+
+CREATE CONSTRAINT admin_cargo_exists IF NOT EXISTS
+FOR (ad:Administrador)
+REQUIRE ad.cargo IS NOT NULL;
+
+CREATE CONSTRAINT admin_nivel_exists IF NOT EXISTS
+FOR (ad:Administrador)
+REQUIRE ad.nivel_acceso IS NOT NULL;
+
+// ---------- ASIGNACION ----------
+CREATE CONSTRAINT asignacion_pk IF NOT EXISTS
+FOR (a:Asignacion)
+REQUIRE (a.id_asignacion) IS NODE KEY;
+
+CREATE CONSTRAINT asignacion_tipo_exists IF NOT EXISTS
+FOR (a:Asignacion)
+REQUIRE a.tipo_asignacion IS NOT NULL;
+
+CREATE CONSTRAINT asignacion_fecha_ini_exists IF NOT EXISTS
+FOR (a:Asignacion)
+REQUIRE a.fecha_inicio_as IS NOT NULL;
+
+CREATE CONSTRAINT asignacion_fecha_fin_exists IF NOT EXISTS
+FOR (a:Asignacion)
+REQUIRE a.fecha_fin_as IS NOT NULL;
+
+CREATE CONSTRAINT asignacion_vigencia_exists IF NOT EXISTS
+FOR (a:Asignacion)
+REQUIRE a.vigencia IS NOT NULL;
+
+// ---------- USUARIO ----------
+CREATE CONSTRAINT usuario_pk IF NOT EXISTS
+FOR (u:Usuario)
+REQUIRE (u.id_usuario) IS NODE KEY;
+
+CREATE CONSTRAINT usuario_correo_unique IF NOT EXISTS
+FOR (u:Usuario)
+REQUIRE u.correo_institucional IS UNIQUE;
+
+CREATE CONSTRAINT usuario_correo_exists IF NOT EXISTS
+FOR (u:Usuario)
+REQUIRE u.correo_institucional IS NOT NULL;
+
+CREATE CONSTRAINT usuario_contrasena_exists IF NOT EXISTS
+FOR (u:Usuario)
+REQUIRE u.contrasena IS NOT NULL;
+
+CREATE CONSTRAINT usuario_fecha_crea_exists IF NOT EXISTS
+FOR (u:Usuario)
+REQUIRE u.fecha_creacion IS NOT NULL;
+
+CREATE CONSTRAINT usuario_ultimo_acceso_exists IF NOT EXISTS
+FOR (u:Usuario)
+REQUIRE u.ultimo_acceso IS NOT NULL;
+
+// ---------- TRAZABILIDAD ----------
+CREATE CONSTRAINT trazabilidad_pk IF NOT EXISTS
+FOR (t:Trazabilidad)
+REQUIRE (t.id_trazabilidad) IS NODE KEY;
+
+CREATE CONSTRAINT trazabilidad_accion_exists IF NOT EXISTS
+FOR (t:Trazabilidad)
+REQUIRE t.accion_realizada IS NOT NULL;
+
+CREATE CONSTRAINT trazabilidad_fecha_exists IF NOT EXISTS
+FOR (t:Trazabilidad)
+REQUIRE t.fecha_t IS NOT NULL;
+
+CREATE CONSTRAINT trazabilidad_hora_exists IF NOT EXISTS
+FOR (t:Trazabilidad)
+REQUIRE t.hora_t IS NOT NULL;
+
+CREATE CONSTRAINT trazabilidad_entidad_exists IF NOT EXISTS
+FOR (t:Trazabilidad)
+REQUIRE t.entidad_afectada IS NOT NULL;
+
+// =====================================================
+// 2. CREACION DE DATOS (10–25 REGISTROS POR ENTIDAD)
+// =====================================================
+
+// ESTUDIANTE (15)
+UNWIND range(1,15) AS i
+CREATE (:Estudiante {
+  id_estudiante: i,
+  nombre: "Estudiante " + i,
+  identificacion: "ID" + toString(1000 + i),
+  correo_institucional: "estudiante" + i + "@unab.edu.co",
+  programa_academico: CASE
+    WHEN i % 3 = 0 THEN "Ingenieria de Sistemas"
+    WHEN i % 3 = 1 THEN "Psicologia"
+    ELSE "Administracion"
+  END,
+  estado_proceso_psicologico: CASE
+    WHEN i % 3 = 0 THEN "En proceso"
+    WHEN i % 3 = 1 THEN "Finalizado"
+    ELSE "Pendiente"
+  END
+});
+
+// PSICOLOGO (10)
+UNWIND range(1,10) AS i
+CREATE (:Psicologo {
+  id_psicologo: i,
+  nombre: "Psicologo " + i,
+  especialidad: CASE
+    WHEN i % 3 = 0 THEN "Clinico"
+    WHEN i % 3 = 1 THEN "Educativo"
+    ELSE "Organizacional"
+  END,
+  estado: CASE
+    WHEN i % 2 = 0 THEN "Activo"
+    ELSE "Inactivo"
+  END,
+  experiencia: 2 + i
+});
+
+// ADMINISTRADOR (5)
+UNWIND range(1,5) AS i
+CREATE (:Administrador {
+  id_administrativo: i,
+  departamento: CASE
+    WHEN i % 2 = 0 THEN "Bienestar"
+    ELSE "Registro"
+  END,
+  cargo: CASE
+    WHEN i = 1 THEN "Coordinador"
+    WHEN i = 2 THEN "Asistente"
+    WHEN i = 3 THEN "Analista"
+    WHEN i = 4 THEN "Director"
+    ELSE "Auxiliar"
+  END,
+  nivel_acceso: CASE
+    WHEN i <= 2 THEN "Alto"
+    ELSE "Medio"
+  END
+});
+
+// USUARIO (20)
+UNWIND range(1,20) AS i
+CREATE (:Usuario {
+  id_usuario: i,
+  correo_institucional: "usuario" + i + "@unab.edu.co",
+  contrasena: "hash_" + toString(100000 + i),
+  fecha_creacion: "2024-01-" + toString(10 + (i % 10)),
+  ultimo_acceso: "2024-05-" + toString(10 + (i % 10))
+});
+
+// TRAZABILIDAD (20)
+UNWIND range(1,20) AS i
+CREATE (:Trazabilidad {
+  id_trazabilidad: i,
+  accion_realizada: "Accion " + i,
+  fecha_t: "2024-05-" + toString(10 + (i % 10)),
+  hora_t: "0" + toString(8 + (i % 10)) + ":00",
+  entidad_afectada: CASE
+    WHEN i % 3 = 0 THEN "Cita"
+    WHEN i % 3 = 1 THEN "Usuario"
+    ELSE "Estudiante"
+  END
+});
+
+// CITA (20)
+UNWIND range(1,20) AS i
+CREATE (:Cita {
+  id_cita: i,
+  fecha: "2024-06-" + toString(10 + (i % 10)),
+  hora: "0" + toString(8 + (i % 10)) + ":30",
+  estado_cita: CASE
+    WHEN i % 3 = 0 THEN "Programada"
+    WHEN i % 3 = 1 THEN "Completada"
+    ELSE "Cancelada"
+  END,
+  motivo_consulta: "Motivo consulta " + i
+});
+
+// NOTA_SEGUIMIENTO (25)
+UNWIND range(1,25) AS i
+CREATE (:Nota_Seguimiento {
+  id_nota: i,
+  tipo_nota: CASE
+    WHEN i % 2 = 0 THEN "Sesion"
+    ELSE "Seguimiento"
+  END,
+  contenido_nota: "Contenido de la nota " + i,
+  fecha_creacion: "2024-06-" + toString(5 + (i % 10))
+});
+
+// HISTORIAL_CLINICO (15)
+UNWIND range(1,15) AS i
+CREATE (:Historial_Clinico {
+  id_historial: i,
+  fecha_creacion: "2024-01-" + toString(5 + (i % 10)),
+  observaciones_generales: "Observaciones generales del historial " + i
+});
+
+// MODIFICACION_CITA (10)
+UNWIND range(1,10) AS i
+CREATE (:Modificacion_Cita {
+  id_modificacion: i,
+  fecha_original: "2024-06-" + toString(5 + (i % 10)),
+  nueva_fecha: "2024-06-" + toString(10 + (i % 10)),
+  motivo_cambio: "Motivo cambio " + i,
+  tipo_modificacion: CASE
+    WHEN i % 2 = 0 THEN "Reprogramacion"
+    ELSE "Cancelacion"
+  END
+});
+
+// DISPONIBILIDAD (8)
+UNWIND range(1,8) AS i
+CREATE (:Disponibilidad {
+  id_disponibilidad: i,
+  fecha_dispo: "2024-06-" + toString(10 + (i % 5)),
+  hora_inicio: "0" + toString(8 + (i % 5)) + ":00",
+  hora_fin: "0" + toString(9 + (i % 5)) + ":00",
+  estado_dispo: CASE
+    WHEN i % 3 = 0 THEN "Disponible"
+    WHEN i % 3 = 1 THEN "Ocupado"
+    ELSE "Bloqueado"
+  END
+});
+
+// RECURSO_PSICOEDUCATIVO (15)
+UNWIND range(1,15) AS i
+CREATE (:Recurso_Psicoeducativo {
+  id_recurso: i,
+  titulo: "Recurso psicoeducativo " + i,
+  categoria: CASE
+    WHEN i % 3 = 0 THEN "Ansiedad"
+    WHEN i % 3 = 1 THEN "Depresion"
+    ELSE "Estres"
+  END,
+  tipo_recurso: CASE
+    WHEN i % 2 = 0 THEN "Articulo"
+    ELSE "Video"
+  END,
+  fecha_publicacion: "2023-0" + toString(1 + (i % 6)) + "-10"
+});
+
+// ESTADO_EMOCIONAL (25)
+UNWIND range(1,25) AS i
+CREATE (:Estado_Emocional {
+  id_estado_emocional: i,
+  nivel_emocional: CASE
+    WHEN i % 3 = 0 THEN "Alto"
+    WHEN i % 3 = 1 THEN "Medio"
+    ELSE "Bajo"
+  END,
+  fecha_est: "2024-05-" + toString(5 + (i % 10)),
+  nivel_criticidad: CASE
+    WHEN i % 3 = 0 THEN "Critico"
+    WHEN i % 3 = 1 THEN "Moderado"
+    ELSE "Leve"
+  END,
+  hora_est: "0" + toString(8 + (i % 10)) + ":15"
+});
+
+// ALERTA_EMOCIONAL (15)
+UNWIND range(1,15) AS i
+CREATE (:Alerta_Emocional {
+  id_alerta: i,
+  fecha_generacion: "2024-05-" + toString(10 + (i % 10)),
+  nivel_alerta: CASE
+    WHEN i % 3 = 0 THEN "Alta"
+    WHEN i % 3 = 1 THEN "Media"
+    ELSE "Baja"
+  END,
+  descripcion_alerta: "Descripcion de alerta " + i,
+  estado_alerta: CASE
+    WHEN i % 2 = 0 THEN "Activa"
+    ELSE "Cerrada"
+  END
+});
+
+// ASIGNACION (15)
+UNWIND range(1,15) AS i
+CREATE (:Asignacion {
+  id_asignacion: i,
+  tipo_asignacion: CASE
+    WHEN i % 2 = 0 THEN "Individual"
+    ELSE "Grupal"
+  END,
+  fecha_inicio_as: "2024-03-" + toString(5 + (i % 10)),
+  fecha_fin_as: "2024-04-" + toString(5 + (i % 10)),
+  vigencia: CASE
+    WHEN i % 2 = 0 THEN "Vigente"
+    ELSE "No vigente"
+  END
+});
+
+// =====================================================
+// 3. RELACIONES (MEZCLADAS Y COHERENTES)
+// =====================================================
+
+// 1. SOLICITA  Estudiante — Cita
+MATCH (e:Estudiante), (c:Cita)
+WHERE e.id_estudiante = c.id_cita
+   OR (c.id_cita % 5) = (e.id_estudiante % 5)
+CREATE (e)-[:SOLICITA]->(c);
+
+// 2. ATIENDE  Psicologo — Cita
+MATCH (p:Psicologo), (c:Cita)
+WHERE (c.id_cita % 10) + 1 = p.id_psicologo
+CREATE (p)-[:ATIENDE]->(c);
+
+// 3. POSEE  Estudiante — Historial_Clinico
+MATCH (e:Estudiante), (h:Historial_Clinico)
+WHERE e.id_estudiante = h.id_historial
+CREATE (e)-[:POSEE]->(h);
+
+// 4. CONTIENE  Historial_Clinico — Nota_Seguimiento
+MATCH (h:Historial_Clinico), (n:Nota_Seguimiento)
+WHERE (n.id_nota % 15) + 1 = h.id_historial
+CREATE (h)-[:CONTIENE]->(n);
+
+// 5. REGISTRA  Psicologo — Nota_Seguimiento
+MATCH (p:Psicologo), (n:Nota_Seguimiento)
+WHERE (n.id_nota % 10) + 1 = p.id_psicologo
+CREATE (p)-[:REGISTRA]->(n);
+
+// 6. GENERA  Cita — Nota_Seguimiento
+MATCH (c:Cita), (n:Nota_Seguimiento)
+WHERE (n.id_nota % 20) + 1 = c.id_cita
+CREATE (c)-[:GENERA]->(n);
+
+// 7. MODIFICA  Cita — Modificacion_Cita
+MATCH (c:Cita), (m:Modificacion_Cita)
+WHERE (m.id_modificacion % 10) + 1 = c.id_cita
+CREATE (c)-[:MODIFICA]->(m);
+
+// 8. TIENE_DISPONIBILIDAD  Psicologo — Disponibilidad
+MATCH (p:Psicologo), (d:Disponibilidad)
+WHERE (p.id_psicologo % 8) + 1 = d.id_disponibilidad
+CREATE (p)-[:TIENE_DISPONIBILIDAD]->(d);
+
+// 9. REPORTA  Estudiante — Estado_Emocional
+MATCH (e:Estudiante), (s:Estado_Emocional)
+WHERE (s.id_estado_emocional % 15) + 1 = e.id_estudiante
+CREATE (e)-[:REPORTA]->(s);
+
+// 10. GENERA_ALERTA  Estado_Emocional — Alerta_Emocional
+MATCH (s:Estado_Emocional), (a:Alerta_Emocional)
+WHERE (a.id_alerta % 25) + 1 = s.id_estado_emocional
+CREATE (s)-[:GENERA_ALERTA]->(a);
+
+// 11. CREA  Psicologo — Recurso_Psicoeducativo
+MATCH (p:Psicologo), (r:Recurso_Psicoeducativo)
+WHERE (r.id_recurso % 10) + 1 = p.id_psicologo
+CREATE (p)-[:CREA]->(r);
+
+// 12. TIENE  Administrador — Usuario, Estudiante – Usuario, Psicologo – Usuario
+
+// Admin → usuarios 1–5
+MATCH (ad:Administrador), (u:Usuario)
+WHERE u.id_usuario <= 5
+  AND ad.id_administrativo = u.id_usuario
+CREATE (ad)-[:TIENE]->(u);
+
+// Estudiante → usuarios 6–15
+MATCH (e:Estudiante), (u:Usuario)
+WHERE u.id_usuario >= 6 AND u.id_usuario <= 15
+  AND (u.id_usuario - 5) = e.id_estudiante
+CREATE (e)-[:TIENE]->(u);
+
+// Psicologo → usuarios 16–20
+MATCH (p:Psicologo), (u:Usuario)
+WHERE u.id_usuario >= 16 AND u.id_usuario <= 20
+  AND (u.id_usuario - 15) = p.id_psicologo
+CREATE (p)-[:TIENE]->(u);
+
+// 13. REALIZA  Usuario — Trazabilidad
+MATCH (u:Usuario), (t:Trazabilidad)
+WHERE (t.id_trazabilidad % 20) + 1 = u.id_usuario
+CREATE (u)-[:REALIZA]->(t);
+
+// 14. ASIGNA  Estudiante — Asignacion
+MATCH (e:Estudiante), (a:Asignacion)
+WHERE (a.id_asignacion % 15) + 1 = e.id_estudiante
+CREATE (e)-[:ASIGNA]->(a);
+
+// 15. CORRESPONDE  Psicologo — Asignacion
+MATCH (p:Psicologo), (a:Asignacion)
+WHERE (a.id_asignacion % 10) + 1 = p.id_psicologo
+CREATE (p)-[:CORRESPONDE]->(a);
+
+// =====================================================
+// 4. VISUALIZAR
+// =====================================================
+MATCH (n) RETURN n;
+
