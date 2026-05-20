@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar as CalendarIcon, Clock, User, Video, Plus, CheckCircle, XCircle, RefreshCw, X } from 'lucide-react';
 import StudentLayout from '../../Components/dashboard/StudentLayout';
 import './MyAppointments.css';
@@ -49,9 +49,23 @@ const getStatusConfig = (status) => {
 
 const MyAppointments = () => {
     const [activeTab, setActiveTab] = useState('Todas');
-    const [appointments, setAppointments] = useState(INITIAL_APPOINTMENTS);
+    const [appointments, setAppointments] = useState([]);
+    const [loadingAppointments, setLoadingAppointments] = useState(true);
     const [cancelModal, setCancelModal] = useState({ isOpen: false, id: null });
     const [rescheduleModal, setRescheduleModal] = useState({ isOpen: false, id: null });
+
+    useEffect(() => {
+        fetch('/api/appointments')
+            .then(response => response.json())
+            .then(data => {
+                setAppointments(data);
+                setLoadingAppointments(false);
+            })
+            .catch(error => {
+                console.error('Error cargando citas:', error);
+                setLoadingAppointments(false);
+            });
+    }, []);
 
     // ── Lógica de Filtrado ──
     const filteredAppointments = appointments.filter(app => {
@@ -115,7 +129,12 @@ const MyAppointments = () => {
 
                 {/* ── Listado de Citas ── */}
                 <div className="sd-appts-list">
-                    {filteredAppointments.length === 0 ? (
+                    {loadingAppointments ? (
+                        <div className="sd-appts-empty">
+                            <div className="sd-appts-empty-icon">⏳</div>
+                            <p>Cargando citas...</p>
+                        </div>
+                    ) : filteredAppointments.length === 0 ? (
                         <div className="sd-appts-empty">
                             <div className="sd-appts-empty-icon">📅</div>
                             <p>No tienes citas en esta categoría.</p>

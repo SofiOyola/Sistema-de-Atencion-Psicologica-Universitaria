@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ResourceController;
 use App\Http\Controllers\Api\PsychologistAgendaController;
+use App\Http\Controllers\Api\AppointmentController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -15,6 +16,11 @@ Route::prefix('resources')->group(function () {
     Route::get('/categories', [ResourceController::class, 'categories']);
     Route::get('/search', [ResourceController::class, 'search']);
 });
+
+// Citas del estudiante
+Route::get('/psychologists', [AppointmentController::class, 'psychologists']);
+Route::get('/appointments', [AppointmentController::class, 'index']);
+Route::post('/appointments', [AppointmentController::class, 'store']);
 
 use App\Http\Controllers\Api\ClinicalFollowUpController;
 use App\Http\Controllers\Api\EmotionalAlertController;
