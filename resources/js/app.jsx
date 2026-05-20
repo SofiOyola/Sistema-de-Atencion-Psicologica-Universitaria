@@ -8,6 +8,7 @@ import Register from './Pages/auth/Register';
 import StudentDashboard from './Pages/student/StudentDashboard';
 import MyAppointments from './Pages/student/MyAppointments';
 import ScheduleAppointment from './Pages/student/ScheduleAppointment';
+import MyTracking from './Pages/student/MyTracking';
 import PsychologistDashboard from './Pages/psychologist/PsychologistDashboard';
 import PsychologistAgenda    from './Pages/psychologist/PsychologistAgenda';
 import ResourcesPage from './Pages/student/ResourcesPage';
@@ -32,6 +33,8 @@ function App() {
                 <Route path="/student/dashboard" element={<StudentDashboard />} />
                 <Route path="/student/appointments" element={<MyAppointments />} />
                 <Route path="/student/schedule-appointment" element={<ScheduleAppointment />} />
+                <Route path="/student/tracking" element={<MyTracking />} />
+                <Route path="/student/tracking/:studentId" element={<MyTracking />} />
                 <Route path="/student/resources" element={<ResourcesPage />} />
                 <Route path="/psychologist/dashboard" element={<PsychologistDashboard />} />
                 <Route path="/psychologist/agenda"    element={<PsychologistAgenda />} />
