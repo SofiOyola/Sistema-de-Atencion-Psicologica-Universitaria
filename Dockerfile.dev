@@ -1,0 +1,12 @@
+FROM php:8.2-cli
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    git zip unzip curl libzip-dev libpng-dev libonig-dev libxml2-dev ca-certificates && \
+    docker-php-ext-install pdo pdo_mysql mbstring zip exif bcmath && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+EXPOSE 8000

@@ -12,7 +12,17 @@ export default defineConfig({
         react(),
         tailwindcss(),
     ],
+
     server: {
+        host: '0.0.0.0',     // Necesario para Docker
+        port: 5173,          // Puerto expuesto en docker-compose
+        strictPort: true,    // Evita que Vite cambie de puerto
+
+        hmr: {
+            host: 'localhost', // Desde el navegador
+            port: 5173,
+        },
+
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },

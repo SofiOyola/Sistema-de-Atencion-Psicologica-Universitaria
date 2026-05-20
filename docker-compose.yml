@@ -4,14 +4,14 @@ services:
     ports:
       - "8000:8000"
     environment:
-      APP_ENV: local
+      APP_ENV: production
+      APP_DEBUG: "false"
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USERNAME: neo4j
       NEO4J_PASSWORD: secret1234
       NEO4J_DATABASE: neo4j
     depends_on:
       - neo4j
-    # By default do not mount the source (use built image). For development, see app-dev service below.
 
   neo4j:
     image: neo4j:5
@@ -28,26 +28,5 @@ services:
       timeout: 5s
       retries: 10
 
-  # Optional development service that mounts the source directory for live editing.
-  app-dev:
-    build: .
-    ports:
-      - "8001:8000"
-    environment:
-      APP_ENV: local
-      NEO4J_URI: bolt://neo4j:7687
-      NEO4J_USERNAME: neo4j
-      NEO4J_PASSWORD: secret1234
-      NEO4J_DATABASE: neo4j
-    depends_on:
-      - neo4j
-    volumes:
-      - ./:/var/www/html
-      - vendor:/var/www/html/vendor
-      - public_build:/var/www/html/public/build
-    command: php artisan serve --host=0.0.0.0 --port=8000
-
 volumes:
   neo4j_data:
-  vendor:
-  public_build:
