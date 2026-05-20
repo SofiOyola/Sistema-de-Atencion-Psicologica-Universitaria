@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import './bootstrap';
+import { isLogoutButton, logout } from './utils/auth';
 import MainLayout from './Components/layout/MainLayout';
 import Home from './Pages/Home';
 import Login from './Pages/auth/Login';
@@ -27,6 +29,21 @@ import AdminSettings from './Pages/admin/AdminSettings';
 
 
 function App() {
+    useEffect(() => {
+        const handleClick = (event) => {
+            if (!isLogoutButton(event.target)) {
+                return;
+            }
+
+            event.preventDefault();
+            logout();
+        };
+
+        document.addEventListener('click', handleClick);
+
+        return () => document.removeEventListener('click', handleClick);
+    }, []);
+
     return (
         <BrowserRouter>
             <Routes>

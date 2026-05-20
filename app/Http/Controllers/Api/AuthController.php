@@ -51,10 +51,43 @@ class AuthController extends Controller
             'updated_at' => now()->toDateTimeString(),
         ];
 
-        $this->neo4j->run(
-            'CREATE (u:User {name: $name, email: $email, password: $password, programa: $programa, identificacion: $identificacion, created_at: $created_at, updated_at: $updated_at}) RETURN u',
+        $created = $this->neo4j->run(
+            '
+            OPTIONAL MATCH (existingUser:User)
+            WITH coalesce(max(existingUser.id_usuario), 0) + 1 AS newUserId
+            OPTIONAL MATCH (existingStudent:Estudiante)
+            WITH newUserId, coalesce(max(existingStudent.id_estudiante), 0) + 1 AS newStudentId
+            CREATE (e:Estudiante {
+                id_estudiante: newStudentId,
+                nombre: $name,
+                identificacion: $identificacion,
+                correo_institucional: $email,
+                programa_academico: $programa,
+                estado_proceso_psicologico: "Pendiente"
+            })
+            CREATE (u:User:Usuario {
+                id_usuario: newUserId,
+                name: $name,
+                email: $email,
+                password: $password,
+                role: "student",
+                student_id: newStudentId,
+                programa: $programa,
+                identificacion: $identificacion,
+                correo_institucional: $email,
+                contrasena: $password,
+                created_at: $created_at,
+                updated_at: $updated_at,
+                fecha_creacion: $created_at,
+                ultimo_acceso: null
+            })
+            CREATE (e)-[:TIENE]->(u)
+            RETURN e.id_estudiante AS studentId
+            ',
             $params
         );
+
+        $studentId = $created->first()->get('studentId');
 
         $localUser = User::updateOrCreate(
             ['email' => $data['email']],
@@ -66,6 +99,8 @@ class AuthController extends Controller
             'user' => [
                 'name' => $localUser->name,
                 'email' => $localUser->email,
+                'role' => 'student',
+                'studentId' => $studentId,
                 'programa' => $data['programa'] ?? null,
                 'identificacion' => $data['identificacion'] ?? null,
             ],
@@ -80,7 +115,26 @@ class AuthController extends Controller
         ]);
 
         $result = $this->neo4j->run(
-            'MATCH (u:User {email: $email}) RETURN u LIMIT 1',
+            '
+            MATCH (u:User {email: $email})
+            OPTIONAL MATCH (e:Estudiante)-[:TIENE]->(u)
+            OPTIONAL MATCH (p:Psicologo)-[:TIENE]->(u)
+            OPTIONAL MATCH (a:Administrador)-[:TIENE]->(u)
+            RETURN u,
+                   coalesce(
+                       u.role,
+                       CASE
+                           WHEN e IS NOT NULL THEN "student"
+                           WHEN p IS NOT NULL THEN "psychologist"
+                           WHEN a IS NOT NULL THEN "admin"
+                           ELSE "student"
+                       END
+                   ) AS role,
+                   e.id_estudiante AS studentId,
+                   p.id_psicologo AS psychologistId,
+                   a.id_administrativo AS adminId
+            LIMIT 1
+            ',
             ['email' => $data['email']]
         );
 
@@ -111,7 +165,20 @@ class AuthController extends Controller
             'user' => [
                 'name' => $localUser->name,
                 'email' => $localUser->email,
+                'role' => $record->get('role'),
+                'studentId' => $record->get('studentId'),
+                'psychologistId' => $record->get('psychologistId'),
+                'adminId' => $record->get('adminId'),
             ],
+        ]);
+    }
+
+    public function logout(Request $request): JsonResponse
+    {
+        $request->user()?->currentAccessToken()?->delete();
+
+        return response()->json([
+            'message' => 'Sesion cerrada correctamente.',
         ]);
     }
 }

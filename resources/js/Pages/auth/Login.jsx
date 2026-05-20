@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { clearAuthSession } from '../../utils/auth';
 import './Login.css';
 
 const Login = () => {
@@ -16,11 +17,27 @@ const Login = () => {
         try {
             const response = await axios.post('/api/auth/login', { email, password });
             const token = response.data.token;
+            clearAuthSession();
+
             if (token) {
                 localStorage.setItem('sap_token', token);
                 axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             }
-            navigate('/student/dashboard');
+            const user = response.data.user || {};
+            const role = user.role || 'student';
+
+            localStorage.setItem('sap_role', role);
+            if (user.studentId) localStorage.setItem('studentId', user.studentId);
+            if (user.psychologistId) localStorage.setItem('psychologistId', user.psychologistId);
+            if (user.adminId) localStorage.setItem('adminId', user.adminId);
+
+            const routesByRole = {
+                student: '/student/dashboard',
+                psychologist: '/psychologist/dashboard',
+                admin: '/admin/dashboard',
+            };
+
+            navigate(routesByRole[role] || '/student/dashboard');
         } catch (err) {
             setError(err.response?.data?.message || 'No se pudo iniciar sesión.');
         }
