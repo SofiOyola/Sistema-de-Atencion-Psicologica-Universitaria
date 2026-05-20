@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\StudentTrackingController;
 use App\Http\Controllers\Api\StudentWellnessController;
 use App\Http\Controllers\Api\StudentProfileController;
+use App\Http\Controllers\Api\PsychologistPatientController;
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -59,6 +60,10 @@ Route::prefix('psychologist')->group(function () {
     Route::put('/appointments/{id}/cancel',     [PsychologistAgendaController::class, 'cancel']);
     Route::get('/agenda/blocks',  [PsychologistAgendaController::class, 'getBlocks']);
     Route::post('/agenda/blocks', [PsychologistAgendaController::class, 'createBlock']);
+
+    // Pacientes del psicólogo
+    // TODO: Proteger con auth:sanctum y resolver el psicólogo desde el usuario autenticado.
+    Route::get('/patients/{psychologistId}', [PsychologistPatientController::class, 'index']);
     
     // Seguimiento clínico
     Route::get('/patients', [ClinicalFollowUpController::class, 'getPatients']);

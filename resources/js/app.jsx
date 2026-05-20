@@ -16,6 +16,7 @@ import PsychologistAgenda    from './Pages/psychologist/PsychologistAgenda';
 import ResourcesPage from './Pages/student/ResourcesPage';
 import ClinicalFollowUp from './Pages/psychologist/ClinicalFollowUp';
 import EmotionalAlerts from './Pages/psychologist/EmotionalAlerts';
+import PsychologistPatients from './Pages/psychologist/PsychologistPatients';
 import AdminDashboard from './Pages/admin/AdminDashboard';
 import AdminPsychologists from './Pages/admin/AdminPsychologists';
 import AdminStudents from './Pages/admin/AdminStudents';
@@ -44,6 +45,8 @@ function App() {
                 <Route path="/student/resources" element={<ResourcesPage />} />
                 <Route path="/psychologist/dashboard" element={<PsychologistDashboard />} />
                 <Route path="/psychologist/agenda"    element={<PsychologistAgenda />} />
+                <Route path="/psychologist/patients" element={<PsychologistPatients />} />
+                <Route path="/psychologist/patients/:psychologistId" element={<PsychologistPatients />} />
                 <Route path="/psychologist/clinical-followup" element={<ClinicalFollowUp />} />
                 <Route path="/psychologist/alerts" element={<EmotionalAlerts />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
