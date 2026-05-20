@@ -10,6 +10,7 @@ import MyAppointments from './Pages/student/MyAppointments';
 import ScheduleAppointment from './Pages/student/ScheduleAppointment';
 import MyTracking from './Pages/student/MyTracking';
 import EmotionalWellness from './Pages/student/EmotionalWellness';
+import StudentProfile from './Pages/student/StudentProfile';
 import PsychologistDashboard from './Pages/psychologist/PsychologistDashboard';
 import PsychologistAgenda    from './Pages/psychologist/PsychologistAgenda';
 import ResourcesPage from './Pages/student/ResourcesPage';
@@ -38,6 +39,8 @@ function App() {
                 <Route path="/student/tracking/:studentId" element={<MyTracking />} />
                 <Route path="/student/wellness" element={<EmotionalWellness />} />
                 <Route path="/student/wellness/:studentId" element={<EmotionalWellness />} />
+                <Route path="/student/profile" element={<StudentProfile />} />
+                <Route path="/student/profile/:studentId" element={<StudentProfile />} />
                 <Route path="/student/resources" element={<ResourcesPage />} />
                 <Route path="/psychologist/dashboard" element={<PsychologistDashboard />} />
                 <Route path="/psychologist/agenda"    element={<PsychologistAgenda />} />

@@ -1,0 +1,462 @@
+/* ==========================================================================
+   Perfil del estudiante - estilos propios sp-*
+   Hereda layout, fondo, sidebar y topbar desde StudentDashboard.css
+   ========================================================================== */
+
+.sp-page {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    animation: spFadeUp 0.45s ease-out;
+}
+
+@keyframes spFadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sp-hero {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 34px 38px;
+    border-radius: 28px;
+    background:
+        radial-gradient(circle at 88% 18%, rgba(255, 236, 179, 0.52), transparent 28%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(238, 249, 242, 0.82));
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: var(--sd-shadow-md);
+    backdrop-filter: var(--sd-glass-blur);
+    overflow: hidden;
+    position: relative;
+}
+
+.sp-hero::after {
+    content: '';
+    position: absolute;
+    right: 36px;
+    bottom: -34px;
+    width: 142px;
+    height: 142px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle, #ffecb3 0 16%, transparent 17%),
+        conic-gradient(from 20deg, rgba(125, 184, 154, 0.34), rgba(255, 255, 255, 0.8), rgba(125, 184, 154, 0.34));
+    opacity: 0.42;
+}
+
+.sp-hero-copy,
+.sp-hero-card {
+    position: relative;
+    z-index: 1;
+}
+
+.sp-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    color: var(--sd-primary);
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.sp-hero h1 {
+    margin: 0 0 12px 0;
+    font-size: 34px;
+    line-height: 1.18;
+    color: var(--sd-text-main);
+}
+
+.sp-hero p {
+    max-width: 660px;
+    margin: 0;
+    color: var(--sd-text-muted);
+    line-height: 1.65;
+}
+
+.sp-hero-card {
+    min-width: 230px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 22px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.76);
+    border: 1px solid rgba(95, 168, 110, 0.14);
+    box-shadow: var(--sd-shadow-sm);
+}
+
+.sp-hero-card span {
+    color: var(--sd-text-muted);
+    font-size: 13px;
+}
+
+.sp-hero-card strong {
+    color: var(--sd-text-main);
+    font-size: 20px;
+}
+
+.sp-profile-grid {
+    display: grid;
+    grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+
+.sp-profile-card,
+.sp-details-card,
+.sp-info-item {
+    background: var(--sd-card-bg);
+    backdrop-filter: var(--sd-glass-blur);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    box-shadow: var(--sd-shadow-sm);
+}
+
+.sp-profile-card,
+.sp-details-card {
+    border-radius: 24px;
+    padding: 28px;
+}
+
+.sp-profile-card {
+    position: sticky;
+    top: 20px;
+}
+
+.sp-avatar {
+    width: 132px;
+    height: 132px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--sd-primary), var(--sd-accent));
+    color: white;
+    box-shadow: 0 18px 36px rgba(95, 168, 110, 0.26);
+    overflow: hidden;
+}
+
+.sp-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sp-avatar span {
+    font-size: 42px;
+    font-weight: 800;
+}
+
+.sp-profile-card h2 {
+    margin: 0 0 8px 0;
+    color: var(--sd-text-main);
+    font-size: 25px;
+    line-height: 1.2;
+}
+
+.sp-email,
+.sp-profile-meta span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--sd-text-muted);
+    line-height: 1.45;
+}
+
+.sp-email {
+    margin: 0 0 22px 0;
+    word-break: break-word;
+}
+
+.sp-profile-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px 0;
+    margin-bottom: 20px;
+    border-top: 1px solid var(--sd-border);
+    border-bottom: 1px solid var(--sd-border);
+}
+
+.sp-profile-meta svg,
+.sp-email svg {
+    color: var(--sd-primary);
+    flex: 0 0 auto;
+}
+
+.sp-primary-btn,
+.sp-secondary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 14px;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--sd-transition);
+}
+
+.sp-primary-btn {
+    width: 100%;
+    padding: 14px 18px;
+    border: none;
+    color: white;
+    background: linear-gradient(135deg, var(--sd-primary), var(--sd-accent));
+    box-shadow: 0 8px 24px rgba(95, 168, 110, 0.28);
+}
+
+.sp-secondary-btn {
+    padding: 13px 16px;
+    border: 1px solid var(--sd-primary);
+    color: var(--sd-primary);
+    background: white;
+}
+
+.sp-primary-btn:hover:not(:disabled),
+.sp-secondary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sd-shadow-sm);
+}
+
+.sp-primary-btn:disabled {
+    opacity: 0.72;
+    cursor: not-allowed;
+}
+
+.sp-action-row {
+    display: grid;
+    grid-template-columns: 0.85fr 1fr;
+    gap: 10px;
+}
+
+.sp-section-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    color: var(--sd-primary);
+}
+
+.sp-section-head h2 {
+    margin: 0;
+    color: var(--sd-text-main);
+    font-size: 20px;
+}
+
+.sp-readonly-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.sp-info-item {
+    padding: 16px;
+    border-radius: 18px;
+}
+
+.sp-info-item span,
+.sp-field span {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--sd-text-muted);
+    font-size: 12px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.sp-info-item strong {
+    color: var(--sd-text-main);
+    font-size: 15px;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.sp-editable-area {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.sp-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.sp-field--wide {
+    grid-column: 1 / -1;
+}
+
+.sp-field textarea,
+.sp-field input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid var(--sd-border);
+    background: rgba(255, 255, 255, 0.76);
+    color: var(--sd-text-main);
+    font: inherit;
+    resize: vertical;
+    transition: var(--sd-transition);
+}
+
+.sp-field textarea:focus,
+.sp-field input:focus {
+    outline: none;
+    border-color: var(--sd-primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(95, 168, 110, 0.15);
+}
+
+.sp-field p {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    padding: 14px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.52);
+    border: 1px solid var(--sd-border);
+    color: var(--sd-text-main);
+    line-height: 1.5;
+}
+
+.sp-field small {
+    align-self: flex-end;
+    margin-top: 6px;
+    color: #789180;
+    font-size: 12px;
+}
+
+.sp-alert {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 13px 15px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.sp-alert--success {
+    color: #4a9e7f;
+    background: #e6f2eb;
+    border: 1px solid rgba(95, 168, 110, 0.18);
+}
+
+.sp-alert--error {
+    margin-bottom: 18px;
+    color: #c95b5b;
+    background: #fdecea;
+}
+
+.sp-empty {
+    padding: 44px 24px;
+    text-align: center;
+    border: 1px dashed var(--sd-border);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.52);
+    color: var(--sd-text-muted);
+}
+
+.sp-empty span {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 34px;
+}
+
+.sp-empty h3 {
+    margin: 0 0 8px 0;
+    color: var(--sd-text-main);
+    font-size: 17px;
+}
+
+.sp-empty p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.sp-spin {
+    animation: spSpin 0.8s linear infinite;
+}
+
+@keyframes spSpin {
+    to { transform: rotate(360deg); }
+}
+
+.sp-skeleton {
+    min-height: 290px;
+    border-radius: 24px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.42), rgba(255,255,255,0.86), rgba(255,255,255,0.42));
+    background-size: 220% 100%;
+    animation: spShimmer 1.2s infinite linear;
+    border: 1px solid rgba(255,255,255,0.75);
+}
+
+.sp-skeleton-hero {
+    min-height: 190px;
+}
+
+.sp-skeleton-grid {
+    display: grid;
+    grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+    gap: 24px;
+}
+
+.sp-skeleton-side {
+    min-height: 430px;
+}
+
+@keyframes spShimmer {
+    to { background-position: -220% 0; }
+}
+
+@media (max-width: 1040px) {
+    .sp-profile-grid,
+    .sp-skeleton-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .sp-profile-card {
+        position: static;
+    }
+}
+
+@media (max-width: 740px) {
+    .sp-hero {
+        flex-direction: column;
+        padding: 26px;
+    }
+
+    .sp-hero-card {
+        min-width: 0;
+    }
+
+    .sp-readonly-grid,
+    .sp-editable-area {
+        grid-template-columns: 1fr;
+    }
+
+    .sp-action-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 520px) {
+    .sp-hero h1 {
+        font-size: 28px;
+    }
+
+    .sp-profile-card,
+    .sp-details-card {
+        padding: 22px;
+    }
+}

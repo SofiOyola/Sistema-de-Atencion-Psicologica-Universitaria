@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\PsychologistAgendaController;
 use App\Http\Controllers\Api\AppointmentController;
 use App\Http\Controllers\Api\StudentTrackingController;
 use App\Http\Controllers\Api\StudentWellnessController;
+use App\Http\Controllers\Api\StudentProfileController;
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -40,6 +41,11 @@ Route::get('/student/tracking/{studentId}', [StudentTrackingController::class, '
 // TODO: Proteger con auth:sanctum y resolver el estudiante desde el usuario autenticado.
 Route::get('/student/wellness/{studentId}', [StudentWellnessController::class, 'show']);
 Route::post('/student/wellness/{studentId}', [StudentWellnessController::class, 'store']);
+
+// Perfil del estudiante
+// TODO: Proteger con auth:sanctum y resolver el estudiante desde el usuario autenticado.
+Route::get('/student/profile/{studentId}', [StudentProfileController::class, 'show']);
+Route::put('/student/profile/{studentId}', [StudentProfileController::class, 'update']);
 
 use App\Http\Controllers\Api\ClinicalFollowUpController;
 use App\Http\Controllers\Api\EmotionalAlertController;
