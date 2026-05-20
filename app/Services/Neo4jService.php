@@ -7,6 +7,7 @@ use Laudis\Neo4j\Exceptions\Neo4jException;
 use Illuminate\Support\Facades\Log;
 use Laudis\Neo4j\Authentication\Authenticate;
 
+
 /**
  * Service wrapper for Neo4j Aura connections.
  *
@@ -30,7 +31,11 @@ class Neo4jService
 
         // Build the client with authentication and default database
         $this->client = ClientBuilder::create()
-            ->withDriver('default', $uri, Authenticate::basic($user, $pass))
+            ->withDriver(
+                'default',
+                'bolt://neo4j:7687',
+                Authenticate::basic('neo4j', 'secret1234')
+            )
             ->build();
     }
 
