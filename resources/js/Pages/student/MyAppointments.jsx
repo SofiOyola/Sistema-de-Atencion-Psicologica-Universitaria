@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar as CalendarIcon, Clock, User, Video, Plus, CheckCircle, XCircle, RefreshCw, X } from 'lucide-react';
 import StudentLayout from '../../Components/dashboard/StudentLayout';
 import './MyAppointments.css';
@@ -49,9 +49,23 @@ const getStatusConfig = (status) => {
 
 const MyAppointments = () => {
     const [activeTab, setActiveTab] = useState('Todas');
-    const [appointments, setAppointments] = useState(INITIAL_APPOINTMENTS);
+    const [appointments, setAppointments] = useState([]);
+    const [loadingAppointments, setLoadingAppointments] = useState(true);
     const [cancelModal, setCancelModal] = useState({ isOpen: false, id: null });
     const [rescheduleModal, setRescheduleModal] = useState({ isOpen: false, id: null });
+
+    useEffect(() => {
+        fetch('/api/appointments')
+            .then(response => response.json())
+            .then(data => {
+                setAppointments(data);
+                setLoadingAppointments(false);
+            })
+            .catch(error => {
+                console.error('Error cargando citas:', error);
+                setLoadingAppointments(false);
+            });
+    }, []);
 
     // ── Lógica de Filtrado ──
     const filteredAppointments = appointments.filter(app => {
@@ -63,20 +77,68 @@ const MyAppointments = () => {
     });
 
     // ── Lógica de Modales ──
-    const handleCancelSubmit = (e) => {
+    const handleCancelSubmit = async (e) => {
         e.preventDefault();
-        setAppointments(prev => prev.map(app => 
-            app.id === cancelModal.id ? { ...app, status: 'Cancelada' } : app
-        ));
-        setCancelModal({ isOpen: false, id: null });
+
+        try {
+            const response = await fetch(`/api/appointments/${cancelModal.id}/cancel`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Error cancelando cita');
+            }
+
+            setCancelModal({ isOpen: false, id: null });
+
+            setTimeout(() => {
+                setAppointments(prev =>
+                    prev.filter(app => app.id !== cancelModal.id)
+                );
+            }, 800);
+
+        } catch (error) {
+            console.error(error);
+            alert('No se pudo cancelar la cita');
+        }
     };
 
-    const handleRescheduleSubmit = (e) => {
+    const handleRescheduleSubmit = async (e) => {
         e.preventDefault();
-        setAppointments(prev => prev.map(app => 
-            app.id === rescheduleModal.id ? { ...app, date: 'Nueva Fecha', time: 'Nuevo Horario', status: 'Programada' } : app
-        ));
-        setRescheduleModal({ isOpen: false, id: null });
+
+        const newDate = e.target.date.value;
+
+        try {
+            const response = await fetch(`/api/appointments/${rescheduleModal.id}/reschedule`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    date: newDate,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Error reprogramando cita');
+            }
+
+            const updatedAppointments = await fetch('/api/appointments')
+                .then(res => res.json());
+
+            setAppointments(updatedAppointments);
+
+            setRescheduleModal({ isOpen: false, id: null });
+
+        } catch (error) {
+            console.error(error);
+            alert('No se pudo reprogramar la cita');
+        }
     };
 
     return (
@@ -115,7 +177,12 @@ const MyAppointments = () => {
 
                 {/* ── Listado de Citas ── */}
                 <div className="sd-appts-list">
-                    {filteredAppointments.length === 0 ? (
+                    {loadingAppointments ? (
+                        <div className="sd-appts-empty">
+                            <div className="sd-appts-empty-icon">⏳</div>
+                            <p>Cargando citas...</p>
+                        </div>
+                    ) : filteredAppointments.length === 0 ? (
                         <div className="sd-appts-empty">
                             <div className="sd-appts-empty-icon">📅</div>
                             <p>No tienes citas en esta categoría.</p>
@@ -219,7 +286,7 @@ const MyAppointments = () => {
                         <form onSubmit={handleRescheduleSubmit}>
                             <div className="sd-modal-field">
                                 <label>Nueva fecha simulada</label>
-                                <input type="date" required />
+                                <input type="date" name="date" required />
                             </div>
                             <div className="sd-modal-actions">
                                 <button type="button" className="sd-appt-btn-outline" onClick={() => setRescheduleModal({ isOpen: false, id: null })}>Cerrar</button>

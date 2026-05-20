@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import StudentLayout from '../../Components/dashboard/StudentLayout';
 import { Calendar, Clock, User, CheckCircle, XCircle } from 'lucide-react';
@@ -7,11 +7,6 @@ import './ScheduleAppointment.css';
 /* ------------------------------------------------------------------
    Datos de ejemplo (reemplazables por llamadas a la API)
 ------------------------------------------------------------------ */
-const PSYCHOLOGISTS = [
-  { id: 1, name: 'Dra. Laura Méndez', specialty: 'Psicología clínica', experience: '8 años', active: true, avatar: null },
-  { id: 2, name: 'Dr. Carlos Rojas', specialty: 'Terapia familiar', experience: '5 años', active: true, avatar: null },
-  { id: 3, name: 'Dra. Gabriela Ortiz', specialty: 'Psicología infantil', experience: '3 años', active: false, avatar: null },
-];
 
 // Simulación de disponibilidad: fechas bloqueadas y horarios ocupados
 const UNAVAILABLE_DATES = [
@@ -38,6 +33,21 @@ const ScheduleAppointment = () => {
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [psychologists, setPsychologists] = useState([]);
+  const [loadingPsychologists, setLoadingPsychologists] = useState(true);
+
+  useEffect(() => {
+    fetch('/api/psychologists')
+      .then(response => response.json())
+      .then(data => {
+        setPsychologists(data);
+        setLoadingPsychologists(false);
+      })
+      .catch(error => {
+        console.error('Error cargando psicólogos:', error);
+        setLoadingPsychologists(false);
+      });
+  }, []);
 
   const handleSubmit = e => {
     e.preventDefault();
@@ -47,7 +57,36 @@ const ScheduleAppointment = () => {
       return;
     }
     // Simular envío a backend
-    console.log('Cita enviada', { selectedPsych, reason, date, time });
+    fetch('/api/appointments', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      psychologist_id: selectedPsych.id,
+      date: date,
+      time: time,
+      reason: reason,
+    }),
+  })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('No se pudo crear la cita');
+      }
+      return response.json();
+    })
+    .then(() => {
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        navigate('/student/appointments');
+      }, 1500);
+    })
+    .catch(error => {
+      console.error('Error creando cita:', error);
+      alert('No se pudo guardar la cita.');
+    });
     setShowSuccess(true);
     setTimeout(() => {
       setShowSuccess(false);
@@ -74,7 +113,9 @@ const ScheduleAppointment = () => {
           <div className="sa-section">
             <h2 className="sa-section-title">Selecciona un psicólogo</h2>
             <div className="sa-psych-list">
-              {PSYCHOLOGISTS.filter(p => p.active).map(p => (
+              {loadingPsychologists ? (
+                  <p>Cargando psicólogos...</p>
+                ) : psychologists.filter(p => p.active).map(p => (
                 <button
                   key={p.id}
                   type="button"
