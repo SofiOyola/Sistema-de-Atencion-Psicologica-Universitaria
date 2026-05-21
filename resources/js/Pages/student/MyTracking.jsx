@@ -209,6 +209,7 @@ const MyTracking = () => {
     const { studentId: routeStudentId } = useParams();
     const [filter, setFilter] = useState('all');
     const [tracking, setTracking] = useState(null);
+    const [appointments, setAppointments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
@@ -226,16 +227,30 @@ const MyTracking = () => {
             setError('');
 
             try {
-                const response = await fetch(`/api/student/tracking/${studentId}`, {
-                    headers: { Accept: 'application/json' },
-                });
+       
+                const [trackingResponse, appointmentsResponse] = await Promise.all([
+                    fetch(`/api/student/tracking/${studentId}`, {
+                        headers: { Accept: 'application/json' },
+                    }),
+                    fetch('/api/student/appointments', {
+                        headers: { Accept: 'application/json' },
+                    }),
+                ]);
 
-                if (!response.ok) {
+                if (!trackingResponse.ok) {
                     throw new Error('No se pudo cargar el seguimiento');
                 }
 
-                const data = await response.json();
-                if (!cancelled) setTracking(data);
+                const trackingData = await trackingResponse.json();
+
+                const appointmentsData = appointmentsResponse.ok
+                    ? await appointmentsResponse.json()
+                    : [];
+
+                if (!cancelled) {
+                    setTracking(trackingData);
+                    setAppointments(Array.isArray(appointmentsData) ? appointmentsData : []);
+                }
             } catch (err) {
                 console.error(err);
                 if (!cancelled) setError('No pudimos cargar tu seguimiento. Intenta nuevamente en unos minutos.');
@@ -253,12 +268,12 @@ const MyTracking = () => {
 
     const filtered = useMemo(() => {
         const emotions = tracking?.emotions?.filter(item => isInRange(item, filter)) || [];
-        const appointments = tracking?.appointments?.filter(item => isInRange(item, filter)) || [];
+        const visibleAppointments = appointments.filter(item => isInRange(item, filter));
         const notes = tracking?.notes?.filter(item => isInRange(item, filter)) || [];
         const alerts = tracking?.alerts?.filter(item => isInRange(item, filter)) || [];
 
-        return { emotions, appointments, notes, alerts };
-    }, [tracking, filter]);
+        return { emotions, appointments: visibleAppointments, notes, alerts };
+    }, [tracking, appointments, filter]);
 
     const visibleSummary = useMemo(() => ({
         totalEmotions: filtered.emotions.length,

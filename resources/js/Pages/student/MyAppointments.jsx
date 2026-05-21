@@ -55,7 +55,7 @@ const MyAppointments = () => {
     const [rescheduleModal, setRescheduleModal] = useState({ isOpen: false, id: null });
 
     useEffect(() => {
-        fetch('/api/appointments')
+        fetch('/api/student/appointments')
             .then(response => response.json())
             .then(data => {
                 setAppointments(data);
@@ -81,7 +81,7 @@ const MyAppointments = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch(`/api/appointments/${cancelModal.id}/cancel`, {
+            const response = await fetch(`/api/student/appointments/${cancelModal.id}/cancel`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ const MyAppointments = () => {
         const newDate = e.target.date.value;
 
         try {
-            const response = await fetch(`/api/appointments/${rescheduleModal.id}/reschedule`, {
+            const response = await fetch(`/api/student/appointments/${rescheduleModal.id}/reschedule`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ const MyAppointments = () => {
                 throw new Error('Error reprogramando cita');
             }
 
-            const updatedAppointments = await fetch('/api/appointments')
+            const updatedAppointments = await fetch('/api/student/appointments')
                 .then(res => res.json());
 
             setAppointments(updatedAppointments);

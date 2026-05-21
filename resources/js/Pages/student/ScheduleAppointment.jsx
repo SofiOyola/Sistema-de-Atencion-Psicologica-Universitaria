@@ -37,7 +37,7 @@ const ScheduleAppointment = () => {
   const [loadingPsychologists, setLoadingPsychologists] = useState(true);
 
   useEffect(() => {
-    fetch('/api/psychologists')
+    fetch('/api/student/psychologists')
       .then(response => response.json())
       .then(data => {
         setPsychologists(data);
@@ -57,7 +57,7 @@ const ScheduleAppointment = () => {
       return;
     }
     // Simular envío a backend
-    fetch('/api/appointments', {
+    fetch('/api/student/appointments', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

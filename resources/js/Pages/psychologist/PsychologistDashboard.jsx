@@ -189,8 +189,6 @@ const PsychTopbar = () => {
                     {userMenuOpen && (
                         <div className="pd-user-dropdown" role="menu">
                             <button className="pd-user-menu-item"><User size={15} strokeWidth={1.8} /> Mi perfil</button>
-                            <button className="pd-user-menu-item"><Settings size={15} strokeWidth={1.8} /> Configuración</button>
-                            <hr className="pd-user-menu-divider" />
                             <button className="pd-user-menu-item pd-user-menu-item--danger">
                                 <LogOut size={15} strokeWidth={1.8} /> Cerrar sesión
                             </button>

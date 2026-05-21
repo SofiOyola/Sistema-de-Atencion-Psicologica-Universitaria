@@ -97,7 +97,6 @@ const Topbar = () => {
                     {userOpen && (
                         <div className="pd-user-dropdown" role="menu">
                             <button className="pd-user-menu-item"><User size={15} /> Mi perfil</button>
-                            <button className="pd-user-menu-item"><Settings size={15} /> Configuración</button>
                             <hr className="pd-user-menu-divider" />
                             <button className="pd-user-menu-item pd-user-menu-item--danger"><LogOut size={15} /> Cerrar sesión</button>
                         </div>
