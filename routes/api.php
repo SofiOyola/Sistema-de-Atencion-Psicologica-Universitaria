@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\AdminStudentController;
 use App\Http\Controllers\Api\AdminResourceController;
 use App\Http\Controllers\Api\AdminReportController;
 use App\Http\Controllers\Api\AdminSettingsController;
+use App\Http\Controllers\Api\PsychologistProfileController;
+
 
 //Autenticación 
 Route::prefix('auth')->group(function () {
@@ -94,7 +96,11 @@ Route::prefix('psychologist')->group(function () {
     Route::patch('/{id}/toggle-status', [PsychologistResourceController::class, 'toggleStatus']);
     Route::delete('/{id}', [PsychologistResourceController::class, 'destroy']);
 
-})->middleware('auth:sanctum');
+    //- Perfil del psicólogo
+    Route::get('/profile', [PsychologistProfileController::class, 'show']);
+    Route::put('/profile', [PsychologistProfileController::class, 'update']);
+
+});
 
 
 //Administrador

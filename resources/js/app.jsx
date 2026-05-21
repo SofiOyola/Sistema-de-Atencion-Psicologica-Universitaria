@@ -25,7 +25,8 @@ import AdminStudents from './Pages/admin/AdminStudents';
 import AdminResources from './Pages/admin/AdminResources';
 import AdminReports from './Pages/admin/AdminReports';
 import AdminSettings from './Pages/admin/AdminSettings';
-
+import PsychologistResources from './Pages/psychologist/PsychologistResources';
+import PsychologistProfile from './Pages/psychologist/PsychologistProfile';
 
 
 function App() {
@@ -72,6 +73,8 @@ function App() {
                 <Route path="/admin/resources" element={<AdminResources />} />
                 <Route path="/admin/reports" element={<AdminReports />} />
                 <Route path="/admin/settings" element={<AdminSettings />} />
+                <Route path="/psychologist/resources" element={<PsychologistResources />} />
+                <Route path="/psychologist/profile" element={<PsychologistProfile />} />
             </Routes>
         </BrowserRouter>
     );
