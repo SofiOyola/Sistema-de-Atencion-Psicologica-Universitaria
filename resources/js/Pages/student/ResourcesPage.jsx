@@ -28,8 +28,16 @@ const ResourcesPage = () => {
                     axios.get('/api/resources'),
                     axios.get('/api/resources/categories'),
                 ]);
-                setResources(resResp.data  || []);
-                setDisplayed(resResp.data  || []);
+                const normalizedResources = (resResp.data || []).map(r => ({
+                    ...r,
+                    url: r.url || r.link || r.enlace || '',
+                    type: String(r.type || r.tipo_recurso || 'external').toLowerCase(),
+                    image: r.image || '/images/default-resource.jpg',
+                    size: r.size || r.author || r.autor || 'Recurso'
+                }));
+
+                setResources(normalizedResources);
+                setDisplayed(normalizedResources);
                 setCategories(['Todas', ...(catResp.data || [])]);
             } catch (e) {
                 console.error(e);

@@ -246,22 +246,32 @@ CREATE (:Disponibilidad {
   END
 });
 
-// RECURSOS
-UNWIND range(1, 15) AS i
-CREATE (:Recurso_Psicoeducativo {
-  id_recurso: i,
-  titulo: "Recurso psicoeducativo " + toString(i),
-  categoria: CASE
-    WHEN i % 3 = 0 THEN "Ansiedad"
-    WHEN i % 3 = 1 THEN "Depresion"
-    ELSE "Estres"
-  END,
-  tipo_recurso: CASE
-    WHEN i % 2 = 0 THEN "Articulo"
-    ELSE "Video"
-  END,
-  fecha_publicacion: "2026-03-" + toString(1 + (i % 20))
-});
+// RECURSO_PSICOEDUCATIVO (21)
+UNWIND [
+  {id_recurso: 1, titulo: 'Comprender la Ansiedad y Cómo Afrontarla', categoria: 'Ansiedad', tipo_recurso: 'PDF', autor: 'American Psychological Association', isbn: null, fecha_publicacion: '2021-05-10', descripcion: 'Recurso psicoeducativo sobre síntomas, causas y estrategias para controlar la ansiedad.', enlace: 'https://www.apa.org/topics/anxiety'},
+  {id_recurso: 2, titulo: 'Estrategias para el Manejo del Estrés Académico', categoria: 'Estrés', tipo_recurso: 'WEB', autor: 'MedlinePlus', isbn: null, fecha_publicacion: '2022-03-15', descripcion: 'Artículo sobre técnicas para reducir el estrés en estudiantes universitarios.', enlace: 'https://medlineplus.gov/spanish/ency/article/003211.htm'},
+  {id_recurso: 3, titulo: 'Depresión: señales y tratamiento psicológico', categoria: 'Depresión', tipo_recurso: 'YOUTUBE', autor: 'PsicoVlog', isbn: null, fecha_publicacion: '2023-01-08', descripcion: 'Video educativo sobre síntomas de depresión y alternativas terapéuticas.', enlace: 'https://www.youtube.com/watch?v=z-IR48Mb3W0'},
+  {id_recurso: 4, titulo: 'Fortaleciendo la Autoestima en Jóvenes', categoria: 'Autoestima', tipo_recurso: 'PDF', autor: 'Nathaniel Branden', isbn: '9788449324031', fecha_publicacion: '2020-08-20', descripcion: 'Libro enfocado en el desarrollo de la autoestima y seguridad personal.', enlace: 'https://archive.org/details/los-seis-pilares-de-la-autoestima'},
+  {id_recurso: 5, titulo: 'Cómo Regular las Emociones en Situaciones Difíciles', categoria: 'Manejo de emociones', tipo_recurso: 'WEB', autor: 'Psicología y Mente', isbn: null, fecha_publicacion: '2021-11-02', descripcion: 'Artículo sobre regulación emocional y control de impulsos.', enlace: 'https://psicologiaymente.com/psicologia/regulacion-emocional'},
+  {id_recurso: 6, titulo: 'El Proceso de Duelo y la Adaptación Emocional', categoria: 'Duelo', tipo_recurso: 'PDF', autor: 'Elisabeth Kübler-Ross', isbn: '9788499081519', fecha_publicacion: '2019-06-12', descripcion: 'Guía psicológica sobre las etapas del duelo y la adaptación emocional.', enlace: 'https://archive.org/details/sobre-el-duelo-y-el-dolor'},
+  {id_recurso: 7, titulo: 'Motivación Personal y Cumplimiento de Metas', categoria: 'Motivación', tipo_recurso: 'YOUTUBE', autor: 'TEDx Talks', isbn: null, fecha_publicacion: '2022-07-19', descripcion: 'Charla motivacional sobre disciplina y logro de objetivos personales.', enlace: 'https://www.youtube.com/watch?v=mgmVOuLgFB0'},
+  {id_recurso: 8, titulo: 'Creación de Hábitos Saludables para la Vida Universitaria', categoria: 'Hábitos', tipo_recurso: 'WEB', autor: 'James Clear', isbn: '9780735211292', fecha_publicacion: '2021-09-14', descripcion: 'Artículo basado en hábitos positivos y productividad personal.', enlace: 'https://jamesclear.com/atomic-habits'},
+  {id_recurso: 9, titulo: 'Inteligencia Emocional', categoria: 'Inteligencia emocional', tipo_recurso: 'PDF', autor: 'Daniel Goleman', isbn: '9786073167710', fecha_publicacion: '2018-01-01', descripcion: 'Libro sobre inteligencia emocional y habilidades sociales.', enlace: 'https://clea.edu.mx/biblioteca/items/show/506'},
+  {id_recurso: 10, titulo: 'Construcción del Proyecto de Vida', categoria: 'Proyecto de vida', tipo_recurso: 'PDF', autor: 'UNESCO', isbn: null, fecha_publicacion: '2020-04-18', descripcion: 'Documento educativo para la planificación del futuro académico y personal.', enlace: 'https://unesdoc.unesco.org/'},
+  {id_recurso: 11, titulo: 'Autoconocimiento y Desarrollo Personal', categoria: 'Autoconocimiento', tipo_recurso: 'WEB', autor: 'Psicología Online', isbn: null, fecha_publicacion: '2022-02-09', descripcion: 'Artículo sobre herramientas de introspección y crecimiento personal.', enlace: 'https://www.psicologia-online.com/autoconocimiento'},
+  {id_recurso: 12, titulo: 'Comunicación Asertiva en el Entorno Universitario', categoria: 'Comunicación asertiva', tipo_recurso: 'YOUTUBE', autor: 'Aprendemos Juntos', isbn: null, fecha_publicacion: '2021-10-25', descripcion: 'Video educativo sobre técnicas de comunicación asertiva.', enlace: 'https://www.youtube.com/watch?v=8c6xgM7uYoQ'},
+  {id_recurso: 13, titulo: 'Relaciones Familiares Saludables', categoria: 'Relaciones familiares', tipo_recurso: 'PDF', autor: 'Salvador Minuchin', isbn: '9788475090986', fecha_publicacion: '2019-12-03', descripcion: 'Libro sobre dinámicas familiares y comunicación en el hogar.', enlace: 'https://archive.org/details/familias-y-terapia-familiar'},
+  {id_recurso: 14, titulo: 'Construyendo Relaciones de Pareja Sanas', categoria: 'Relaciones de pareja', tipo_recurso: 'WEB', autor: 'Psychology Today', isbn: null, fecha_publicacion: '2023-05-16', descripcion: 'Artículo sobre vínculos afectivos saludables y resolución de problemas.', enlace: 'https://www.psychologytoday.com/us/topics/relationships'},
+  {id_recurso: 15, titulo: 'Técnicas de Resolución de Conflictos', categoria: 'Resolución de conflictos', tipo_recurso: 'YOUTUBE', autor: 'UNICEF', isbn: null, fecha_publicacion: '2020-07-27', descripcion: 'Video educativo sobre mediación y resolución pacífica de conflictos.', enlace: 'https://www.youtube.com/watch?v=KY5TWVz5ZDU'},
+  {id_recurso: 16, titulo: 'Habilidades Sociales para la Vida Cotidiana', categoria: 'Habilidades sociales', tipo_recurso: 'PDF', autor: 'Vicente Caballo', isbn: '9788436819770', fecha_publicacion: '2021-03-11', descripcion: 'Manual práctico sobre desarrollo de habilidades sociales.', enlace: 'https://archive.org/details/manual-de-habilidades-sociales'},
+  {id_recurso: 17, titulo: 'Técnicas de Estudio Efectivas', categoria: 'Técnicas de estudio', tipo_recurso: 'WEB', autor: 'Universidad de Granada', isbn: null, fecha_publicacion: '2022-08-22', descripcion: 'Guía académica sobre métodos de estudio y aprendizaje efectivo.', enlace: 'https://ve.ugr.es/pages/sae/atencion_social/tecnicas_estudio'},
+  {id_recurso: 18, titulo: 'Mejora de la Atención y la Concentración', categoria: 'Atención y concentración', tipo_recurso: 'PDF', autor: 'David Rock', isbn: '9780061771293', fecha_publicacion: '2020-10-06', descripcion: 'Libro sobre concentración, productividad y enfoque mental.', enlace: 'https://archive.org/details/your-brain-at-work'},
+  {id_recurso: 19, titulo: 'Administración del Tiempo para Estudiantes', categoria: 'Manejo del tiempo', tipo_recurso: 'YOUTUBE', autor: 'ProductividadTop', isbn: null, fecha_publicacion: '2021-01-13', descripcion: 'Video con estrategias para mejorar la gestión del tiempo.', enlace: 'https://www.youtube.com/watch?v=iONDebHX9qk'},
+  {id_recurso: 20, titulo: 'Guía de Orientación Vocacional', categoria: 'Orientación vocacional', tipo_recurso: 'PDF', autor: 'Ministerio de Educación', isbn: null, fecha_publicacion: '2019-09-09', descripcion: 'Guía para ayudar a estudiantes a elegir su carrera profesional.', enlace: 'https://www.mineducacion.gov.co/'},
+  {id_recurso: 21, titulo: 'Educación Inclusiva y Diversidad', categoria: 'Educación inclusiva', tipo_recurso: 'WEB', autor: 'UNESCO', isbn: null, fecha_publicacion: '2022-06-30', descripcion: 'Artículo sobre inclusión educativa y diversidad en el aula.', enlace: 'https://www.unesco.org/es/education/inclusion'}
+] AS recurso
+CREATE (r:Recurso_Psicoeducativo)
+SET r = recurso;
 
 // ESTADOS EMOCIONALES
 UNWIND range(1, 25) AS i

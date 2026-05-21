@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(
             \App\Contracts\ResourceServiceInterface::class,
-            \App\Services\ResourceMockService::class   // Cambiar a Neo4jService cuando esté listo
+            \App\Services\ResourceNeo4jService::class
         );
     }
 
