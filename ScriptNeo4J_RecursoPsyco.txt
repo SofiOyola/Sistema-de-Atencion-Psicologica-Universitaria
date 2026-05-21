@@ -1,0 +1,20 @@
+// =====================================================
+// Script para añadir propiedades necesarias al CRUD
+// de recursos del psicólogo y vincularlos a un psicólogo
+// =====================================================
+
+// Añadir propiedades nuevas a todos los recursos psicoeducativos
+MATCH (r:Recurso_Psicoeducativo)
+SET r.status = 'Publicado',
+    r.creator = 'Dra. Laura Méndez',
+    r.fileName = CASE r.tipo_recurso
+      WHEN 'PDF' THEN r.titulo + '.pdf'
+      ELSE NULL
+    END,
+    r.downloads = toInteger(rand() * 100) + 10,
+    r.updatedAt = datetime()
+
+// Crear relación CREA entre el psicólogo 1 y todos los recursos
+MATCH (p:Psicologo {id_psicologo: 1}), (r:Recurso_Psicoeducativo)
+MERGE (p)-[:CREA]->(r)
+RETURN p.nombre, count(r) AS recursos_asignados;

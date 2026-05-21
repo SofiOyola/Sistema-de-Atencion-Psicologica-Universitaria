@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\StudentTrackingController;
 use App\Http\Controllers\Api\StudentWellnessController;
 use App\Http\Controllers\Api\StudentProfileController;
 use App\Http\Controllers\Api\PsychologistPatientController;
+use App\Http\Controllers\Api\PsychologistResourceController;
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
@@ -76,7 +77,13 @@ Route::prefix('psychologist')->group(function () {
     Route::get('/emotional-alerts/students/{id}/records', [EmotionalAlertController::class, 'getStudentRecords']);
     Route::put('/emotional-alerts/{recordId}/review', [EmotionalAlertController::class, 'reviewRecord']);
     Route::put('/emotional-alerts/{recordId}/close', [EmotionalAlertController::class, 'closeRecord']);
-});
+
+    Route::get('/',                     [PsychologistResourceController::class, 'index']);
+    Route::post('/',                    [PsychologistResourceController::class, 'store']);
+    Route::put('/{id}',                 [PsychologistResourceController::class, 'update']);
+    Route::patch('/{id}/toggle-status', [PsychologistResourceController::class, 'toggleStatus']);
+    Route::delete('/{id}',              [PsychologistResourceController::class, 'destroy']);
+})->middleware('auth:sanctum');
 
 use App\Http\Controllers\Api\AdminDashboardController;
 use App\Http\Controllers\Api\AdminPsychologistController;
