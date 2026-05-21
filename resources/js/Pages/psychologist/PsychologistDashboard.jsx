@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard,
@@ -26,12 +26,14 @@ import {
 import './PsychologistDashboard.css';
 
 /* ─────────────────────────────────────────────────────────────────────────
-   DATOS MOCK – se reemplazarán por llamadas API cuando esté el backend
+   CONSTANTES (PSICÓLOGO, NAVEGACIÓN, HELPERS)
    ───────────────────────────────────────────────────────────────────────── */
+const API_BASE = 'http://localhost:8000/api';
+
 const PSYCHOLOGIST = {
-    name:      'Dra. Laura Méndez',
+    name: 'Dra. Laura Méndez',
     specialty: 'Psicología Clínica · SAPU',
-    initials:  'LM',
+    initials: 'LM',
 };
 
 const NAV_ITEMS = [
@@ -44,50 +46,6 @@ const NAV_ITEMS = [
     { id: 'profile',   icon: User,            label: 'Perfil',              path: '/psychologist/profile' },
 ];
 
-/* ── Agenda del día ── */
-const AGENDA_MOCK = [
-    { id: 1, hora: '08:00', estudiante: 'Valentina Ríos',    motivo: 'Ansiedad académica',       estado: 'confirmada' },
-    { id: 2, hora: '09:30', estudiante: 'Carlos Morales',    motivo: 'Seguimiento depresión',    estado: 'pendiente'  },
-    { id: 3, hora: '11:00', estudiante: 'María Zapata',      motivo: 'Crisis emocional',         estado: 'urgente'    },
-    { id: 4, hora: '14:00', estudiante: 'Andrés Gutiérrez',  motivo: 'Primera consulta',         estado: 'confirmada' },
-    { id: 5, hora: '15:30', estudiante: 'Laura Quintero',    motivo: 'Estrés por exámenes',      estado: 'pendiente'  },
-];
-
-/* ── Alertas emocionales ── */
-const ALERTAS_MOCK = [
-    { id: 1, estudiante: 'María Zapata',     riesgo: 'alto',  emocion: 'Tristeza intensa',     fecha: 'Hoy 07:42'     },
-    { id: 2, estudiante: 'Carlos Morales',   riesgo: 'medio', emocion: 'Ansiedad generalizada', fecha: 'Hoy 06:15'     },
-    { id: 3, estudiante: 'Sofía Herrera',    riesgo: 'alto',  emocion: 'Desesperanza',          fecha: 'Ayer 22:30'    },
-];
-
-/* ── Pacientes recientes ── */
-const PACIENTES_MOCK = [
-    { id: 1, nombre: 'Valentina Ríos',   programa: 'Psicología',           semestre: 6, estado: 'En proceso',    ultimaSesion: '15 May 2026', iniciales: 'VR', color: '#e07b9a' },
-    { id: 2, nombre: 'Carlos Morales',   programa: 'Ingeniería de Sistemas',semestre: 4, estado: 'Seguimiento',   ultimaSesion: '14 May 2026', iniciales: 'CM', color: '#9b7dd4' },
-    { id: 3, nombre: 'María Zapata',     programa: 'Administración',        semestre: 8, estado: 'Urgente',       ultimaSesion: '13 May 2026', iniciales: 'MZ', color: '#d95f7a' },
-    { id: 4, nombre: 'Andrés Gutiérrez', programa: 'Medicina',              semestre: 2, estado: 'Primera cita',  ultimaSesion: '—',           iniciales: 'AG', color: '#c47db8' },
-    { id: 5, nombre: 'Laura Quintero',   programa: 'Arquitectura',          semestre: 5, estado: 'En proceso',    ultimaSesion: '10 May 2026', iniciales: 'LQ', color: '#a07dd4' },
-];
-
-/* ── Stat cards con valores reales ── */
-const STATS = [
-    { icon: CalendarDays,  label: 'Citas hoy',               value: '5',  color: 'var(--pd-primary)', bg: 'var(--pd-primary-light)' },
-    { icon: Users,         label: 'Pacientes activos',        value: '24', color: 'var(--pd-accent)',  bg: 'var(--pd-accent-light)'  },
-    { icon: AlertTriangle, label: 'Alertas críticas',         value: '3',  color: '#e07b9a',           bg: '#fde8ef'                 },
-    { icon: HeartPulse,    label: 'Seguimientos pendientes',  value: '8',  color: '#9b7dd4',           bg: '#ede8f8'                 },
-];
-
-/* ── Accesos rápidos ── */
-const QUICK_ACTIONS = [
-    { id: 'nota',     icon: PenLine,      label: 'Crear nota clínica',       color: '#e07b9a', bg: '#fde8ef' },
-    { id: 'agenda',   icon: CalendarDays, label: 'Ver agenda completa',      color: '#c47db8', bg: '#f5e8f5' },
-    { id: 'alertas',  icon: AlertTriangle,label: 'Revisar alertas',          color: '#9b7dd4', bg: '#ede8f8' },
-    { id: 'recursos', icon: BookOpen,     label: 'Recursos psicoeducativos', color: 'var(--pd-accent)', bg: 'var(--pd-accent-light)' },
-];
-
-/* ─────────────────────────────────────────────────────────────────────────
-   HELPERS
-   ───────────────────────────────────────────────────────────────────────── */
 const getGreeting = () => {
     const h = new Date().getHours();
     if (h < 12) return '☀️ Buenos días';
@@ -97,9 +55,9 @@ const getGreeting = () => {
 
 const estadoBadge = (estado) => {
     const map = {
-        confirmada: { label: 'Confirmada', cls: 'pd-badge--ok'      },
-        pendiente:  { label: 'Pendiente',  cls: 'pd-badge--warn'    },
-        urgente:    { label: 'Urgente',    cls: 'pd-badge--danger'  },
+        confirmada: { label: 'Confirmada', cls: 'pd-badge--ok' },
+        pendiente:  { label: 'Pendiente',  cls: 'pd-badge--warn' },
+        urgente:    { label: 'Urgente',    cls: 'pd-badge--danger' },
     };
     return map[estado] || { label: estado, cls: '' };
 };
@@ -107,16 +65,15 @@ const estadoBadge = (estado) => {
 const riesgoBadge = (riesgo) => {
     const map = {
         alto:  { label: 'Alto',  cls: 'pd-badge--danger' },
-        medio: { label: 'Medio', cls: 'pd-badge--warn'   },
-        bajo:  { label: 'Bajo',  cls: 'pd-badge--ok'     },
+        medio: { label: 'Medio', cls: 'pd-badge--warn' },
+        bajo:  { label: 'Bajo',  cls: 'pd-badge--ok' },
     };
     return map[riesgo] || { label: riesgo, cls: '' };
 };
 
 /* ─────────────────────────────────────────────────────────────────────────
-   SUB-COMPONENTES
+   BARRA LATERAL (sin cambios)
    ───────────────────────────────────────────────────────────────────────── */
-
 const PsychSidebar = () => {
     const location = useLocation();
     return (
@@ -151,8 +108,11 @@ const PsychSidebar = () => {
     );
 };
 
+/* ─────────────────────────────────────────────────────────────────────────
+   BARRA SUPERIOR (sin cambios)
+   ───────────────────────────────────────────────────────────────────────── */
 const PsychTopbar = () => {
-    const [notifOpen, setNotifOpen]       = useState(false);
+    const [notifOpen, setNotifOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     return (
         <header className="pd-topbar" role="banner">
@@ -200,6 +160,9 @@ const PsychTopbar = () => {
     );
 };
 
+/* ─────────────────────────────────────────────────────────────────────────
+   TARJETA DE ESTADÍSTICA (sin cambios)
+   ───────────────────────────────────────────────────────────────────────── */
 const StatCard = ({ icon: Icon, label, value, color, bg }) => (
     <div className="pd-stat-card" style={{ '--card-color': color, '--card-bg': bg }}>
         <div className="pd-stat-icon-box"><Icon size={22} strokeWidth={1.8} /></div>
@@ -211,17 +174,19 @@ const StatCard = ({ icon: Icon, label, value, color, bg }) => (
 );
 
 /* ─────────────────────────────────────────────────────────────────────────
-   PANEL: AGENDA DEL DÍA
+   PANELES (ahora reciben datos por props)
    ───────────────────────────────────────────────────────────────────────── */
-const AgendaPanel = () => (
+const AgendaPanel = ({ data, loading }) => (
     <section className="pd-panel" aria-label="Agenda del día">
         <div className="pd-panel-header">
             <CalendarDays size={18} strokeWidth={1.8} />
             <h2 className="pd-panel-title">Agenda del día</h2>
-            <span className="pd-panel-count">{AGENDA_MOCK.length} citas</span>
+            <span className="pd-panel-count">{loading ? '...' : data.length} citas</span>
         </div>
         <div className="pd-agenda-list">
-            {AGENDA_MOCK.map(cita => {
+            {loading ? (
+                <p className="pd-muted">Cargando agenda…</p>
+            ) : data.map(cita => {
                 const badge = estadoBadge(cita.estado);
                 return (
                     <div key={cita.id} className="pd-agenda-row">
@@ -246,18 +211,17 @@ const AgendaPanel = () => (
     </section>
 );
 
-/* ─────────────────────────────────────────────────────────────────────────
-   PANEL: ALERTAS EMOCIONALES
-   ───────────────────────────────────────────────────────────────────────── */
-const AlertasPanel = () => (
+const AlertasPanel = ({ data, loading }) => (
     <section className="pd-panel pd-panel--alert" aria-label="Alertas emocionales">
         <div className="pd-panel-header">
             <AlertTriangle size={18} strokeWidth={1.8} />
             <h2 className="pd-panel-title">Alertas emocionales</h2>
-            <span className="pd-panel-badge">{ALERTAS_MOCK.length}</span>
+            <span className="pd-panel-badge">{loading ? '...' : data.length}</span>
         </div>
         <div className="pd-alerts-list">
-            {ALERTAS_MOCK.map(alerta => {
+            {loading ? (
+                <p className="pd-muted">Cargando alertas…</p>
+            ) : data.map(alerta => {
                 const badge = riesgoBadge(alerta.riesgo);
                 return (
                     <div key={alerta.id} className="pd-alert-card">
@@ -286,18 +250,17 @@ const AlertasPanel = () => (
     </section>
 );
 
-/* ─────────────────────────────────────────────────────────────────────────
-   PANEL: PACIENTES RECIENTES
-   ───────────────────────────────────────────────────────────────────────── */
-const PacientesPanel = () => (
+const PacientesPanel = ({ data, loading }) => (
     <section className="pd-panel" aria-label="Pacientes recientes">
         <div className="pd-panel-header">
             <Users size={18} strokeWidth={1.8} />
             <h2 className="pd-panel-title">Pacientes recientes</h2>
-            <span className="pd-panel-count">{PACIENTES_MOCK.length} registros</span>
+            <span className="pd-panel-count">{loading ? '...' : data.length} registros</span>
         </div>
         <div className="pd-patients-list">
-            {PACIENTES_MOCK.map(p => (
+            {loading ? (
+                <p className="pd-muted">Cargando pacientes…</p>
+            ) : data.map(p => (
                 <div key={p.id} className="pd-patient-row">
                     <div className="pd-patient-avatar" style={{ background: p.color }}>
                         {p.iniciales}
@@ -312,7 +275,7 @@ const PacientesPanel = () => (
                         <span className={`pd-badge ${p.estado === 'Urgente' ? 'pd-badge--danger' : p.estado === 'Seguimiento' ? 'pd-badge--warn' : 'pd-badge--ok'}`}>
                             {p.estado}
                         </span>
-                        <span className="pd-patient-sesion">Últ. sesión: {p.ultimaSesion}</span>
+                        <span className="pd-patient-sesion">Últ. sesión: {p.ultima_sesion}</span>
                     </div>
                     <button
                         className="pd-icon-btn"
@@ -329,15 +292,15 @@ const PacientesPanel = () => (
 );
 
 /* ─────────────────────────────────────────────────────────────────────────
-   ACCESOS RÁPIDOS
+   ACCESOS RÁPIDOS (sin cambios)
    ───────────────────────────────────────────────────────────────────────── */
 const QuickActions = () => {
     const navigate = useNavigate();
 
     const handleAction = (id) => {
         const routes = {
-            agenda:   '/psychologist/agenda',
-            alertas:  '/psychologist/alerts',
+            agenda: '/psychologist/agenda',
+            alertas: '/psychologist/alerts',
             recursos: '/student/resources',
         };
         if (routes[id]) {
@@ -355,7 +318,12 @@ const QuickActions = () => {
                 <h2 className="pd-panel-title">Accesos rápidos</h2>
             </div>
             <div className="pd-quick-grid">
-                {QUICK_ACTIONS.map(({ id, icon: Icon, label, color, bg }) => (
+                {[
+                    { id: 'nota',     icon: PenLine,      label: 'Crear nota clínica',       color: '#e07b9a', bg: '#fde8ef' },
+                    { id: 'agenda',   icon: CalendarDays, label: 'Ver agenda completa',      color: '#c47db8', bg: '#f5e8f5' },
+                    { id: 'alertas',  icon: AlertTriangle,label: 'Revisar alertas',          color: '#9b7dd4', bg: '#ede8f8' },
+                    { id: 'recursos', icon: BookOpen,     label: 'Recursos psicoeducativos', color: 'var(--pd-accent)', bg: 'var(--pd-accent-light)' },
+                ].map(({ id, icon: Icon, label, color, bg }) => (
                     <button
                         key={id}
                         className="pd-quick-card"
@@ -372,85 +340,122 @@ const QuickActions = () => {
 };
 
 /* ─────────────────────────────────────────────────────────────────────────
-   PÁGINA PRINCIPAL
+   COMPONENTE PRINCIPAL (con datos reales desde Neo4j)
    ───────────────────────────────────────────────────────────────────────── */
-const PsychologistDashboard = () => (
-    <div className="pd-root">
+const PsychologistDashboard = () => {
+    const [stats, setStats] = useState(null);
+    const [agenda, setAgenda] = useState([]);
+    const [alertas, setAlertas] = useState([]);
+    const [pacientes, setPacientes] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const token = localStorage.getItem('auth_token');
 
-        {/* Blobs decorativos */}
-        <div className="pd-bg-blob pd-bg-blob--a" aria-hidden="true" />
-        <div className="pd-bg-blob pd-bg-blob--b" aria-hidden="true" />
-        <div className="pd-bg-blob pd-bg-blob--c" aria-hidden="true" />
+    useEffect(() => {
+        fetch(`${API_BASE}/psychologist/dashboard`, {
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    setStats(res.data.stats);
+                    setAgenda(res.data.agenda || []);
+                    setAlertas(res.data.alertas || []);
+                    setPacientes(res.data.pacientes || []);
+                }
+                setLoading(false);
+            })
+            .catch(() => setLoading(false));
+    }, []);
 
-        {/* Flores CSS */}
-        <div className="pd-deco-rose pd-deco-rose--1" aria-hidden="true">
-            <span /><span /><span /><span /><span />
-        </div>
-        <div className="pd-deco-rose pd-deco-rose--2" aria-hidden="true">
-            <span /><span /><span /><span /><span />
-        </div>
+    const statCards = stats ? [
+        { icon: CalendarDays,  label: 'Citas hoy',               value: stats.citas_hoy,               color: 'var(--pd-primary)', bg: 'var(--pd-primary-light)' },
+        { icon: Users,         label: 'Pacientes activos',        value: stats.pacientes_activos,        color: 'var(--pd-accent)',  bg: 'var(--pd-accent-light)' },
+        { icon: AlertTriangle, label: 'Alertas críticas',         value: stats.alertas_criticas,         color: '#e07b9a',           bg: '#fde8ef' },
+        { icon: HeartPulse,    label: 'Seguimientos pendientes',  value: stats.seguimientos_pendientes,  color: '#9b7dd4',           bg: '#ede8f8' },
+    ] : [];
 
-        <PsychSidebar />
+    return (
+        <div className="pd-root">
+            {/* Blobs decorativos */}
+            <div className="pd-bg-blob pd-bg-blob--a" aria-hidden="true" />
+            <div className="pd-bg-blob pd-bg-blob--b" aria-hidden="true" />
+            <div className="pd-bg-blob pd-bg-blob--c" aria-hidden="true" />
 
-        <div className="pd-main-area">
-            <PsychTopbar />
+            {/* Flores CSS */}
+            <div className="pd-deco-rose pd-deco-rose--1" aria-hidden="true">
+                <span /><span /><span /><span /><span />
+            </div>
+            <div className="pd-deco-rose pd-deco-rose--2" aria-hidden="true">
+                <span /><span /><span /><span /><span />
+            </div>
 
-            <main className="pd-content" id="main-content">
+            <PsychSidebar />
 
-                {/* ══════════ HERO ══════════ */}
-                <section className="pd-hero" aria-label="Resumen del día">
-                    <div className="pd-hero-text">
-                        <p className="pd-hero-tag">
-                            <Sparkles size={14} strokeWidth={2} />
-                            Espacio clínico · SAPU
-                        </p>
-                        <h1 className="pd-hero-title">{PSYCHOLOGIST.name}</h1>
-                        <p className="pd-hero-desc">
-                            Bienvenida a tu panel clínico. Desde aquí puedes gestionar tu agenda,
-                            hacer seguimiento a tus pacientes y atender alertas emocionales.
-                        </p>
-                        <div className="pd-hero-badge">
-                            <Clock size={14} strokeWidth={2} />
-                            {new Date().toLocaleDateString('es-CO', {
-                                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-                            })}
+            <div className="pd-main-area">
+                <PsychTopbar />
+
+                <main className="pd-content" id="main-content">
+                    {/* HERO */}
+                    <section className="pd-hero" aria-label="Resumen del día">
+                        <div className="pd-hero-text">
+                            <p className="pd-hero-tag">
+                                <Sparkles size={14} strokeWidth={2} />
+                                Espacio clínico · SAPU
+                            </p>
+                            <h1 className="pd-hero-title">{PSYCHOLOGIST.name}</h1>
+                            <p className="pd-hero-desc">
+                                Bienvenida a tu panel clínico. Desde aquí puedes gestionar tu agenda,
+                                hacer seguimiento a tus pacientes y atender alertas emocionales.
+                            </p>
+                            <div className="pd-hero-badge">
+                                <Clock size={14} strokeWidth={2} />
+                                {new Date().toLocaleDateString('es-CO', {
+                                    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+                                })}
+                            </div>
                         </div>
-                    </div>
-                    <div className="pd-hero-illus" aria-hidden="true">
-                        <div className="pd-illus-brain">
-                            <div className="pd-illus-brain-shape" />
-                            <div className="pd-illus-brain-line pd-illus-brain-line--1" />
-                            <div className="pd-illus-brain-line pd-illus-brain-line--2" />
-                            <div className="pd-illus-brain-line pd-illus-brain-line--3" />
+                        <div className="pd-hero-illus" aria-hidden="true">
+                            <div className="pd-illus-brain">
+                                <div className="pd-illus-brain-shape" />
+                                <div className="pd-illus-brain-line pd-illus-brain-line--1" />
+                                <div className="pd-illus-brain-line pd-illus-brain-line--2" />
+                                <div className="pd-illus-brain-line pd-illus-brain-line--3" />
+                            </div>
+                            <div className="pd-illus-dot pd-illus-dot--1" />
+                            <div className="pd-illus-dot pd-illus-dot--2" />
+                            <div className="pd-illus-dot pd-illus-dot--3" />
+                            <div className="pd-illus-petal pd-illus-petal--1" />
+                            <div className="pd-illus-petal pd-illus-petal--2" />
                         </div>
-                        <div className="pd-illus-dot pd-illus-dot--1" />
-                        <div className="pd-illus-dot pd-illus-dot--2" />
-                        <div className="pd-illus-dot pd-illus-dot--3" />
-                        <div className="pd-illus-petal pd-illus-petal--1" />
-                        <div className="pd-illus-petal pd-illus-petal--2" />
+                    </section>
+
+                    {/* STAT CARDS */}
+                    <section className="pd-stats-section" aria-label="Resumen estadístico">
+                        {loading ? (
+                            <p className="pd-muted">Cargando métricas…</p>
+                        ) : (
+                            statCards.map((s, i) => <StatCard key={i} {...s} />)
+                        )}
+                    </section>
+
+                    {/* ACCESOS RÁPIDOS */}
+                    <QuickActions />
+
+                    {/* GRID PRINCIPAL */}
+                    <div className="pd-lower-grid">
+                        <AgendaPanel data={agenda} loading={loading} />
+                        <AlertasPanel data={alertas} loading={loading} />
                     </div>
-                </section>
 
-                {/* ══════════ STAT CARDS ══════════ */}
-                <section className="pd-stats-section" aria-label="Resumen estadístico">
-                    {STATS.map((s, i) => <StatCard key={i} {...s} />)}
-                </section>
-
-                {/* ══════════ ACCESOS RÁPIDOS ══════════ */}
-                <QuickActions />
-
-                {/* ══════════ GRID PRINCIPAL ══════════ */}
-                <div className="pd-lower-grid">
-                    <AgendaPanel />
-                    <AlertasPanel />
-                </div>
-
-                {/* ══════════ PACIENTES ══════════ */}
-                <PacientesPanel />
-
-            </main>
+                    {/* PACIENTES */}
+                    <PacientesPanel data={pacientes} loading={loading} />
+                </main>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 export default PsychologistDashboard;

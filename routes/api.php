@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\AdminResourceController;
 use App\Http\Controllers\Api\AdminReportController;
 use App\Http\Controllers\Api\AdminSettingsController;
 use App\Http\Controllers\Api\PsychologistProfileController;
+use App\Http\Controllers\Api\PsychologistDashboardController;
 
 
 //Autenticación 
@@ -99,6 +100,9 @@ Route::prefix('psychologist')->group(function () {
     //- Perfil del psicólogo
     Route::get('/profile', [PsychologistProfileController::class, 'show']);
     Route::put('/profile', [PsychologistProfileController::class, 'update']);
+
+    //- Dashboard del psicólogo
+    Route::get('/dashboard', [PsychologistDashboardController::class, 'index'])->middleware('auth:sanctum');
 
 });
 
