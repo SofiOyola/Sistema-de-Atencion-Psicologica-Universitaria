@@ -69,6 +69,17 @@ const formatDate = (value) => {
     });
 };
 
+const safeJson = async (response, fallback = null) => {
+    if (!response || !response.ok) return fallback;
+
+    try {
+        return await response.json();
+    } catch (error) {
+        console.error('Respuesta no válida en formato JSON:', error);
+        return fallback;
+    }
+};
+
 const countBy = (items, key, fallback = 'Sin estado') => items.reduce((acc, item) => {
     const value = item[key] || fallback;
     acc[value] = (acc[value] || 0) + 1;
@@ -227,8 +238,7 @@ const MyTracking = () => {
             setError('');
 
             try {
-       
-                const [trackingResponse, appointmentsResponse] = await Promise.all([
+                const [trackingResult, appointmentsResult] = await Promise.allSettled([
                     fetch(`/api/student/tracking/${studentId}`, {
                         headers: { Accept: 'application/json' },
                     }),
@@ -237,19 +247,32 @@ const MyTracking = () => {
                     }),
                 ]);
 
-                if (!trackingResponse.ok) {
+                const trackingResponse = trackingResult.status === 'fulfilled' ? trackingResult.value : null;
+
+                if (!trackingResponse || !trackingResponse.ok) {
                     throw new Error('No se pudo cargar el seguimiento');
                 }
 
-                const trackingData = await trackingResponse.json();
+                const trackingData = await safeJson(trackingResponse, null);
 
-                const appointmentsData = appointmentsResponse.ok
-                    ? await appointmentsResponse.json()
+                if (!trackingData) {
+                    throw new Error('No se pudo interpretar el seguimiento');
+                }
+
+                const appointmentsResponse = appointmentsResult.status === 'fulfilled' ? appointmentsResult.value : null;
+                const appointmentsData = await safeJson(appointmentsResponse, []);
+
+                const trackingAppointments = Array.isArray(trackingData.appointments)
+                    ? trackingData.appointments
                     : [];
+
+                const finalAppointments = Array.isArray(appointmentsData) && appointmentsData.length > 0
+                    ? appointmentsData
+                    : trackingAppointments;
 
                 if (!cancelled) {
                     setTracking(trackingData);
-                    setAppointments(Array.isArray(appointmentsData) ? appointmentsData : []);
+                    setAppointments(finalAppointments);
                 }
             } catch (err) {
                 console.error(err);
