@@ -1,24 +1,17 @@
+version: "3.9"
 services:
-  app-dev:
+  laravel:
     build:
       context: .
       dockerfile: Dockerfile.dev
+    container_name: laravel_dev
     working_dir: /var/www/html
     ports:
       - "8001:8000"
     volumes:
       - ./:/var/www/html
-      - vendor_data:/var/www/html/vendor
-    depends_on:
-      - neo4j
-    command: >
-      sh -c "composer install
-      && php -r \"file_exists('.env') || copy('.env.example', '.env');\"
-      && php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"
-      && php artisan key:generate --force --ansi
-      && php artisan optimize:clear
-      && php artisan migrate --force
-      && php artisan serve --host=0.0.0.0 --port=8000"
+      # Excluir vendor para que no se sobrescriba con el host
+      - /var/www/html/vendor
     environment:
       APP_ENV: local
       APP_DEBUG: "true"
@@ -27,15 +20,24 @@ services:
       NEO4J_USERNAME: neo4j
       NEO4J_PASSWORD: secret1234
       NEO4J_DATABASE: neo4j
+    depends_on:
+      - neo4j
+    # El entrypoint se encarga de tareas condicionales, luego ejecuta el CMD
 
   vite:
     image: node:20
+    container_name: vite_dev
     working_dir: /app
     ports:
       - "5173:5173"
     volumes:
-      - ./:/app
-      - node_modules_data:/app/node_modules
+      - ./resources:/app/resources
+      - ./public:/app/public
+      - ./package.json:/app/package.json
+      - ./package-lock.json:/app/package-lock.json
+      - ./vite.config.js:/app/vite.config.js
+      # Excluir node_modules para evitar conflictos con el host
+      - /app/node_modules
     command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
     environment:
       NODE_ENV: development
@@ -44,6 +46,7 @@ services:
 
   neo4j:
     image: neo4j:5
+    container_name: neo4j_dev
     ports:
       - "7474:7474"
       - "7687:7687"
@@ -54,5 +57,3 @@ services:
 
 volumes:
   neo4j_data:
-  vendor_data:
-  node_modules_data:
