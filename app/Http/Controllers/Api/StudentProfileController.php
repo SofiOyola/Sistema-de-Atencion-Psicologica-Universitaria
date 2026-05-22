@@ -70,6 +70,10 @@ class StudentProfileController extends Controller
             'semester' => 'nullable|integer|between:1,12',
         ]);
 
+        if ($request->has('birthDate')) {
+            $validated['birthDate'] = $request->input('birthDate');
+        }
+
         try {
             $updated = $this->neo4j->run("
                 MATCH (e:Estudiante {id_estudiante: \$id})

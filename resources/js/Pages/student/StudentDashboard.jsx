@@ -28,6 +28,25 @@ const formatDate = (value) => {
     });
 };
 
+const safeJson = async (response, fallback = null) => {
+    if (!response || !response.ok) return fallback;
+
+    try {
+        return await response.json();
+    } catch (error) {
+        console.error('Respuesta no válida en formato JSON:', error);
+        return fallback;
+    }
+};
+
+const getRandomResources = (list, quantity = 3) => {
+    if (!Array.isArray(list)) return [];
+
+    return [...list]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, quantity);
+};
+
 const StudentDashboard = () => {
     const [dashboard, setDashboard] = useState(null);
     const [resources, setResources] = useState([]);
@@ -38,9 +57,14 @@ const StudentDashboard = () => {
     const studentId = localStorage.getItem('studentId') || '1';
 
     useEffect(() => {
+        let cancelled = false;
+
         const loadDashboard = async () => {
+            setLoading(true);
+            setError('');
+
             try {
-                const [trackingResponse, resourcesResponse, appointmentsResponse] = await Promise.all([
+                const [trackingResult, resourcesResult, appointmentsResult] = await Promise.allSettled([
                     fetch(`/api/student/tracking/${studentId}`, {
                         headers: { Accept: 'application/json' },
                     }),
@@ -52,32 +76,54 @@ const StudentDashboard = () => {
                     }),
                 ]);
 
-                if (!trackingResponse.ok) {
+                const trackingResponse = trackingResult.status === 'fulfilled' ? trackingResult.value : null;
+
+                if (!trackingResponse || !trackingResponse.ok) {
                     throw new Error('No se pudo cargar la información del estudiante.');
                 }
 
-                const trackingData = await trackingResponse.json();
-                const resourcesData = resourcesResponse.ok
-                    ? await resourcesResponse.json()
+                const trackingData = await safeJson(trackingResponse, null);
+
+                if (!trackingData) {
+                    throw new Error('No se pudo interpretar la información del estudiante.');
+                }
+
+                const resourcesResponse = resourcesResult.status === 'fulfilled' ? resourcesResult.value : null;
+                const appointmentsResponse = appointmentsResult.status === 'fulfilled' ? appointmentsResult.value : null;
+
+                const resourcesData = await safeJson(resourcesResponse, []);
+                const appointmentsData = await safeJson(appointmentsResponse, []);
+
+                const trackingAppointments = Array.isArray(trackingData.appointments)
+                    ? trackingData.appointments
                     : [];
 
-                const appointmentsData = appointmentsResponse.ok
-                    ? await appointmentsResponse.json()
-                    : [];
+                const finalAppointments = Array.isArray(appointmentsData) && appointmentsData.length > 0
+                    ? appointmentsData
+                    : trackingAppointments;
 
-                setDashboard(trackingData);
-                setResources(Array.isArray(resourcesData) ? resourcesData.slice(0, 3) : []);
-                setAppointments(Array.isArray(appointmentsData) ? appointmentsData : []);
-                
+                if (!cancelled) {
+                    setDashboard(trackingData);
+                    setResources(getRandomResources(resourcesData, 3));
+                    setAppointments(finalAppointments);
+                }
             } catch (err) {
                 console.error(err);
-                setError('No se pudo cargar el dashboard del estudiante.');
+                if (!cancelled) {
+                    setError('No se pudo cargar el dashboard del estudiante.');
+                }
             } finally {
-                setLoading(false);
+                if (!cancelled) {
+                    setLoading(false);
+                }
             }
         };
 
         loadDashboard();
+
+        return () => {
+            cancelled = true;
+        };
     }, [studentId]);
 
     if (loading) {
@@ -132,7 +178,7 @@ const StudentDashboard = () => {
             icon: Heart,
             label: 'Estado emocional',
             value: lastEmotion
-                ? `${lastEmotion.emoji} ${lastEmotion.emotion}`
+                ? `${lastEmotion.emoji || ''} ${lastEmotion.emotion || 'Registrado'}`
                 : 'Sin registro',
             subtitle: lastEmotion?.date
                 ? `Registrado el ${formatDate(lastEmotion.date)}`
@@ -143,7 +189,7 @@ const StudentDashboard = () => {
         {
             icon: TrendingUp,
             label: 'Sesiones completadas',
-            value: dashboard?.summary?.completedAppointments || 0,
+            value: dashboard?.summary?.completedAppointments ?? 0,
             subtitle: 'Seguimiento psicológico',
             color: '#4a9e7f',
             bgColor: 'rgba(74,158,127,0.1)',
@@ -151,7 +197,7 @@ const StudentDashboard = () => {
         {
             icon: BookOpen,
             label: 'Alertas activas',
-            value: dashboard?.summary?.activeAlerts || 0,
+            value: dashboard?.summary?.activeAlerts ?? 0,
             subtitle: 'Bienestar emocional',
             color: '#6bb89c',
             bgColor: 'rgba(107,184,156,0.1)',
@@ -161,17 +207,10 @@ const StudentDashboard = () => {
     const formattedResources = resources.map((resource) => ({
         emoji: resource.emoji || '📚',
         title: resource.title || resource.titulo || 'Recurso psicoeducativo',
-        type:
-            resource.type ||
-            resource.tipo_recurso ||
-            resource.category ||
-            resource.categoria ||
-            'Recurso',
-        description:
-            resource.description ||
-            resource.descripcion ||
-            'Contenido de apoyo para tu bienestar.',
+        type: resource.type || resource.tipo_recurso || resource.category || resource.categoria || 'Recurso',
+        description: resource.description || resource.descripcion || 'Contenido de apoyo para tu bienestar.',
         color: '#5fa86e',
+        url: resource.url || resource.link || resource.enlace || '',
     }));
 
     return (
@@ -238,7 +277,15 @@ const StudentDashboard = () => {
                     <div className="sd-resources-list">
                         {formattedResources.length > 0 ? (
                             formattedResources.map((r, i) => (
-                                <ResourceCard key={i} {...r} />
+                                <ResourceCard
+                                    key={i}
+                                    {...r}
+                                    onClick={() => {
+                                        if (r.url) {
+                                            window.open(r.url, '_blank', 'noopener,noreferrer');
+                                        }
+                                    }}
+                                />
                             ))
                         ) : (
                             <p className="sd-greeting-message">

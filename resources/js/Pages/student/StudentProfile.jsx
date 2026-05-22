@@ -27,6 +27,7 @@ const editableDefaults = {
     emergencyContact: '',
     program: '',
     semester: '',
+    birthDate: '',
 };
 
 const formatBirthDate = (value) => {
@@ -292,10 +293,6 @@ const StudentProfile = () => {
                             <div className="sp-info-item">
                                 <span>Identificación</span>
                                 <strong>{student?.identification || 'No registrada'}</strong>
-                            </div>
-                            <div className="sp-info-item">
-                                <span>Fecha de nacimiento</span>
-                                <strong>{formatBirthDate(student?.birthDate)}</strong>
                             </div>
                         </div>
 

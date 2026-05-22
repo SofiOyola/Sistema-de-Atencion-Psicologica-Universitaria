@@ -50,7 +50,8 @@ class StudentProfileService
                 e.intereses_bienestar = \$interests,
                 e.contacto_emergencia = \$emergencyContact,
                 e.programa_academico = coalesce(\$program, e.programa_academico),
-                e.semestre = coalesce(\$semester, e.semestre)
+                e.semestre = coalesce(\$semester, e.semestre),
+                e.fecha_nacimiento = coalesce(\$birthDate, e.fecha_nacimiento)
             RETURN e
         ", [
             'studentId' => $studentId,
@@ -61,6 +62,7 @@ class StudentProfileService
             'emergencyContact' => $this->clean($data['emergencyContact'] ?? null),
             'program' => $this->clean($data['program'] ?? null),
             'semester' => isset($data['semester']) ? (int) $data['semester'] : null,
+            'birthDate' => $this->clean($data['birthDate'] ?? null),
         ]);
 
         return $this->getProfile($studentId);
