@@ -3,122 +3,97 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\AdminSettingsMockService;
+use App\Services\Neo4jService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\JsonResponse;
 
 class AdminSettingsController extends Controller
 {
-    protected $settingsService;
+    public function __construct(private readonly Neo4jService $neo4j) {}
 
     /**
-     * Inyección del servicio mock de configuración.
-     *
-     * @param AdminSettingsMockService $settingsService
-     */
-    public function __construct(AdminSettingsMockService $settingsService)
-    {
-        $this->settingsService = $settingsService;
-    }
-
-    /**
-     * Devuelve la información actual del perfil del directivo/administrador.
      * GET /api/admin/settings/profile
-     *
-     * @return JsonResponse
      */
-    public function getProfile(): JsonResponse
+    public function getProfile(Request $request)
     {
-        try {
-            $profile = $this->settingsService->getProfile();
-            return response()->json([
-                'success' => true,
-                'data' => $profile
-            ], 200);
-        } catch (\Exception $e) {
+        // Asumimos que el admin autenticado es el de id_administrativo = 1
+        $adminId = $request->user()->admin_id ?? 1;
+
+        $result = $this->neo4j->run("
+            MATCH (a:Administrador {id_administrativo: \$id})
+            RETURN a.nombre AS fullName,
+                   a.correo_institucional AS email,
+                   a.cargo AS position,
+                   a.departamento AS department,
+                   COALESCE(a.descripcion, '') AS description,
+                   COALESCE(a.telefono, '') AS phone,
+                   COALESCE(a.ubicacion, '') AS location,
+                   a.nivel_acceso AS role
+        ", ['id' => (int) $adminId]);
+
+        if ($result->count() === 0) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al cargar perfil de configuración: ' . $e->getMessage()
-            ], 500);
+                'message' => 'Administrador no encontrado.'
+            ], 404);
         }
+
+        $row = $result->first();
+        $profile = [
+            'fullName'    => $row->get('fullName'),
+            'email'       => $row->get('email'),
+            'position'    => $row->get('position'),
+            'department'  => $row->get('department'),
+            'description' => $row->get('description'),
+            'phone'       => $row->get('phone'),
+            'location'    => $row->get('location'),
+            'role'        => $row->get('role') ?? 'Director General',
+            'avatar'      => '/images/doctor_avatar.png',  // o null
+        ];
+
+        return response()->json(['success' => true, 'data' => $profile]);
     }
 
     /**
-     * Actualiza la información del perfil del directivo/administrador.
      * PUT /api/admin/settings/profile
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
-    public function updateProfile(Request $request): JsonResponse
+    public function updateProfile(Request $request)
     {
-        $currentProfile = $this->settingsService->getProfile();
+        $adminId = $request->user()->admin_id ?? 1;
 
-        // 1. Validar que no se intente modificar campos protegidos
-        if ($request->has('fullName') && $request->input('fullName') !== $currentProfile['fullName']) {
-            return response()->json([
-                'success' => false,
-                'message' => 'El nombre completo del directivo es inmutable en la configuración.'
-            ], 422);
-        }
-
-        if ($request->has('email') && $request->input('email') !== $currentProfile['email']) {
-            return response()->json([
-                'success' => false,
-                'message' => 'El correo institucional es inmutable en la configuración.'
-            ], 422);
-        }
-
-        if ($request->has('role') && $request->input('role') !== $currentProfile['role']) {
-            return response()->json([
-                'success' => false,
-                'message' => 'El rol administrativo es inmutable en la configuración.'
-            ], 422);
-        }
-
-        // 2. Validaciones normales de campos editables
         $validator = Validator::make($request->all(), [
-            'department' => 'required|string|max:100',
-            'position' => 'required|string|max:100',
-            'description' => 'required|string|max:500',
-            'phone' => ['required', 'string', 'regex:/^\+?[0-9\s\-]{7,20}$/'],
-            'location' => 'required|string|max:120',
-            'avatar' => 'nullable|string'
-        ], [
-            'department.required' => 'El departamento es obligatorio.',
-            'position.required' => 'El cargo o posición es obligatorio.',
-            'description.required' => 'La descripción profesional es obligatoria.',
-            'description.max' => 'La descripción profesional no debe exceder los 500 caracteres.',
-            'phone.required' => 'El teléfono de contacto es obligatorio.',
-            'phone.regex' => 'El teléfono de contacto debe tener un formato válido (mínimo 7 dígitos, opcionalmente con prefijo + y espacios).',
-            'location.required' => 'La ubicación de oficina es obligatoria.',
-            'location.max' => 'La ubicación de oficina no debe exceder los 120 caracteres.'
+            'department'  => 'required|string|max:120',
+            'position'    => 'required|string|max:120',
+            'description' => 'nullable|string|max:500',
+            'phone'       => 'nullable|string|max:30',
+            'location'    => 'nullable|string|max:120',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => $validator->errors()->first(),
-                'errors' => $validator->errors()
+                'message' => $validator->errors()->first()
             ], 422);
         }
 
-        try {
-            $updated = $this->settingsService->updateProfile($request->only([
-                'department', 'position', 'description', 'phone', 'location', 'avatar'
-            ]));
+        $this->neo4j->run("
+            MATCH (a:Administrador {id_administrativo: \$id})
+            SET a.departamento = \$department,
+                a.cargo = \$position,
+                a.descripcion = \$description,
+                a.telefono = \$phone,
+                a.ubicacion = \$location
+            RETURN a
+        ", [
+            'id'          => (int) $adminId,
+            'department'  => $request->input('department'),
+            'position'    => $request->input('position'),
+            'description' => $request->input('description') ?? '',
+            'phone'       => $request->input('phone') ?? '',
+            'location'    => $request->input('location') ?? '',
+        ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Configuración de perfil actualizada con éxito en el servidor.',
-                'data' => $updated
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error interno al guardar la configuración: ' . $e->getMessage()
-            ], 500);
-        }
+        // Retornar el perfil actualizado
+        return $this->getProfile($request);
     }
 }

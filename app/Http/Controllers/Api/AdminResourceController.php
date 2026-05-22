@@ -3,222 +3,253 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\AdminResourceMockService;
+use App\Services\Neo4jService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\JsonResponse;
 
 class AdminResourceController extends Controller
 {
-    protected $resourceService;
+    public function __construct(private readonly Neo4jService $neo4j) {}
 
     /**
-     * Inyección del servicio mock de recursos.
-     *
-     * @param AdminResourceMockService $resourceService
-     */
-    public function __construct(AdminResourceMockService $resourceService)
-    {
-        $this->resourceService = $resourceService;
-    }
-
-    /**
-     * Devuelve la lista completa de recursos psicoeducativos.
      * GET /api/admin/resources
-     *
-     * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function index()
     {
-        try {
-            $data = $this->resourceService->getAll();
-            return response()->json([
-                'success' => true,
-                'data' => $data
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al obtener la biblioteca de recursos: ' . $e->getMessage()
-            ], 500);
+        $result = $this->neo4j->run("
+            MATCH (r:Recurso_Psicoeducativo)
+            RETURN 
+                r.id_recurso AS id,
+                r.titulo AS title,
+                r.categoria AS category,
+                r.tipo_recurso AS type,
+                r.descripcion AS description,
+                r.enlace AS url,
+                COALESCE(r.fileName, '') AS fileName,
+                COALESCE(r.status, 'Publicado') AS status,
+                COALESCE(r.creator, 'SAPU') AS creator,
+                COALESCE(r.downloads, 0) AS downloads
+            ORDER BY r.titulo
+        ");
+
+        $resources = [];
+        foreach ($result as $row) {
+            $resources[] = [
+                'id'          => $row->get('id'),
+                'title'       => $row->get('title'),
+                'category'    => $row->get('category'),
+                'type'        => $row->get('type'),
+                'description' => $row->get('description'),
+                'url'         => $row->get('url'),
+                'fileName'    => $row->get('fileName'),
+                'status'      => $row->get('status'),
+                'creator'     => $row->get('creator'),
+                'downloads'   => (int) $row->get('downloads'),
+            ];
         }
+
+        return response()->json(['success' => true, 'data' => $resources]);
     }
 
     /**
-     * Registra un nuevo recurso psicoeducativo en el portal simulado.
      * POST /api/admin/resources
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
+            'title'       => 'required|string|max:255',
             'description' => 'required|string',
-            'category' => 'required|string',
-            'type' => 'required|string|in:PDF,Artículo,Video,Podcast,Enlace externo',
-            'url' => 'nullable|string',
-            'fileName' => 'nullable|string',
-            'status' => 'required|string|in:Publicado,Inactivo',
-            'creator' => 'nullable|string|max:255',
-            'downloads' => 'nullable|integer'
-        ], [
-            'title.required' => 'El título del recurso es obligatorio.',
-            'title.max' => 'El título del recurso no debe superar los 255 caracteres.',
-            'description.required' => 'La descripción o resumen del recurso es obligatoria.',
-            'category.required' => 'La categoría del recurso es obligatoria.',
-            'type.required' => 'El tipo de recurso es obligatorio.',
-            'type.in' => 'El tipo de recurso seleccionado debe ser PDF, Artículo, Video, Podcast o Enlace externo.',
-            'status.required' => 'El estado de publicación es obligatorio.',
-            'status.in' => 'El estado de publicación seleccionado no es válido.'
+            'category'    => 'required|string',
+            'type'        => 'required|string|in:PDF,Artículo,Video,Podcast,Enlace externo',
+            'url'         => 'nullable|string',
+            'fileName'    => 'nullable|string',
+            'status'      => 'required|string|in:Publicado,Inactivo',
+            'creator'     => 'nullable|string|max:255',
+            'downloads'   => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => $validator->errors()->first(),
-                'errors' => $validator->errors()
+                'message' => $validator->errors()->first()
             ], 422);
         }
 
-        try {
-            $newResource = $this->resourceService->create($request->all());
-            return response()->json([
-                'success' => true,
-                'message' => 'Recurso psicoeducativo publicado correctamente.',
-                'data' => $newResource
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 422);
-        }
+        // Generate new ID
+        $maxId = $this->neo4j->run("
+            MATCH (r:Recurso_Psicoeducativo) RETURN coalesce(max(r.id_recurso), 0) AS maxId
+        ")->first()->get('maxId');
+        $newId = $maxId + 1;
+
+        $this->neo4j->run("
+            CREATE (r:Recurso_Psicoeducativo {
+                id_recurso: \$id,
+                titulo: \$title,
+                descripcion: \$description,
+                categoria: \$category,
+                tipo_recurso: \$type,
+                enlace: \$url,
+                fileName: \$fileName,
+                status: \$status,
+                creator: \$creator,
+                downloads: \$downloads,
+                fecha_publicacion: date(),
+                updatedAt: datetime()
+            })
+            RETURN r
+        ", [
+            'id'          => $newId,
+            'title'       => $request->input('title'),
+            'description' => $request->input('description'),
+            'category'    => $request->input('category'),
+            'type'        => $request->input('type'),
+            'url'         => $request->input('url') ?? '#',
+            'fileName'    => $request->input('fileName') ?? null,
+            'status'      => $request->input('status'),
+            'creator'     => $request->input('creator') ?? 'SAPU',
+            'downloads'   => (int) ($request->input('downloads') ?? 0),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Recurso creado.',
+            'data'    => [
+                'id'          => $newId,
+                'title'       => $request->input('title'),
+                'description' => $request->input('description'),
+                'category'    => $request->input('category'),
+                'type'        => $request->input('type'),
+                'url'         => $request->input('url') ?? '#',
+                'fileName'    => $request->input('fileName') ?? null,
+                'status'      => $request->input('status'),
+                'creator'     => $request->input('creator') ?? 'SAPU',
+                'downloads'   => (int) ($request->input('downloads') ?? 0),
+            ]
+        ], 201);
     }
 
     /**
-     * Actualiza la información de un recurso psicoeducativo existente.
      * PUT /api/admin/resources/{id}
-     *
-     * @param Request $request
-     * @param int $id
-     * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
+            'title'       => 'required|string|max:255',
             'description' => 'required|string',
-            'category' => 'required|string',
-            'type' => 'required|string|in:PDF,Artículo,Video,Podcast,Enlace externo',
-            'url' => 'nullable|string',
-            'fileName' => 'nullable|string',
-            'status' => 'required|string|in:Publicado,Inactivo',
-            'creator' => 'nullable|string|max:255',
-            'downloads' => 'nullable|integer'
-        ], [
-            'title.required' => 'El título del recurso es obligatorio.',
-            'title.max' => 'El título del recurso no debe superar los 255 caracteres.',
-            'description.required' => 'La descripción o resumen del recurso es obligatoria.',
-            'category.required' => 'La categoría del recurso es obligatoria.',
-            'type.required' => 'El tipo de recurso es obligatorio.',
-            'type.in' => 'El tipo de recurso seleccionado debe ser PDF, Artículo, Video, Podcast o Enlace externo.',
-            'status.required' => 'El estado de publicación es obligatorio.',
-            'status.in' => 'El estado de publicación seleccionado no es válido.'
+            'category'    => 'required|string',
+            'type'        => 'required|string|in:PDF,Artículo,Video,Podcast,Enlace externo',
+            'url'         => 'nullable|string',
+            'fileName'    => 'nullable|string',
+            'status'      => 'required|string|in:Publicado,Inactivo',
+            'creator'     => 'nullable|string|max:255',
+            'downloads'   => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => $validator->errors()->first(),
-                'errors' => $validator->errors()
+                'message' => $validator->errors()->first()
             ], 422);
         }
 
-        try {
-            $updated = $this->resourceService->update($id, $request->all());
-            
-            if ($updated === null) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'El recurso psicoeducativo a modificar no existe en el sistema.'
-                ], 404);
-            }
+        $updated = $this->neo4j->run("
+            MATCH (r:Recurso_Psicoeducativo {id_recurso: \$id})
+            SET r.titulo = \$title,
+                r.descripcion = \$description,
+                r.categoria = \$category,
+                r.tipo_recurso = \$type,
+                r.enlace = \$url,
+                r.fileName = \$fileName,
+                r.status = \$status,
+                r.creator = \$creator,
+                r.downloads = \$downloads,
+                r.updatedAt = datetime()
+            RETURN r
+        ", [
+            'id'          => (int) $id,
+            'title'       => $request->input('title'),
+            'description' => $request->input('description'),
+            'category'    => $request->input('category'),
+            'type'        => $request->input('type'),
+            'url'         => $request->input('url') ?? '#',
+            'fileName'    => $request->input('fileName') ?? null,
+            'status'      => $request->input('status'),
+            'creator'     => $request->input('creator') ?? 'SAPU',
+            'downloads'   => (int) ($request->input('downloads') ?? 0),
+        ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Recurso psicoeducativo modificado correctamente.',
-                'data' => $updated
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 422);
+        if ($updated->count() === 0) {
+            return response()->json(['success' => false, 'message' => 'Recurso no encontrado.'], 404);
         }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Recurso actualizado.',
+            'data'    => [
+                'id'          => (int) $id,
+                'title'       => $request->input('title'),
+                'description' => $request->input('description'),
+                'category'    => $request->input('category'),
+                'type'        => $request->input('type'),
+                'url'         => $request->input('url') ?? '#',
+                'fileName'    => $request->input('fileName') ?? null,
+                'status'      => $request->input('status'),
+                'creator'     => $request->input('creator') ?? 'SAPU',
+                'downloads'   => (int) ($request->input('downloads') ?? 0),
+            ]
+        ]);
     }
 
     /**
-     * Conmuta el estado del recurso entre Publicado e Inactivo.
      * PATCH /api/admin/resources/{id}/toggle-status
-     *
-     * @param int $id
-     * @return JsonResponse
      */
-    public function toggleStatus(int $id): JsonResponse
+    public function toggleStatus($id)
     {
-        try {
-            $updated = $this->resourceService->toggleStatus($id);
+        $updated = $this->neo4j->run("
+            MATCH (r:Recurso_Psicoeducativo {id_recurso: \$id})
+            SET r.status = CASE r.status WHEN 'Publicado' THEN 'Inactivo' ELSE 'Publicado' END,
+                r.updatedAt = datetime()
+            RETURN r
+        ", ['id' => (int) $id]);
 
-            if ($updated === null) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'El recurso especificado no existe en la biblioteca.'
-                ], 404);
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Estado de publicación conmutado con éxito.',
-                'data' => $updated
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al conmutar estado de publicación: ' . $e->getMessage()
-            ], 500);
+        if ($updated->count() === 0) {
+            return response()->json(['success' => false, 'message' => 'Recurso no encontrado.'], 404);
         }
+
+        $row = $updated->first();
+        return response()->json([
+            'success' => true,
+            'message' => 'Estado actualizado.',
+            'data'    => [
+                'id'          => (int) $id,
+                'title'       => $row->get('title'),
+                'description' => $row->get('description'),
+                'category'    => $row->get('category'),
+                'type'        => $row->get('type'),
+                'url'         => $row->get('url'),
+                'fileName'    => $row->get('fileName'),
+                'status'      => $row->get('status'),
+                'creator'     => $row->get('creator'),
+                'downloads'   => (int) $row->get('downloads'),
+            ]
+        ]);
     }
 
     /**
-     * Elimina permanentemente un recurso psicoeducativo de los registros.
      * DELETE /api/admin/resources/{id}
-     *
-     * @param int $id
-     * @return JsonResponse
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy($id)
     {
-        try {
-            $deleted = $this->resourceService->delete($id);
+        $deleted = $this->neo4j->run("
+            MATCH (r:Recurso_Psicoeducativo {id_recurso: \$id})
+            DETACH DELETE r
+            RETURN count(r) AS deletedCount
+        ", ['id' => (int) $id])->first()->get('deletedCount');
 
-            if (!$deleted) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'El recurso psicoeducativo a eliminar no fue encontrado.'
-                ], 404);
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Recurso psicoeducativo removido permanentemente.'
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error en el servidor al intentar eliminar recurso: ' . $e->getMessage()
-            ], 500);
+        if ($deleted == 0) {
+            return response()->json(['success' => false, 'message' => 'Recurso no encontrado.'], 404);
         }
+
+        return response()->json(['success' => true, 'message' => 'Recurso eliminado.']);
     }
 }

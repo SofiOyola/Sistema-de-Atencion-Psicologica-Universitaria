@@ -3,206 +3,280 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Services\AdminStudentMockService;
+use App\Services\Neo4jService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\JsonResponse;
 
 class AdminStudentController extends Controller
 {
-    protected $studentService;
+    public function __construct(private readonly Neo4jService $neo4j) {}
 
     /**
-     * Inyección del servicio mock de estudiantes.
-     *
-     * @param AdminStudentMockService $studentService
-     */
-    public function __construct(AdminStudentMockService $studentService)
-    {
-        $this->studentService = $studentService;
-    }
-
-    /**
-     * Devuelve la lista completa de estudiantes registrados.
      * GET /api/admin/students
-     *
-     * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function index()
     {
-        try {
-            $data = $this->studentService->getAll();
-            return response()->json([
-                'success' => true,
-                'data' => $data
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al obtener la lista de estudiantes: ' . $e->getMessage()
-            ], 500);
+        $result = $this->neo4j->run("
+            MATCH (e:Estudiante)
+            OPTIONAL MATCH (e)-[:ASIGNA]->(a:Asignacion {vigencia: 'Vigente'})
+            OPTIONAL MATCH (a)-[:CORRESPONDE]->(p:Psicologo)
+            RETURN 
+                e.id_estudiante AS id,
+                e.nombre AS fullName,
+                e.identificacion AS identification,
+                e.programa_academico AS career,
+                e.semestre AS semester,
+                e.correo_institucional AS email,
+                COALESCE(e.telefono, '+57 N/A') AS phone,
+                e.estado_proceso_psicologico AS status,
+                COALESCE(p.nombre, 'No asignado') AS psychologistName,
+                COALESCE(p.correo_institucional, NULL) AS psychologistEmail,
+                COALESCE(e.nivel_riesgo, 'Bajo') AS criticality,
+                COALESCE(e.fecha_nacimiento, '2002-01-01') AS birthDate
+            ORDER BY e.nombre
+        ");
+
+        $students = [];
+        foreach ($result as $row) {
+            $name = $row->get('fullName');
+            $students[] = [
+                'id'                => $row->get('id'),
+                'fullName'          => $name,
+                'initials'          => $this->initials($name),
+                'identification'    => $row->get('identification'),
+                'career'            => $row->get('career'),
+                'semester'          => (int) $row->get('semester'),
+                'email'             => $row->get('email'),
+                'phone'             => $row->get('phone'),
+                'status'            => $row->get('status') ?: 'Sin asignar',
+                'psychologistName'  => $row->get('psychologistName'),
+                'psychologistEmail' => $row->get('psychologistEmail'),
+                'criticality'       => $row->get('criticality'),
+                'birthDate'         => $row->get('birthDate'),
+            ];
         }
+
+        return response()->json(['success' => true, 'data' => $students]);
     }
 
     /**
-     * Registra un nuevo estudiante en el sistema simulado.
      * POST /api/admin/students
-     *
-     * @param Request $request
-     * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'fullName' => 'required|string|max:255',
-            'identification' => 'required|numeric',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string',
-            'career' => 'required|string|max:255',
-            'semester' => 'required|integer|min:1|max:10',
-            'status' => 'required|string|in:En proceso,Terminado,Sin asignar',
-            'psychologistName' => 'nullable|string|max:255',
+            'fullName'          => 'required|string|max:255',
+            'identification'    => 'required|string|max:20',
+            'career'            => 'required|string|max:120',
+            'semester'          => 'required|integer|min:1|max:12',
+            'email'             => 'required|email|max:255',
+            'phone'             => 'nullable|string|max:30',
+            'status'            => 'required|in:Sin asignar,En proceso,Terminado',
+            'psychologistName'  => 'nullable|string|max:255',
             'psychologistEmail' => 'nullable|email|max:255',
-            'criticality' => 'required|string|in:Bajo,Medio,Alto',
-            'birthDate' => 'nullable|date'
-        ], [
-            'fullName.required' => 'El nombre completo del estudiante es obligatorio.',
-            'identification.required' => 'La cédula o documento es obligatorio.',
-            'identification.numeric' => 'La identificación debe ser enteramente numérica.',
-            'email.required' => 'El correo electrónico institucional es obligatorio.',
-            'email.email' => 'El formato del correo institucional ingresado no es válido.',
-            'career.required' => 'La carrera universitaria es obligatoria.',
-            'semester.required' => 'El semestre académico es obligatorio.',
-            'semester.integer' => 'El semestre debe ser un valor entero.',
-            'semester.min' => 'El semestre mínimo admitido es el 1° semestre.',
-            'semester.max' => 'El semestre máximo admitido es el 10° semestre.',
-            'status.required' => 'El estado de atención del caso es obligatorio.',
-            'status.in' => 'El estado de atención especificado no es válido.',
-            'criticality.required' => 'El nivel de riesgo/criticidad es obligatorio.',
-            'criticality.in' => 'El nivel de riesgo especificado no es válido.'
+            'criticality'       => 'required|in:Bajo,Medio,Alto',
+            'birthDate'         => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator->errors()->first(),
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
         }
 
-        try {
-            $newStudent = $this->studentService->create($request->all());
-            return response()->json([
-                'success' => true,
-                'message' => 'Estudiante registrado correctamente.',
-                'data' => $newStudent
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 422);
+        $maxId = $this->neo4j->run(
+            "MATCH (e:Estudiante) RETURN coalesce(max(e.id_estudiante), 0) AS maxId"
+        )->first()->get('maxId');
+        $newId = $maxId + 1;
+
+        $this->neo4j->run("
+            CREATE (e:Estudiante {
+                id_estudiante: \$id,
+                nombre: \$fullName,
+                identificacion: \$identification,
+                programa_academico: \$career,
+                semestre: \$semester,
+                correo_institucional: \$email,
+                telefono: \$phone,
+                estado_proceso_psicologico: \$status,
+                nivel_riesgo: \$criticality,
+                fecha_nacimiento: \$birthDate
+            })
+            RETURN e
+        ", [
+            'id'             => $newId,
+            'fullName'       => $request->input('fullName'),
+            'identification' => $request->input('identification'),
+            'career'         => $request->input('career'),
+            'semester'       => (int) $request->input('semester'),
+            'email'          => $request->input('email'),
+            'phone'          => $request->input('phone') ?? '+57 N/A',
+            'status'         => $request->input('status'),
+            'criticality'    => $request->input('criticality'),
+            'birthDate'      => $request->input('birthDate') ?? '2002-01-01',
+        ]);
+
+        // Asignar psicólogo si corresponde
+        if ($request->input('status') !== 'Sin asignar' && $request->input('psychologistName') !== 'No asignado') {
+            $this->assignPsychologist($newId, $request->input('psychologistName'));
         }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Estudiante registrado.',
+            'data'    => $this->studentData($newId, $request)
+        ], 201);
     }
 
     /**
-     * Actualiza la información de un estudiante existente de forma simulada.
      * PUT /api/admin/students/{id}
-     *
-     * @param Request $request
-     * @param int $id
-     * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-            'fullName' => 'required|string|max:255',
-            'identification' => 'required|numeric',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string',
-            'career' => 'required|string|max:255',
-            'semester' => 'required|integer|min:1|max:10',
-            'status' => 'required|string|in:En proceso,Terminado,Sin asignar',
-            'psychologistName' => 'nullable|string|max:255',
+            'fullName'          => 'required|string|max:255',
+            'identification'    => 'required|string|max:20',
+            'career'            => 'required|string|max:120',
+            'semester'          => 'required|integer|min:1|max:12',
+            'email'             => 'required|email|max:255',
+            'phone'             => 'nullable|string|max:30',
+            'status'            => 'required|in:Sin asignar,En proceso,Terminado',
+            'psychologistName'  => 'nullable|string|max:255',
             'psychologistEmail' => 'nullable|email|max:255',
-            'criticality' => 'required|string|in:Bajo,Medio,Alto',
-            'birthDate' => 'nullable|date'
-        ], [
-            'fullName.required' => 'El nombre completo del estudiante es obligatorio.',
-            'identification.required' => 'La cédula o documento es obligatorio.',
-            'identification.numeric' => 'La identificación debe ser enteramente numérica.',
-            'email.required' => 'El correo electrónico institucional es obligatorio.',
-            'email.email' => 'El formato del correo institucional ingresado no es válido.',
-            'career.required' => 'La carrera universitaria es obligatoria.',
-            'semester.required' => 'El semestre académico es obligatorio.',
-            'semester.integer' => 'El semestre debe ser un valor entero.',
-            'semester.min' => 'El semestre mínimo admitido es el 1° semestre.',
-            'semester.max' => 'El semestre máximo admitido es el 10° semestre.',
-            'status.required' => 'El estado de atención del caso es obligatorio.',
-            'status.in' => 'El estado de atención especificado no es válido.',
-            'criticality.required' => 'El nivel de riesgo/criticidad es obligatorio.',
-            'criticality.in' => 'El nivel de riesgo especificado no es válido.'
+            'criticality'       => 'required|in:Bajo,Medio,Alto',
+            'birthDate'         => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => $validator->errors()->first(),
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 422);
         }
 
-        try {
-            $updated = $this->studentService->update($id, $request->all());
-            
-            if ($updated === null) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'El estudiante a modificar no existe en el sistema.'
-                ], 404);
-            }
+        $updated = $this->neo4j->run("
+            MATCH (e:Estudiante {id_estudiante: \$id})
+            SET e.nombre = \$fullName,
+                e.identificacion = \$identification,
+                e.programa_academico = \$career,
+                e.semestre = \$semester,
+                e.correo_institucional = \$email,
+                e.telefono = \$phone,
+                e.estado_proceso_psicologico = \$status,
+                e.nivel_riesgo = \$criticality,
+                e.fecha_nacimiento = \$birthDate
+            RETURN e
+        ", [
+            'id'             => (int) $id,
+            'fullName'       => $request->input('fullName'),
+            'identification' => $request->input('identification'),
+            'career'         => $request->input('career'),
+            'semester'       => (int) $request->input('semester'),
+            'email'          => $request->input('email'),
+            'phone'          => $request->input('phone') ?? '+57 N/A',
+            'status'         => $request->input('status'),
+            'criticality'    => $request->input('criticality'),
+            'birthDate'      => $request->input('birthDate') ?? '2002-01-01',
+        ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Información de estudiante modificada correctamente.',
-                'data' => $updated
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 422);
+        if ($updated->count() === 0) {
+            return response()->json(['success' => false, 'message' => 'Estudiante no encontrado.'], 404);
         }
+
+        // Actualizar asignación
+        $this->neo4j->run("
+            MATCH (e:Estudiante {id_estudiante: \$id})-[old:ASIGNA]->(:Asignacion)
+            DELETE old
+        ", ['id' => (int) $id]);
+
+        if ($request->input('status') !== 'Sin asignar' && $request->input('psychologistName') !== 'No asignado') {
+            $this->assignPsychologist((int) $id, $request->input('psychologistName'));
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Estudiante actualizado.',
+            'data'    => $this->studentData((int) $id, $request)
+        ]);
     }
 
     /**
-     * Elimina permanentemente a un estudiante de forma simulada.
      * DELETE /api/admin/students/{id}
-     *
-     * @param int $id
-     * @return JsonResponse
      */
-    public function destroy(int $id): JsonResponse
+    public function destroy($id)
     {
-        try {
-            $deleted = $this->studentService->delete($id);
+        $deleted = $this->neo4j->run("
+            MATCH (e:Estudiante {id_estudiante: \$id})
+            DETACH DELETE e
+            RETURN count(e) AS deletedCount
+        ", ['id' => (int) $id])->first()->get('deletedCount');
 
-            if (!$deleted) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'El estudiante a eliminar no fue encontrado en los registros.'
-                ], 404);
-            }
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Estudiante eliminado con éxito de los registros.'
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error en el servidor al intentar eliminar estudiante: ' . $e->getMessage()
-            ], 500);
+        if ($deleted == 0) {
+            return response()->json(['success' => false, 'message' => 'Estudiante no encontrado.'], 404);
         }
+
+        return response()->json(['success' => true, 'message' => 'Estudiante eliminado.']);
+    }
+
+    // ─── Helpers ────────────────────────────────────────
+
+    private function assignPsychologist(int $studentId, string $psychologistName): void
+    {
+        // Buscar psicólogo por nombre
+        $psych = $this->neo4j->run("
+            MATCH (p:Psicologo {nombre: \$name})
+            RETURN p.id_psicologo AS id, p.nombre AS name, p.correo_institucional AS email
+        ", ['name' => $psychologistName]);
+
+        if ($psych->count() === 0) return;
+
+        $psychData = $psych->first();
+        $psychId = $psychData->get('id');
+
+        // Crear asignación vigente
+        $maxAsig = $this->neo4j->run(
+            "MATCH (a:Asignacion) RETURN coalesce(max(a.id_asignacion), 0) AS maxId"
+        )->first()->get('maxId');
+        $newAsigId = $maxAsig + 1;
+
+        $this->neo4j->run("
+            MATCH (e:Estudiante {id_estudiante: \$studentId})
+            MATCH (p:Psicologo {id_psicologo: \$psychId})
+            CREATE (a:Asignacion {
+                id_asignacion: \$asigId,
+                tipo_asignacion: 'Individual',
+                fecha_inicio_as: date(),
+                fecha_fin_as: date() + duration({months: 6}),
+                vigencia: 'Vigente'
+            })
+            CREATE (e)-[:ASIGNA]->(a)
+            CREATE (a)-[:CORRESPONDE]->(p)
+        ", [
+            'studentId' => $studentId,
+            'psychId'   => $psychId,
+            'asigId'    => $newAsigId,
+        ]);
+    }
+
+    private function studentData(int $id, Request $request): array
+    {
+        $name = $request->input('fullName');
+        return [
+            'id'                => $id,
+            'fullName'          => $name,
+            'initials'          => $this->initials($name),
+            'identification'    => $request->input('identification'),
+            'career'            => $request->input('career'),
+            'semester'          => (int) $request->input('semester'),
+            'email'             => $request->input('email'),
+            'phone'             => $request->input('phone') ?? '+57 N/A',
+            'status'            => $request->input('status'),
+            'psychologistName'  => $request->input('status') !== 'Sin asignar' ? $request->input('psychologistName') : 'No asignado',
+            'psychologistEmail' => $request->input('status') !== 'Sin asignar' ? $request->input('psychologistEmail') : null,
+            'criticality'       => $request->input('criticality'),
+            'birthDate'         => $request->input('birthDate') ?? '2002-01-01',
+        ];
+    }
+
+    private function initials(string $name): string
+    {
+        $pieces = array_filter(explode(' ', trim($name)));
+        if (count($pieces) < 2) return mb_strtoupper(mb_substr($name, 0, 2));
+        return mb_strtoupper(mb_substr($pieces[0], 0, 1) . mb_substr($pieces[1], 0, 1));
     }
 }
