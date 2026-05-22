@@ -110,7 +110,7 @@ const Topbar = () => {
 /* ─────────────────────────────────────────────────────────────────────────
    PÁGINA PRINCIPAL / GESTIÓN DE ESTUDIANTES CRUD COMPLETO (FASE 4)
    ───────────────────────────────────────────────────────────────────────── */
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = '/api';
 
 const getPsychologistEmailByName = (name) => {
     if (name === 'Dra. Laura Méndez') return 'laura.mendez@sapu.edu.co';

@@ -18,27 +18,26 @@ class PsychologistPatientController extends Controller
         // TODO: cuando tengas auth, usa $request->user()->psychologist_id y quita el parámetro
         // $psychologistId = $request->user()->psychologist_id;
 
-        // 1. Obtener pacientes (estudiantes) relacionados con el psicólogo por citas o asignaciones
         $patientsResult = $this->neo4j->run("
-            // Estudiantes con asignaciones vigentes o que tienen citas con el psicólogo
             MATCH (p:Psicologo {id_psicologo: \$id})
-            OPTIONAL MATCH (p)-[:CORRESPONDE]->(a:Asignacion {vigencia: 'Vigente'})<-[:ASIGNA]-(e:Estudiante)
-            WITH p, e
-            OPTIONAL MATCH (p)-[:ATIENDE]->(c:Cita)<-[:SOLICITA]-(e2:Estudiante)
-            WITH p, 
-                 collect(DISTINCT e) + collect(DISTINCT e2) AS estudiantes
+            OPTIONAL MATCH (p)-[:CORRESPONDE]->(:Asignacion {vigencia: 'Vigente'})<-[:ASIGNA]-(asignado:Estudiante)
+            OPTIONAL MATCH (p)-[:ATIENDE]->(:Cita)<-[:SOLICITA]-(citado:Estudiante)
+            WITH p, collect(DISTINCT asignado) + collect(DISTINCT citado) AS estudiantes
             UNWIND estudiantes AS est
-            WITH DISTINCT est
-            OPTIONAL MATCH (est)-[:SOLICITA]->(c:Cita)
+            WITH p, est
+            WHERE est IS NOT NULL
+            WITH DISTINCT p, est
+            OPTIONAL MATCH (est)-[:SOLICITA]->(c:Cita)<-[:ATIENDE]-(p)
             OPTIONAL MATCH (est)-[:REPORTA]->(s:Estado_Emocional)-[:GENERA_ALERTA]->(a:Alerta_Emocional {estado_alerta: 'Activa'})
-            OPTIONAL MATCH (est)<-[:ASIGNA]-(asig:Asignacion)
-            OPTIONAL MATCH (h:Historial_Clinico)<-[:POSEE]-(est)
+            OPTIONAL MATCH (est)-[:ASIGNA]->(asig:Asignacion)<-[:CORRESPONDE]-(p)
+            OPTIONAL MATCH (est)-[:POSEE]->(h:Historial_Clinico)
             OPTIONAL MATCH (h)-[:CONTIENE]->(n:Nota_Seguimiento)
-            WITH est,
+            WITH p, est,
                  max(c.fecha) AS ultimaCitaFecha,
                  max(c.hora) AS ultimaCitaHora,
                  collect(DISTINCT a) AS alertasActivas,
                  collect(DISTINCT asig) AS asignaciones,
+                 collect(DISTINCT s) AS estados,
                  count(DISTINCT c) AS totalCitas,
                  count(DISTINCT n) AS totalNotas
             RETURN 
@@ -50,15 +49,17 @@ class PsychologistPatientController extends Controller
                 est.identificacion AS identification,
                 CASE 
                     WHEN asignaciones[0].vigencia = 'Vigente' 
-                    THEN apoc.text.join([p.nombre], '')
+                    THEN p.nombre
                     ELSE 'No asignado'
                 END AS assignedPsychologist,
                 totalCitas AS appointmentsCount,
                 totalNotas AS notesCount,
-                ultimaCitaFecha + 'T' + ultimaCitaHora AS lastAppointment,
-                // Datos emocionales (último estado)
-                reduce(s = null, r IN collect(DISTINCT s) | 
-                    CASE WHEN s IS NULL OR r.fecha_est > s.fecha_est THEN r ELSE s END
+                CASE
+                    WHEN ultimaCitaFecha IS NULL THEN NULL
+                    ELSE ultimaCitaFecha + 'T' + coalesce(ultimaCitaHora, '00:00')
+                END AS lastAppointment,
+                reduce(last = null, r IN estados | 
+                    CASE WHEN last IS NULL OR r.fecha_est > last.fecha_est THEN r ELSE last END
                 ) AS ultimoEstado,
                 size([a IN alertasActivas WHERE a.estado_alerta = 'Activa']) AS activeAlerts
         ", ['id' => (int) $psychologistId]);

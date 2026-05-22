@@ -37,7 +37,7 @@ const CATEGORIES = [
     'Orientación vocacional', 'Educación inclusiva'
 ];
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = '/api';
 
 /* ── HELPERS ── */
 const getGreeting = () => {
@@ -133,7 +133,7 @@ const PsychTopbar = () => {
    ───────────────────────────────────────────────────────────────────────── */
 const PsychologistResources = () => {
     const navigate = useNavigate();
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('sap_token') || localStorage.getItem('auth_token');
 
     const [resources, setResources] = useState([]);
     const [loading, setLoading] = useState(true);

@@ -97,7 +97,16 @@ class AdminPsychologistController extends Controller
                 estado: \$status,
                 calificacion: 5.0
             })
-            RETURN p
+            RETURN
+                p.id_psicologo AS id,
+                p.nombre AS name,
+                p.correo_institucional AS email,
+                p.especialidad AS specialty,
+                p.estado AS status,
+                p.experiencia AS experience,
+                COALESCE(p.identificacion, \$identification) AS identification,
+                COALESCE(p.telefono, \$phone) AS phone,
+                COALESCE(p.calificacion, 5.0) AS rating
         ", [
             'id'             => $newId,
             'name'           => $request->input('name'),
@@ -158,7 +167,16 @@ class AdminPsychologistController extends Controller
                 p.telefono = \$phone,
                 p.experiencia = \$experience,
                 p.estado = \$status
-            RETURN p
+            RETURN
+                p.id_psicologo AS id,
+                p.nombre AS name,
+                p.correo_institucional AS email,
+                p.especialidad AS specialty,
+                p.estado AS status,
+                p.experiencia AS experience,
+                COALESCE(p.identificacion, '1000000000') AS identification,
+                COALESCE(p.telefono, '3000000000') AS phone,
+                COALESCE(p.calificacion, 5.0) AS rating
         ", [
             'id'             => (int) $id,
             'name'           => $request->input('name'),
@@ -179,7 +197,7 @@ class AdminPsychologistController extends Controller
             'success' => true,
             'message' => 'Perfil actualizado.',
             'data' => [
-                'id'                => (int) $id,
+                'id'                => $row->get('id') ?? (int) $id,
                 'name'              => $row->get('name') ?? $request->input('name'),
                 'email'             => $row->get('email') ?? $request->input('email'),
                 'specialty'         => $row->get('specialty') ?? $request->input('specialty'),
@@ -189,7 +207,7 @@ class AdminPsychologistController extends Controller
                 'phone'             => $row->get('phone') ?? $request->input('phone'),
                 'assignedPatients'  => 0,  // no se actualiza aquí
                 'hoursToday'        => 0,
-                'rating'            => 5.0,
+                'rating'            => (float) ($row->get('rating') ?? 5.0),
                 'initials'          => $this->initials($row->get('name') ?? $request->input('name')),
             ],
         ]);
@@ -203,7 +221,16 @@ class AdminPsychologistController extends Controller
         $updated = $this->neo4j->run("
             MATCH (p:Psicologo {id_psicologo: \$id})
             SET p.estado = CASE p.estado WHEN 'Activo' THEN 'Inactivo' ELSE 'Activo' END
-            RETURN p
+            RETURN
+                p.id_psicologo AS id,
+                p.nombre AS name,
+                p.correo_institucional AS email,
+                p.especialidad AS specialty,
+                p.estado AS status,
+                p.experiencia AS experience,
+                COALESCE(p.identificacion, '1000000000') AS identification,
+                COALESCE(p.telefono, '3000000000') AS phone,
+                COALESCE(p.calificacion, 5.0) AS rating
         ", ['id' => (int) $id]);
 
         if ($updated->count() === 0) {
@@ -215,7 +242,7 @@ class AdminPsychologistController extends Controller
             'success' => true,
             'message' => 'Estado actualizado.',
             'data' => [
-                'id'                => (int) $id,
+                'id'                => $row->get('id') ?? (int) $id,
                 'name'              => $row->get('name'),
                 'email'             => $row->get('email'),
                 'specialty'         => $row->get('specialty'),
@@ -225,7 +252,7 @@ class AdminPsychologistController extends Controller
                 'phone'             => $row->get('phone'),
                 'assignedPatients'  => 0,
                 'hoursToday'        => 0,
-                'rating'            => 5.0,
+                'rating'            => (float) ($row->get('rating') ?? 5.0),
                 'initials'          => $this->initials($row->get('name')),
             ],
         ]);

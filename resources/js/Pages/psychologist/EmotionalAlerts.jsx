@@ -110,7 +110,12 @@ const Topbar = () => {
 /* ─────────────────────────────────────────────────────────────────────────
    CONEXIÓN CON EL BACKEND LARAVEL (MOCK SERVICE)
    ───────────────────────────────────────────────────────────────────────── */
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = '/api';
+
+const authHeaders = () => ({
+    'Accept': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('sap_token') || localStorage.getItem('auth_token') || ''}`,
+});
 
 const EmotionalAlerts = () => {
     const [students, setStudents] = useState([]);
@@ -135,7 +140,7 @@ const EmotionalAlerts = () => {
     const fetchStudents = (shouldSelectFirst = false) => {
         setLoadingStudents(true);
         setErrorStudents(null);
-        fetch(`${API_BASE}/psychologist/emotional-alerts/students`)
+        fetch(`${API_BASE}/psychologist/emotional-alerts/students`, { headers: authHeaders() })
             .then(res => res.json())
             .then(res => {
                 if (res.success) {
@@ -164,7 +169,7 @@ const EmotionalAlerts = () => {
     const fetchRecords = (studentId) => {
         setLoadingRecords(true);
         setErrorRecords(null);
-        fetch(`${API_BASE}/psychologist/emotional-alerts/students/${studentId}/records`)
+        fetch(`${API_BASE}/psychologist/emotional-alerts/students/${studentId}/records`, { headers: authHeaders() })
             .then(res => res.json())
             .then(res => {
                 if (res.success) {
@@ -196,8 +201,8 @@ const EmotionalAlerts = () => {
         fetch(`${API_BASE}/psychologist/emotional-alerts/${recordId}/${endpointSuffix}`, {
             method: 'PUT',
             headers: {
+                ...authHeaders(),
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
             }
         })
         .then(res => res.json())

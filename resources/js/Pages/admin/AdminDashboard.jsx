@@ -110,7 +110,7 @@ const Topbar = () => {
 /* ─────────────────────────────────────────────────────────────────────────
    PÁGINA PRINCIPAL / DASHBOARD
    ───────────────────────────────────────────────────────────────────────── */
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = '/api';
 
 const AdminDashboard = () => {
     const [data, setData] = useState(null);

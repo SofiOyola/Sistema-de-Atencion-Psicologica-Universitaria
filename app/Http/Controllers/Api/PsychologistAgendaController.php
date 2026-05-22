@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 class PsychologistAgendaController extends Controller
 {
+    use ResolvesApiUser;
+
     public function __construct(private readonly Neo4jService $neo4j) {}
 
     /**
@@ -17,7 +19,10 @@ class PsychologistAgendaController extends Controller
      */
     public function index(Request $request)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $result = $this->neo4j->run("
             MATCH (p:Psicologo {id_psicologo: \$id})-[:ATIENDE]->(c:Cita)
@@ -37,11 +42,11 @@ class PsychologistAgendaController extends Controller
         foreach ($result as $row) {
             $citas[] = [
                 'id'          => $row->get('id'),
-                'date'        => $row->get('date'),
+                'date'        => $this->formatDateString($row->get('date')),
                 'time'        => $row->get('time'),
                 'studentName' => $row->get('studentName'),
                 'reason'      => $row->get('reason'),
-                'status'      => $row->get('status'),
+                'status'      => $this->normalizeAppointmentStatus($row->get('status')),
                 'modality'    => $row->get('modality'),
                 'room'        => $row->get('room'),
             ];
@@ -56,12 +61,16 @@ class PsychologistAgendaController extends Controller
      */
     public function byDay(Request $request)
     {
-        $psychologistId = $request->user()->psychologist_id;
-        $fecha = $request->query('fecha', date('Y-m-d'));
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
+        $fecha = $request->query('date', $request->query('fecha', date('Y-m-d')));
+        $fechas = $this->dateVariants($fecha);
 
         $result = $this->neo4j->run("
             MATCH (p:Psicologo {id_psicologo: \$id})-[:ATIENDE]->(c:Cita)
-            WHERE c.fecha = \$fecha
+            WHERE c.fecha IN \$fechas
             OPTIONAL MATCH (e:Estudiante)-[:SOLICITA]->(c)
             RETURN c.id_cita AS id,
                    c.hora AS time,
@@ -71,7 +80,7 @@ class PsychologistAgendaController extends Controller
                    COALESCE(c.modalidad, 'Presencial') AS modality,
                    COALESCE(c.consultorio, 'Consultorio 1') AS room
             ORDER BY c.hora
-        ", ['id' => $psychologistId, 'fecha' => $fecha]);
+        ", ['id' => $psychologistId, 'fechas' => $fechas]);
 
         $citas = [];
         foreach ($result as $row) {
@@ -80,7 +89,7 @@ class PsychologistAgendaController extends Controller
                 'time'        => $row->get('time'),
                 'studentName' => $row->get('studentName'),
                 'reason'      => $row->get('reason'),
-                'status'      => $row->get('status'),
+                'status'      => $this->normalizeAppointmentStatus($row->get('status')),
                 'modality'    => $row->get('modality'),
                 'room'        => $row->get('room'),
             ];
@@ -95,7 +104,10 @@ class PsychologistAgendaController extends Controller
      */
     public function reschedule(Request $request, $id)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $validator = Validator::make($request->all(), [
             'date'   => 'required|date',
@@ -151,7 +163,10 @@ class PsychologistAgendaController extends Controller
      */
     public function cancel(Request $request, $id)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $validator = Validator::make($request->all(), [
             'reason' => 'required|string|min:5|max:500',
@@ -196,7 +211,10 @@ class PsychologistAgendaController extends Controller
      */
     public function getBlocks(Request $request)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
         $fecha = $request->query('date');
 
         $query = "
@@ -236,7 +254,10 @@ class PsychologistAgendaController extends Controller
      */
     public function createBlock(Request $request)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $validator = Validator::make($request->all(), [
             'date'      => 'required|date',
@@ -311,5 +332,47 @@ class PsychologistAgendaController extends Controller
             'success' => true,
             'message' => 'Espacio bloqueado correctamente.',
         ]);
+    }
+
+    private function normalizeAppointmentStatus(?string $status): string
+    {
+        return match (strtolower((string) $status)) {
+            'programada', 'confirmada' => 'confirmada',
+            'pendiente' => 'pendiente',
+            'urgente' => 'urgente',
+            'completada', 'atendida' => 'atendida',
+            'cancelada' => 'cancelada',
+            default => strtolower((string) $status),
+        };
+    }
+
+    private function formatDateString(?string $date): ?string
+    {
+        if (!$date) {
+            return null;
+        }
+
+        $parts = explode('-', $date);
+        if (count($parts) !== 3) {
+            return $date;
+        }
+
+        return sprintf('%04d-%02d-%02d', (int) $parts[0], (int) $parts[1], (int) $parts[2]);
+    }
+
+    private function dateVariants(string $date): array
+    {
+        $formatted = $this->formatDateString($date) ?? $date;
+        $parts = explode('-', $formatted);
+
+        if (count($parts) !== 3) {
+            return [$date];
+        }
+
+        return array_values(array_unique([
+            $formatted,
+            sprintf('%04d-%02d-%d', (int) $parts[0], (int) $parts[1], (int) $parts[2]),
+            sprintf('%04d-%d-%d', (int) $parts[0], (int) $parts[1], (int) $parts[2]),
+        ]));
     }
 }

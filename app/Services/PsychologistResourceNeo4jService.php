@@ -42,10 +42,15 @@ class PsychologistResourceNeo4jService
      */
     public function create(array $data, int $psychologistId): array
     {
-        $id = $this->neo4j->run("
+        $maxId = $this->neo4j->run("
+            MATCH (r:Recurso_Psicoeducativo)
+            RETURN coalesce(max(toInteger(r.id_recurso)), 0) AS maxId
+        ")->first()->get('maxId');
+
+        $result = $this->neo4j->run("
             MATCH (p:Psicologo {id_psicologo: \$psychologistId})
             CREATE (r:Recurso_Psicoeducativo {
-                id_recurso: coalesce(max(toInteger(r.id_recurso)) + 1, 1),
+                id_recurso: \$id,
                 titulo: \$title,
                 categoria: \$category,
                 tipo_recurso: \$type,
@@ -62,6 +67,7 @@ class PsychologistResourceNeo4jService
             CREATE (p)-[:CREA]->(r)
             RETURN r
         ", [
+            'id' => ((int) $maxId) + 1,
             'psychologistId' => $psychologistId,
             'title' => $data['title'],
             'category' => $data['category'],
@@ -163,11 +169,18 @@ class PsychologistResourceNeo4jService
 
     private function recordToArray($record): array
     {
+        $type = $record->get('type');
+        $normalizedType = match ($type) {
+            'WEB' => 'Enlace externo',
+            'YOUTUBE' => 'Video',
+            default => $type,
+        };
+
         return [
             'id' => $record->get('id'),
             'title' => $record->get('title'),
             'category' => $record->get('category'),
-            'type' => $record->get('type'),
+            'type' => $normalizedType,
             'author' => $record->get('author'),
             'description' => $record->get('description'),
             'url' => $record->get('url'),

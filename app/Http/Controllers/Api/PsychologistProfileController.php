@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 class PsychologistProfileController extends Controller
 {
+    use ResolvesApiUser;
+
     public function __construct(private readonly Neo4jService $neo4j) {}
 
     /**
@@ -16,7 +18,10 @@ class PsychologistProfileController extends Controller
      */
     public function show(Request $request)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $result = $this->neo4j->run("
             MATCH (p:Psicologo {id_psicologo: \$id})
@@ -61,7 +66,10 @@ class PsychologistProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $validator = Validator::make($request->all(), [
             'specialty'        => 'nullable|string|max:120',

@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 class ClinicalFollowUpController extends Controller
 {
+    use ResolvesApiUser;
+
     public function __construct(private readonly Neo4jService $neo4j) {}
 
     /**
@@ -17,7 +19,10 @@ class ClinicalFollowUpController extends Controller
      */
     public function getPatients(Request $request)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $result = $this->neo4j->run("
             MATCH (p:Psicologo {id_psicologo: \$id})
@@ -55,7 +60,10 @@ class ClinicalFollowUpController extends Controller
      */
     public function getPatientNotes(Request $request, $id)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $result = $this->neo4j->run("
             MATCH (p:Psicologo {id_psicologo: \$psychologistId})-[:REGISTRA]->(n:Nota_Seguimiento)
@@ -98,7 +106,10 @@ class ClinicalFollowUpController extends Controller
      */
     public function addNote(Request $request, $id)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $validator = Validator::make($request->all(), [
             'date'              => 'required|date',
@@ -148,17 +159,24 @@ class ClinicalFollowUpController extends Controller
         ", ['patientId' => (int) $id]);
 
         if ($historial->count() === 0) {
-            // Crear historial si no existe
+            $maxHistorialId = $this->neo4j->run("
+                MATCH (h:Historial_Clinico)
+                RETURN coalesce(max(toInteger(h.id_historial)), 0) AS maxId
+            ")->first()->get('maxId');
+
             $this->neo4j->run("
                 MATCH (e:Estudiante {id_estudiante: \$patientId})
                 CREATE (h:Historial_Clinico {
-                    id_historial: coalesce(max(toInteger(h2.id_historial)) + 1, 1),
+                    id_historial: \$historialId,
                     fecha_creacion: date(),
                     observaciones_generales: 'Historial creado automáticamente'
                 })
                 CREATE (e)-[:POSEE]->(h)
                 RETURN h
-            ", ['patientId' => (int) $id]);
+            ", [
+                'patientId' => (int) $id,
+                'historialId' => ((int) $maxHistorialId) + 1,
+            ]);
         }
 
         // Obtener el ID del historial

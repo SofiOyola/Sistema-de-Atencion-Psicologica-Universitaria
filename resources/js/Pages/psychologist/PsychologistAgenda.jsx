@@ -47,40 +47,45 @@ const ESTADO_CFG = {
    TODO: Cuando Neo4j esté listo, solo cambia el Service en Laravel —
          estos endpoints no requieren modificación.
    ─────────────────────────────────────────────────────────────────────── */
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = '/api';
+
+const authHeaders = () => ({
+    'Accept': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('sap_token') || localStorage.getItem('auth_token') || ''}`,
+});
 
 const fetchAllAppointments = () =>
-    fetch(`${API_BASE}/psychologist/agenda`)
+    fetch(`${API_BASE}/psychologist/agenda`, { headers: authHeaders() })
         .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
         .then(json => json.data);
 
 const fetchDayAppointments = (dateStr) =>
-    fetch(`${API_BASE}/psychologist/agenda/day?date=${dateStr}`)
+    fetch(`${API_BASE}/psychologist/agenda/day?date=${dateStr}`, { headers: authHeaders() })
         .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
         .then(json => json.data);
 
 const rescheduleAppointment = (id, body) =>
     fetch(`${API_BASE}/psychologist/appointments/${id}/reschedule`, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        method: 'PUT', headers: { ...authHeaders(), 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
     }).then(r => r.json());
 
 const cancelAppointment = (id, reason) =>
     fetch(`${API_BASE}/psychologist/appointments/${id}/cancel`, {
-        method: 'PUT', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        method: 'PUT', headers: { ...authHeaders(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason }),
     }).then(r => r.json());
 
 const fetchBlocks = (dateStr = null) => {
     const url = dateStr ? `${API_BASE}/psychologist/agenda/blocks?date=${dateStr}` : `${API_BASE}/psychologist/agenda/blocks`;
-    return fetch(url)
+    return fetch(url, { headers: authHeaders() })
         .then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); })
         .then(json => json.data);
 };
 
 const createBlock = (body) =>
     fetch(`${API_BASE}/psychologist/agenda/blocks`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        method: 'POST', headers: { ...authHeaders(), 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
     }).then(r => r.json());
 
@@ -727,4 +732,3 @@ const PsychologistAgenda = () => {
 };
 
 export default PsychologistAgenda;
-

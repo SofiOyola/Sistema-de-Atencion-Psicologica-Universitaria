@@ -8,11 +8,16 @@ use Illuminate\Http\Request;
 
 class PsychologistDashboardController extends Controller
 {
+    use ResolvesApiUser;
+
     public function __construct(private readonly Neo4jService $neo4j) {}
 
     public function index(Request $request)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
         $today = date('Y-m-d');
 
         // Métricas
@@ -65,7 +70,7 @@ class PsychologistDashboardController extends Controller
                 'hora'       => $row->get('hora'),
                 'estudiante' => $row->get('estudiante'),
                 'motivo'     => $row->get('motivo'),
-                'estado'     => $row->get('estado'),
+                'estado'     => $this->normalizeAppointmentStatus($row->get('estado')),
             ];
         }
 
@@ -85,7 +90,7 @@ class PsychologistDashboardController extends Controller
             $alertas[] = [
                 'id'         => $row->get('id'),
                 'estudiante' => $row->get('estudiante'),
-                'riesgo'     => $row->get('riesgo'),
+                'riesgo'     => $this->normalizeRisk($row->get('riesgo')),
                 'emocion'    => $row->get('emocion'),
                 'fecha'      => $row->get('fecha'),
             ];
@@ -123,5 +128,26 @@ class PsychologistDashboardController extends Controller
             'success' => true,
             'data' => compact('stats', 'agenda', 'alertas', 'pacientes')
         ]);
+    }
+
+    private function normalizeAppointmentStatus(?string $status): string
+    {
+        return match (strtolower((string) $status)) {
+            'programada', 'confirmada' => 'confirmada',
+            'pendiente' => 'pendiente',
+            'urgente' => 'urgente',
+            'completada', 'atendida' => 'atendida',
+            'cancelada' => 'cancelada',
+            default => strtolower((string) $status),
+        };
+    }
+
+    private function normalizeRisk(?string $risk): string
+    {
+        return match (strtolower((string) $risk)) {
+            'alta', 'alto' => 'alto',
+            'media', 'medio' => 'medio',
+            default => 'bajo',
+        };
     }
 }

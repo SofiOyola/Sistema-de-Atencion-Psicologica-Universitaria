@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 
 class EmotionalAlertController extends Controller
 {
+    use ResolvesApiUser;
+
     public function __construct(private readonly Neo4jService $neo4j) {}
 
     /**
@@ -15,7 +17,10 @@ class EmotionalAlertController extends Controller
      */
     public function getStudents(Request $request)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $result = $this->neo4j->run("
             MATCH (p:Psicologo {id_psicologo: \$id})
@@ -82,16 +87,21 @@ class EmotionalAlertController extends Controller
      */
     public function getStudentRecords(Request $request, $id)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $studentResult = $this->neo4j->run("
             MATCH (e:Estudiante {id_estudiante: \$studentId})
             OPTIONAL MATCH (e)-[:REPORTA]->(s:Estado_Emocional)
             OPTIONAL MATCH (s)-[:GENERA_ALERTA]->(a:Alerta_Emocional)
+            WITH e, s, a
+            ORDER BY s.fecha_est DESC, s.hora_est DESC
             RETURN e.nombre AS name,
                    e.programa_academico AS program,
                    e.semestre AS semester,
-                   collect(DISTINCT {
+                   collect({
                        id: s.id_estado_emocional,
                        date: s.fecha_est,
                        time: s.hora_est,
@@ -101,7 +111,6 @@ class EmotionalAlertController extends Controller
                        criticality: COALESCE(s.nivel_criticidad, 'Leve'),
                        alertStatus: a.estado_alerta
                    }) AS records
-            ORDER BY s.fecha_est DESC, s.hora_est DESC
         ", [
             'studentId' => (int) $id,
         ])->first();
@@ -112,6 +121,10 @@ class EmotionalAlertController extends Controller
 
         $records = [];
         foreach ($studentResult->get('records') as $rec) {
+            if (($rec['id'] ?? null) === null) {
+                continue;
+            }
+
             $records[] = [
                 'id'          => $rec['id'],
                 'date'        => $rec['date'],
@@ -152,7 +165,10 @@ class EmotionalAlertController extends Controller
      */
     public function reviewRecord(Request $request, $recordId)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $updated = $this->neo4j->run("
             MATCH (p:Psicologo {id_psicologo: \$psychologistId})-[:ATIENDE]->(:Cita)-[:GENERA]->(:Nota_Seguimiento)<-[:CONTIENE]-(:Historial_Clinico)<-[:POSEE]-(:Estudiante)-[:REPORTA]->(:Estado_Emocional)-[:GENERA_ALERTA]->(a:Alerta_Emocional {id_alerta: \$recordId})
@@ -181,7 +197,10 @@ class EmotionalAlertController extends Controller
      */
     public function closeRecord(Request $request, $recordId)
     {
-        $psychologistId = $request->user()->psychologist_id;
+        $psychologistId = $this->psychologistIdFromRequest($request);
+        if (!$psychologistId) {
+            return $this->unauthenticatedResponse();
+        }
 
         $updated = $this->neo4j->run("
             MATCH (p:Psicologo {id_psicologo: \$psychologistId})-[:ATIENDE]->(:Cita)-[:GENERA]->(:Nota_Seguimiento)<-[:CONTIENE]-(:Historial_Clinico)<-[:POSEE]-(:Estudiante)-[:REPORTA]->(:Estado_Emocional)-[:GENERA_ALERTA]->(a:Alerta_Emocional {id_alerta: \$recordId})

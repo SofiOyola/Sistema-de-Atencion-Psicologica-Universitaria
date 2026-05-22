@@ -18,8 +18,8 @@ class AdminStudentController extends Controller
     {
         $result = $this->neo4j->run("
             MATCH (e:Estudiante)
-            OPTIONAL MATCH (e)-[:ASIGNA]->(a:Asignacion {vigencia: 'Vigente'})
-            OPTIONAL MATCH (a)-[:CORRESPONDE]->(p:Psicologo)
+            OPTIONAL MATCH (e)-[:ASIGNA]-(a:Asignacion {vigencia: 'Vigente'})
+            OPTIONAL MATCH (a)-[:CORRESPONDE]-(p:Psicologo)
             RETURN 
                 e.id_estudiante AS id,
                 e.nombre AS fullName,
@@ -39,6 +39,7 @@ class AdminStudentController extends Controller
         $students = [];
         foreach ($result as $row) {
             $name = $row->get('fullName');
+            $status = $this->normalizeStatus($row->get('status'));
             $students[] = [
                 'id'                => $row->get('id'),
                 'fullName'          => $name,
@@ -48,7 +49,7 @@ class AdminStudentController extends Controller
                 'semester'          => (int) $row->get('semester'),
                 'email'             => $row->get('email'),
                 'phone'             => $row->get('phone'),
-                'status'            => $row->get('status') ?: 'Sin asignar',
+                'status'            => $status,
                 'psychologistName'  => $row->get('psychologistName'),
                 'psychologistEmail' => $row->get('psychologistEmail'),
                 'criticality'       => $row->get('criticality'),
@@ -180,7 +181,7 @@ class AdminStudentController extends Controller
 
         // Actualizar asignación
         $this->neo4j->run("
-            MATCH (e:Estudiante {id_estudiante: \$id})-[old:ASIGNA]->(:Asignacion)
+            MATCH (e:Estudiante {id_estudiante: \$id})-[old:ASIGNA]-(:Asignacion)
             DELETE old
         ", ['id' => (int) $id]);
 
@@ -278,5 +279,15 @@ class AdminStudentController extends Controller
         $pieces = array_filter(explode(' ', trim($name)));
         if (count($pieces) < 2) return mb_strtoupper(mb_substr($name, 0, 2));
         return mb_strtoupper(mb_substr($pieces[0], 0, 1) . mb_substr($pieces[1], 0, 1));
+    }
+
+    private function normalizeStatus(?string $status): string
+    {
+        return match ($status) {
+            'Pendiente' => 'Sin asignar',
+            'Seguimiento' => 'En proceso',
+            'Finalizado' => 'Terminado',
+            default => $status ?: 'Sin asignar',
+        };
     }
 }

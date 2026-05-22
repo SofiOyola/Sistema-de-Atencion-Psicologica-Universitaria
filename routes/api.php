@@ -90,12 +90,12 @@ Route::prefix('psychologist')->group(function () {
     Route::put('/emotional-alerts/{recordId}/review', [EmotionalAlertController::class, 'reviewRecord']);
     Route::put('/emotional-alerts/{recordId}/close', [EmotionalAlertController::class, 'closeRecord']);
 
-    //- CRUD
-    Route::get('/', [PsychologistResourceController::class, 'index']);
-    Route::post('/', [PsychologistResourceController::class, 'store']);
-    Route::put('/{id}', [PsychologistResourceController::class, 'update']);
-    Route::patch('/{id}/toggle-status', [PsychologistResourceController::class, 'toggleStatus']);
-    Route::delete('/{id}', [PsychologistResourceController::class, 'destroy']);
+    //- CRUD de recursos del psicologo
+    Route::get('/resources', [PsychologistResourceController::class, 'index']);
+    Route::post('/resources', [PsychologistResourceController::class, 'store']);
+    Route::put('/resources/{id}', [PsychologistResourceController::class, 'update']);
+    Route::patch('/resources/{id}/toggle-status', [PsychologistResourceController::class, 'toggleStatus']);
+    Route::delete('/resources/{id}', [PsychologistResourceController::class, 'destroy']);
 
     //- Perfil del psicólogo
     Route::get('/profile', [PsychologistProfileController::class, 'show']);
@@ -111,7 +111,7 @@ Route::prefix('psychologist')->group(function () {
 Route::prefix('admin')->group(function () {
     
     //- Panel Administrativo
-    Route::get('/admin/dashboard', [AdminDashboardController::class, 'getDashboardData']);
+    Route::get('/dashboard', [AdminDashboardController::class, 'getDashboardData']);
     
     //- Gestión de Psicólogos
     Route::get('/psychologists', [AdminPsychologistController::class, 'index']);
@@ -121,22 +121,22 @@ Route::prefix('admin')->group(function () {
     Route::delete('/psychologists/{id}', [AdminPsychologistController::class, 'destroy']);
 
     //- Gestión de Estudiantes
-    Route::get('/admin/students', [AdminStudentController::class, 'index']);
-    Route::post('/admin/students', [AdminStudentController::class, 'store']);
-    Route::put('/admin/students/{id}', [AdminStudentController::class, 'update']);
-    Route::delete('/admin/students/{id}', [AdminStudentController::class, 'destroy']);
+    Route::get('/students', [AdminStudentController::class, 'index']);
+    Route::post('/students', [AdminStudentController::class, 'store']);
+    Route::put('/students/{id}', [AdminStudentController::class, 'update']);
+    Route::delete('/students/{id}', [AdminStudentController::class, 'destroy']);
 
     //- Gestión de Recursos Psicoeducativos
-    Route::get('/admin/resources', [AdminResourceController::class, 'index']);
-    Route::post('/admin/resources', [AdminResourceController::class, 'store']);
-    Route::put('/admin/resources/{id}', [AdminResourceController::class, 'update']);
-    Route::patch('/admin/resources/{id}/toggle-status', [AdminResourceController::class, 'toggleStatus']);
-    Route::delete('/admin/resources/{id}', [AdminResourceController::class, 'destroy']);
+    Route::get('/resources', [AdminResourceController::class, 'index']);
+    Route::post('/resources', [AdminResourceController::class, 'store']);
+    Route::put('/resources/{id}', [AdminResourceController::class, 'update']);
+    Route::patch('/resources/{id}/toggle-status', [AdminResourceController::class, 'toggleStatus']);
+    Route::delete('/resources/{id}', [AdminResourceController::class, 'destroy']);
 
     //- Reportes Administrativos
-    Route::get('/admin/reports/types', [AdminReportController::class, 'types']);
-    Route::get('/admin/reports/generate', [AdminReportController::class, 'generate']);
-    Route::post('/admin/reports/export-pdf', [AdminReportController::class, 'exportPdf']);
+    Route::get('/reports/types', [AdminReportController::class, 'types']);
+    Route::get('/reports/generate', [AdminReportController::class, 'generate']);
+    Route::post('/reports/export-pdf', [AdminReportController::class, 'exportPdf']);
 
     //- Configuración del Administrador
     Route::get('/settings/profile', [AdminSettingsController::class, 'getProfile']);

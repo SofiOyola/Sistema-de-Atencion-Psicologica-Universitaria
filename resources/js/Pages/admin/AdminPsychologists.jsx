@@ -110,7 +110,7 @@ const Topbar = () => {
 /* ─────────────────────────────────────────────────────────────────────────
    PÁGINA PRINCIPAL / GESTIÓN DE PSICÓLOGOS (CRUD Conectado a la API con Validaciones)
    ───────────────────────────────────────────────────────────────────────── */
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = '/api';
 
 const AdminPsychologists = () => {
     const [psychologists, setPsychologists] = useState([]);

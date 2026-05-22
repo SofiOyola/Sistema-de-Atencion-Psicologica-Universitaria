@@ -284,7 +284,12 @@ SET r.titulo = recurso.titulo,
     r.isbn = recurso.isbn,
     r.fecha_publicacion = recurso.fecha_publicacion,
     r.descripcion = recurso.descripcion,
-    r.enlace = recurso.enlace;
+    r.enlace = recurso.enlace,
+    r.fileName = CASE WHEN recurso.tipo_recurso = 'PDF' THEN recurso.titulo + '.pdf' ELSE null END,
+    r.status = 'Publicado',
+    r.creator = recurso.autor,
+    r.downloads = 10 + recurso.id_recurso,
+    r.updatedAt = datetime();
 
 //ESTADOS EMOCIONALES
 UNWIND range(1, 25) AS i
@@ -356,8 +361,7 @@ CREATE (:Asignacion {
 // 3. RELACIONES
 
 MATCH (e:Estudiante), (c:Cita)
-WHERE e.id_estudiante = c.id_cita
-   OR (c.id_cita % 5) = (e.id_estudiante % 5)
+WHERE e.id_estudiante = ((c.id_cita - 1) % 15) + 1
 CREATE (e)-[:SOLICITA]->(c);
 
 MATCH (p:Psicologo), (c:Cita)

@@ -28,7 +28,7 @@ import './PsychologistDashboard.css';
 /* ─────────────────────────────────────────────────────────────────────────
    CONSTANTES (PSICÓLOGO, NAVEGACIÓN, HELPERS)
    ───────────────────────────────────────────────────────────────────────── */
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = '/api';
 
 const PSYCHOLOGIST = {
     name: 'Dra. Laura Méndez',
@@ -301,7 +301,7 @@ const QuickActions = () => {
         const routes = {
             agenda: '/psychologist/agenda',
             alertas: '/psychologist/alerts',
-            recursos: '/student/resources',
+            recursos: '/psychologist/resources',
         };
         if (routes[id]) {
             navigate(routes[id]);
@@ -348,7 +348,7 @@ const PsychologistDashboard = () => {
     const [alertas, setAlertas] = useState([]);
     const [pacientes, setPacientes] = useState([]);
     const [loading, setLoading] = useState(true);
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('sap_token') || localStorage.getItem('auth_token');
 
     useEffect(() => {
         fetch(`${API_BASE}/psychologist/dashboard`, {

@@ -22,7 +22,11 @@ class AdminResourceController extends Controller
                 r.id_recurso AS id,
                 r.titulo AS title,
                 r.categoria AS category,
-                r.tipo_recurso AS type,
+                CASE r.tipo_recurso
+                    WHEN 'WEB' THEN 'Enlace externo'
+                    WHEN 'YOUTUBE' THEN 'Video'
+                    ELSE r.tipo_recurso
+                END AS type,
                 r.descripcion AS description,
                 r.enlace AS url,
                 COALESCE(r.fileName, '') AS fileName,
@@ -38,7 +42,7 @@ class AdminResourceController extends Controller
                 'id'          => $row->get('id'),
                 'title'       => $row->get('title'),
                 'category'    => $row->get('category'),
-                'type'        => $row->get('type'),
+                'type'        => $this->normalizeType($row->get('type')),
                 'description' => $row->get('description'),
                 'url'         => $row->get('url'),
                 'fileName'    => $row->get('fileName'),
@@ -60,7 +64,7 @@ class AdminResourceController extends Controller
             'title'       => 'required|string|max:255',
             'description' => 'required|string',
             'category'    => 'required|string',
-            'type'        => 'required|string|in:PDF,Artículo,Video,Podcast,Enlace externo',
+            'type'        => 'required|string|in:PDF,Artículo,Video,Podcast,Enlace externo,WEB,YOUTUBE',
             'url'         => 'nullable|string',
             'fileName'    => 'nullable|string',
             'status'      => 'required|string|in:Publicado,Inactivo',
@@ -102,7 +106,7 @@ class AdminResourceController extends Controller
             'title'       => $request->input('title'),
             'description' => $request->input('description'),
             'category'    => $request->input('category'),
-            'type'        => $request->input('type'),
+            'type'        => $this->normalizeType($request->input('type')),
             'url'         => $request->input('url') ?? '#',
             'fileName'    => $request->input('fileName') ?? null,
             'status'      => $request->input('status'),
@@ -118,7 +122,7 @@ class AdminResourceController extends Controller
                 'title'       => $request->input('title'),
                 'description' => $request->input('description'),
                 'category'    => $request->input('category'),
-                'type'        => $request->input('type'),
+                'type'        => $this->normalizeType($request->input('type')),
                 'url'         => $request->input('url') ?? '#',
                 'fileName'    => $request->input('fileName') ?? null,
                 'status'      => $request->input('status'),
@@ -137,7 +141,7 @@ class AdminResourceController extends Controller
             'title'       => 'required|string|max:255',
             'description' => 'required|string',
             'category'    => 'required|string',
-            'type'        => 'required|string|in:PDF,Artículo,Video,Podcast,Enlace externo',
+            'type'        => 'required|string|in:PDF,Artículo,Video,Podcast,Enlace externo,WEB,YOUTUBE',
             'url'         => 'nullable|string',
             'fileName'    => 'nullable|string',
             'status'      => 'required|string|in:Publicado,Inactivo',
@@ -170,7 +174,7 @@ class AdminResourceController extends Controller
             'title'       => $request->input('title'),
             'description' => $request->input('description'),
             'category'    => $request->input('category'),
-            'type'        => $request->input('type'),
+            'type'        => $this->normalizeType($request->input('type')),
             'url'         => $request->input('url') ?? '#',
             'fileName'    => $request->input('fileName') ?? null,
             'status'      => $request->input('status'),
@@ -190,7 +194,7 @@ class AdminResourceController extends Controller
                 'title'       => $request->input('title'),
                 'description' => $request->input('description'),
                 'category'    => $request->input('category'),
-                'type'        => $request->input('type'),
+                'type'        => $this->normalizeType($request->input('type')),
                 'url'         => $request->input('url') ?? '#',
                 'fileName'    => $request->input('fileName') ?? null,
                 'status'      => $request->input('status'),
@@ -209,7 +213,21 @@ class AdminResourceController extends Controller
             MATCH (r:Recurso_Psicoeducativo {id_recurso: \$id})
             SET r.status = CASE r.status WHEN 'Publicado' THEN 'Inactivo' ELSE 'Publicado' END,
                 r.updatedAt = datetime()
-            RETURN r
+            RETURN 
+                r.id_recurso AS id,
+                r.titulo AS title,
+                r.descripcion AS description,
+                r.categoria AS category,
+                CASE r.tipo_recurso
+                    WHEN 'WEB' THEN 'Enlace externo'
+                    WHEN 'YOUTUBE' THEN 'Video'
+                    ELSE r.tipo_recurso
+                END AS type,
+                r.enlace AS url,
+                COALESCE(r.fileName, '') AS fileName,
+                COALESCE(r.status, 'Publicado') AS status,
+                COALESCE(r.creator, 'SAPU') AS creator,
+                COALESCE(r.downloads, 0) AS downloads
         ", ['id' => (int) $id]);
 
         if ($updated->count() === 0) {
@@ -221,11 +239,11 @@ class AdminResourceController extends Controller
             'success' => true,
             'message' => 'Estado actualizado.',
             'data'    => [
-                'id'          => (int) $id,
+                'id'          => $row->get('id') ?? (int) $id,
                 'title'       => $row->get('title'),
                 'description' => $row->get('description'),
                 'category'    => $row->get('category'),
-                'type'        => $row->get('type'),
+                'type'        => $this->normalizeType($row->get('type')),
                 'url'         => $row->get('url'),
                 'fileName'    => $row->get('fileName'),
                 'status'      => $row->get('status'),
@@ -251,5 +269,14 @@ class AdminResourceController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => 'Recurso eliminado.']);
+    }
+
+    private function normalizeType(?string $type): string
+    {
+        return match ($type) {
+            'WEB' => 'Enlace externo',
+            'YOUTUBE' => 'Video',
+            default => $type ?: 'Enlace externo',
+        };
     }
 }

@@ -11,7 +11,7 @@ import './AdminResources.css';
 
 /* ── Constantes Administrativas ── */
 const ADMIN = { name: 'Dr. Roberto Alarcón', role: 'Director General · SAPU', initials: 'RA' };
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = '/api';
 
 const NAV_ITEMS = [
     { id: 'dashboard',    icon: LayoutDashboard, label: 'Dashboard',      path: '/admin/dashboard' },

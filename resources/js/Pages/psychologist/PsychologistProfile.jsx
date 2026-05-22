@@ -33,7 +33,7 @@ const PsychologistProfile = () => {
     const [formError, setFormError] = useState('');
     const [success, setSuccess] = useState('');
 
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem('sap_token') || localStorage.getItem('auth_token');
 
     const hydrateForm = (profile) => {
         setForm({

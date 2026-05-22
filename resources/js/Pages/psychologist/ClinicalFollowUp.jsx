@@ -113,7 +113,12 @@ const Topbar = () => {
 /* ─────────────────────────────────────────────────────────────────────────
    PÁGINA PRINCIPAL
    ───────────────────────────────────────────────────────────────────────── */
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = '/api';
+
+const authHeaders = () => ({
+    'Accept': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('sap_token') || localStorage.getItem('auth_token') || ''}`,
+});
 
 const ClinicalFollowUp = () => {
     const [patients, setPatients] = useState([]);
@@ -143,7 +148,7 @@ const ClinicalFollowUp = () => {
 
     // Cargar pacientes inicial
     useEffect(() => {
-        fetch(`${API_BASE}/psychologist/patients`)
+        fetch(`${API_BASE}/psychologist/patients`, { headers: authHeaders() })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
@@ -161,7 +166,7 @@ const ClinicalFollowUp = () => {
     useEffect(() => {
         if (!selectedPatientId) return;
         setLoadingNotes(true);
-        fetch(`${API_BASE}/psychologist/patients/${selectedPatientId}/notes`)
+        fetch(`${API_BASE}/psychologist/patients/${selectedPatientId}/notes`, { headers: authHeaders() })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
@@ -220,7 +225,7 @@ const ClinicalFollowUp = () => {
 
         fetch(`${API_BASE}/psychologist/patients/${selectedPatientId}/notes`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            headers: { ...authHeaders(), 'Content-Type': 'application/json' },
             body: JSON.stringify(newNoteData)
         })
         .then(res => res.json())
