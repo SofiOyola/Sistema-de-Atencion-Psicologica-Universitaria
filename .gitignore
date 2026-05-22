@@ -22,3 +22,12 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+.git
+*.md
+docker-compose*.yml
+Dockerfile*
+docker-entrypoint*.sh

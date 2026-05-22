@@ -22,11 +22,6 @@ services:
       - NEO4J_AUTH=neo4j/secret1234
     volumes:
       - neo4j_data:/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:7474 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
 volumes:
   neo4j_data:
