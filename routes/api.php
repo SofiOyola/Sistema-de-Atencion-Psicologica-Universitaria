@@ -22,123 +22,106 @@ use App\Http\Controllers\Api\AdminSettingsController;
 use App\Http\Controllers\Api\PsychologistProfileController;
 use App\Http\Controllers\Api\PsychologistDashboardController;
 
+$service = env('SAPU_SERVICE', 'monolith');
+$registerService = static fn (string $name): bool => $service === 'monolith' || $service === $name;
 
-//Autenticación 
-Route::prefix('auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-});
+if ($registerService('auth')) {
+    Route::prefix('auth')->group(function () {
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/login', [AuthController::class, 'login']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+    });
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    })->middleware('auth:sanctum');
+}
 
+if ($registerService('resources')) {
+    Route::prefix('resources')->group(function () {
+        Route::get('/', [ResourceController::class, 'index']);
+        Route::get('/categories', [ResourceController::class, 'categories']);
+        Route::get('/search', [ResourceController::class, 'search']);
+    });
+}
 
-// Recursos psicoeducativos
-Route::prefix('resources')->group(function () {
-    Route::get('/', [ResourceController::class, 'index']);
-    Route::get('/categories', [ResourceController::class, 'categories']);
-    Route::get('/search', [ResourceController::class, 'search']);
-});
+if ($registerService('student')) {
+    Route::prefix('student')->group(function () {
+        Route::get('/psychologists', [AppointmentController::class, 'psychologists']);
+        Route::get('/appointments', [AppointmentController::class, 'index']);
+        Route::post('/appointments', [AppointmentController::class, 'store']);
+        Route::put('/appointments/{id}/reschedule', [AppointmentController::class, 'reschedule']);
+        Route::put('/appointments/{id}/cancel', [AppointmentController::class, 'cancel']);
 
-// Estudiante
-Route::prefix('student')->group(function () {
-    
-    // Citas del estudiante
-    Route::get('/psychologists', [AppointmentController::class, 'psychologists']);
-    Route::get('/appointments', [AppointmentController::class, 'index']);
-    Route::post('/appointments', [AppointmentController::class, 'store']);
-    Route::put('/appointments/{id}/reschedule', [AppointmentController::class, 'reschedule']);
-    Route::put('/appointments/{id}/cancel', [AppointmentController::class, 'cancel']);
+        Route::get('/tracking/{studentId}', [StudentTrackingController::class, 'show']);
 
-    // Seguimiento del estudiante
-    Route::get('/tracking/{studentId}', [StudentTrackingController::class, 'show']);
+        Route::get('/wellness/{studentId}', [StudentWellnessController::class, 'show']);
+        Route::post('/wellness/{studentId}', [StudentWellnessController::class, 'store']);
 
-    // Bienestar emocional del estudiante
-    Route::get('/wellness/{studentId}', [StudentWellnessController::class, 'show']);
-    Route::post('/wellness/{studentId}', [StudentWellnessController::class, 'store']);
+        Route::get('/profile/{studentId}', [StudentProfileController::class, 'show']);
+        Route::put('/profile/{studentId}', [StudentProfileController::class, 'update']);
+    });
+}
 
-    // Perfil del estudiante
-    Route::get('/profile/{studentId}', [StudentProfileController::class, 'show']);
-    Route::put('/profile/{studentId}', [StudentProfileController::class, 'update']);
-});
+if ($registerService('psychologist')) {
+    Route::prefix('psychologist')->group(function () {
+        Route::get('/agenda', [PsychologistAgendaController::class, 'index']);
+        Route::get('/agenda/day', [PsychologistAgendaController::class, 'byDay']);
+        Route::put('/appointments/{id}/reschedule', [PsychologistAgendaController::class, 'reschedule']);
+        Route::put('/appointments/{id}/cancel', [PsychologistAgendaController::class, 'cancel']);
+        Route::get('/agenda/blocks', [PsychologistAgendaController::class, 'getBlocks']);
+        Route::post('/agenda/blocks', [PsychologistAgendaController::class, 'createBlock']);
 
+        Route::get('/patients/{psychologistId}', [PsychologistPatientController::class, 'index']);
 
-//Psicologo: 
-Route::prefix('psychologist')->group(function () {
+        Route::get('/patients', [ClinicalFollowUpController::class, 'getPatients']);
+        Route::get('/patients/{id}/notes', [ClinicalFollowUpController::class, 'getPatientNotes']);
+        Route::post('/patients/{id}/notes', [ClinicalFollowUpController::class, 'addNote']);
 
-    //- Agenda del psicólogo
-    Route::get('/agenda',     [PsychologistAgendaController::class, 'index']);
-    Route::get('/agenda/day', [PsychologistAgendaController::class, 'byDay']);
-    Route::put('/appointments/{id}/reschedule', [PsychologistAgendaController::class, 'reschedule']);
-    Route::put('/appointments/{id}/cancel',     [PsychologistAgendaController::class, 'cancel']);
-    Route::get('/agenda/blocks',  [PsychologistAgendaController::class, 'getBlocks']);
-    Route::post('/agenda/blocks', [PsychologistAgendaController::class, 'createBlock']);
+        Route::get('/emotional-alerts/students', [EmotionalAlertController::class, 'getStudents']);
+        Route::get('/emotional-alerts/students/{id}/records', [EmotionalAlertController::class, 'getStudentRecords']);
+        Route::put('/emotional-alerts/{recordId}/review', [EmotionalAlertController::class, 'reviewRecord']);
+        Route::put('/emotional-alerts/{recordId}/close', [EmotionalAlertController::class, 'closeRecord']);
 
-    //- Pacientes del psicólogo
-    Route::get('/patients/{psychologistId}', [PsychologistPatientController::class, 'index']);
-    
-    //- Seguimiento clínico
-    Route::get('/patients', [ClinicalFollowUpController::class, 'getPatients']);
-    Route::get('/patients/{id}/notes', [ClinicalFollowUpController::class, 'getPatientNotes']);
-    Route::post('/patients/{id}/notes', [ClinicalFollowUpController::class, 'addNote']);
+        Route::get('/resources', [PsychologistResourceController::class, 'index']);
+        Route::post('/resources', [PsychologistResourceController::class, 'store']);
+        Route::put('/resources/{id}', [PsychologistResourceController::class, 'update']);
+        Route::patch('/resources/{id}/toggle-status', [PsychologistResourceController::class, 'toggleStatus']);
+        Route::delete('/resources/{id}', [PsychologistResourceController::class, 'destroy']);
 
-    //- Alertas emocionales
-    Route::get('/emotional-alerts/students', [EmotionalAlertController::class, 'getStudents']);
-    Route::get('/emotional-alerts/students/{id}/records', [EmotionalAlertController::class, 'getStudentRecords']);
-    Route::put('/emotional-alerts/{recordId}/review', [EmotionalAlertController::class, 'reviewRecord']);
-    Route::put('/emotional-alerts/{recordId}/close', [EmotionalAlertController::class, 'closeRecord']);
+        Route::get('/profile', [PsychologistProfileController::class, 'show']);
+        Route::put('/profile', [PsychologistProfileController::class, 'update']);
 
-    //- CRUD de recursos del psicologo
-    Route::get('/resources', [PsychologistResourceController::class, 'index']);
-    Route::post('/resources', [PsychologistResourceController::class, 'store']);
-    Route::put('/resources/{id}', [PsychologistResourceController::class, 'update']);
-    Route::patch('/resources/{id}/toggle-status', [PsychologistResourceController::class, 'toggleStatus']);
-    Route::delete('/resources/{id}', [PsychologistResourceController::class, 'destroy']);
+        Route::get('/dashboard', [PsychologistDashboardController::class, 'index'])->middleware('auth:sanctum');
+    });
+}
 
-    //- Perfil del psicólogo
-    Route::get('/profile', [PsychologistProfileController::class, 'show']);
-    Route::put('/profile', [PsychologistProfileController::class, 'update']);
+if ($registerService('admin')) {
+    Route::prefix('admin')->group(function () {
+        Route::get('/dashboard', [AdminDashboardController::class, 'getDashboardData']);
 
-    //- Dashboard del psicólogo
-    Route::get('/dashboard', [PsychologistDashboardController::class, 'index'])->middleware('auth:sanctum');
+        Route::get('/psychologists', [AdminPsychologistController::class, 'index']);
+        Route::post('/psychologists', [AdminPsychologistController::class, 'store']);
+        Route::put('/psychologists/{id}', [AdminPsychologistController::class, 'update']);
+        Route::patch('/psychologists/{id}/toggle-status', [AdminPsychologistController::class, 'toggleStatus']);
+        Route::delete('/psychologists/{id}', [AdminPsychologistController::class, 'destroy']);
 
-});
+        Route::get('/students', [AdminStudentController::class, 'index']);
+        Route::post('/students', [AdminStudentController::class, 'store']);
+        Route::put('/students/{id}', [AdminStudentController::class, 'update']);
+        Route::delete('/students/{id}', [AdminStudentController::class, 'destroy']);
 
+        Route::get('/resources', [AdminResourceController::class, 'index']);
+        Route::post('/resources', [AdminResourceController::class, 'store']);
+        Route::put('/resources/{id}', [AdminResourceController::class, 'update']);
+        Route::patch('/resources/{id}/toggle-status', [AdminResourceController::class, 'toggleStatus']);
+        Route::delete('/resources/{id}', [AdminResourceController::class, 'destroy']);
 
-//Administrador
-Route::prefix('admin')->group(function () {
-    
-    //- Panel Administrativo
-    Route::get('/dashboard', [AdminDashboardController::class, 'getDashboardData']);
-    
-    //- Gestión de Psicólogos
-    Route::get('/psychologists', [AdminPsychologistController::class, 'index']);
-    Route::post('/psychologists', [AdminPsychologistController::class, 'store']);
-    Route::put('/psychologists/{id}', [AdminPsychologistController::class, 'update']);
-    Route::patch('/psychologists/{id}/toggle-status', [AdminPsychologistController::class, 'toggleStatus']);
-    Route::delete('/psychologists/{id}', [AdminPsychologistController::class, 'destroy']);
+        Route::get('/reports/types', [AdminReportController::class, 'types']);
+        Route::get('/reports/generate', [AdminReportController::class, 'generate']);
+        Route::post('/reports/export-pdf', [AdminReportController::class, 'exportPdf']);
 
-    //- Gestión de Estudiantes
-    Route::get('/students', [AdminStudentController::class, 'index']);
-    Route::post('/students', [AdminStudentController::class, 'store']);
-    Route::put('/students/{id}', [AdminStudentController::class, 'update']);
-    Route::delete('/students/{id}', [AdminStudentController::class, 'destroy']);
-
-    //- Gestión de Recursos Psicoeducativos
-    Route::get('/resources', [AdminResourceController::class, 'index']);
-    Route::post('/resources', [AdminResourceController::class, 'store']);
-    Route::put('/resources/{id}', [AdminResourceController::class, 'update']);
-    Route::patch('/resources/{id}/toggle-status', [AdminResourceController::class, 'toggleStatus']);
-    Route::delete('/resources/{id}', [AdminResourceController::class, 'destroy']);
-
-    //- Reportes Administrativos
-    Route::get('/reports/types', [AdminReportController::class, 'types']);
-    Route::get('/reports/generate', [AdminReportController::class, 'generate']);
-    Route::post('/reports/export-pdf', [AdminReportController::class, 'exportPdf']);
-
-    //- Configuración del Administrador
-    Route::get('/settings/profile', [AdminSettingsController::class, 'getProfile']);
-    Route::put('/settings/profile', [AdminSettingsController::class, 'updateProfile']);
-});
+        Route::get('/settings/profile', [AdminSettingsController::class, 'getProfile']);
+        Route::put('/settings/profile', [AdminSettingsController::class, 'updateProfile']);
+    });
+}

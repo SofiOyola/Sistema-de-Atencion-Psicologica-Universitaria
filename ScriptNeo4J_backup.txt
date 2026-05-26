@@ -3,14 +3,14 @@
 // =====================================================
 MATCH (n) DETACH DELETE n;
 
-// =====================================================
-// 1. CONSTRAINTS
+// ==============ls -la | grep Script=======================================
+// 1. CONSTRAINTS (NODE KEY + UNIQUE + EXISTS)
 // =====================================================
 
 // ---------- ESTUDIANTE ----------
 CREATE CONSTRAINT estudiante_pk IF NOT EXISTS
 FOR (e:Estudiante)
-REQUIRE e.id_estudiante IS UNIQUE;
+REQUIRE (e.id_estudiante) IS NODE KEY;
 
 CREATE CONSTRAINT estudiante_identificacion_unique IF NOT EXISTS
 FOR (e:Estudiante)
@@ -20,82 +20,286 @@ CREATE CONSTRAINT estudiante_correo_unique IF NOT EXISTS
 FOR (e:Estudiante)
 REQUIRE e.correo_institucional IS UNIQUE;
 
+CREATE CONSTRAINT estudiante_nombre_exists IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE e.nombre IS NOT NULL;
 
+CREATE CONSTRAINT estudiante_identificacion_exists IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE e.identificacion IS NOT NULL;
+
+CREATE CONSTRAINT estudiante_correo_exists IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE e.correo_institucional IS NOT NULL;
+
+CREATE CONSTRAINT estudiante_programa_exists IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE e.programa_academico IS NOT NULL;
+
+CREATE CONSTRAINT estudiante_estado_proc_exists IF NOT EXISTS
+FOR (e:Estudiante)
+REQUIRE e.estado_proceso_psicologico IS NOT NULL;
 
 // ---------- CITA ----------
 CREATE CONSTRAINT cita_pk IF NOT EXISTS
 FOR (c:Cita)
-REQUIRE c.id_cita IS UNIQUE;
+REQUIRE (c.id_cita) IS NODE KEY;
 
+CREATE CONSTRAINT cita_fecha_exists IF NOT EXISTS
+FOR (c:Cita)
+REQUIRE c.fecha IS NOT NULL;
+
+CREATE CONSTRAINT cita_hora_exists IF NOT EXISTS
+FOR (c:Cita)
+REQUIRE c.hora IS NOT NULL;
+
+CREATE CONSTRAINT cita_estado_exists IF NOT EXISTS
+FOR (c:Cita)
+REQUIRE c.estado_cita IS NOT NULL;
+
+CREATE CONSTRAINT cita_motivo_exists IF NOT EXISTS
+FOR (c:Cita)
+REQUIRE c.motivo_consulta IS NOT NULL;
 
 // ---------- NOTA_SEGUIMIENTO ----------
 CREATE CONSTRAINT nota_pk IF NOT EXISTS
 FOR (n:Nota_Seguimiento)
-REQUIRE n.id_nota IS UNIQUE;
+REQUIRE (n.id_nota) IS NODE KEY;
 
+CREATE CONSTRAINT nota_tipo_exists IF NOT EXISTS
+FOR (n:Nota_Seguimiento)
+REQUIRE n.tipo_nota IS NOT NULL;
+
+CREATE CONSTRAINT nota_contenido_exists IF NOT EXISTS
+FOR (n:Nota_Seguimiento)
+REQUIRE n.contenido_nota IS NOT NULL;
+
+CREATE CONSTRAINT nota_fecha_exists IF NOT EXISTS
+FOR (n:Nota_Seguimiento)
+REQUIRE n.fecha_creacion IS NOT NULL;
 
 // ---------- PSICOLOGO ----------
 CREATE CONSTRAINT psicologo_pk IF NOT EXISTS
 FOR (p:Psicologo)
-REQUIRE p.id_psicologo IS UNIQUE;
+REQUIRE (p.id_psicologo) IS NODE KEY;
 
+CREATE CONSTRAINT psicologo_nombre_exists IF NOT EXISTS
+FOR (p:Psicologo)
+REQUIRE p.nombre IS NOT NULL;
+
+CREATE CONSTRAINT psicologo_especialidad_exists IF NOT EXISTS
+FOR (p:Psicologo)
+REQUIRE p.especialidad IS NOT NULL;
+
+CREATE CONSTRAINT psicologo_estado_exists IF NOT EXISTS
+FOR (p:Psicologo)
+REQUIRE p.estado IS NOT NULL;
+
+CREATE CONSTRAINT psicologo_experiencia_exists IF NOT EXISTS
+FOR (p:Psicologo)
+REQUIRE p.experiencia IS NOT NULL;
 
 // ---------- HISTORIAL_CLINICO ----------
 CREATE CONSTRAINT historial_pk IF NOT EXISTS
 FOR (h:Historial_Clinico)
-REQUIRE h.id_historial IS UNIQUE;
+REQUIRE (h.id_historial) IS NODE KEY;
 
+CREATE CONSTRAINT historial_fecha_exists IF NOT EXISTS
+FOR (h:Historial_Clinico)
+REQUIRE h.fecha_creacion IS NOT NULL;
+
+CREATE CONSTRAINT historial_obs_exists IF NOT EXISTS
+FOR (h:Historial_Clinico)
+REQUIRE h.observaciones_generales IS NOT NULL;
 
 // ---------- MODIFICACION_CITA ----------
 CREATE CONSTRAINT mod_cita_pk IF NOT EXISTS
 FOR (m:Modificacion_Cita)
-REQUIRE m.id_modificacion IS UNIQUE;
+REQUIRE (m.id_modificacion) IS NODE KEY;
 
+CREATE CONSTRAINT mod_cita_fecha_orig_exists IF NOT EXISTS
+FOR (m:Modificacion_Cita)
+REQUIRE m.fecha_original IS NOT NULL;
+
+CREATE CONSTRAINT mod_cita_nueva_fecha_exists IF NOT EXISTS
+FOR (m:Modificacion_Cita)
+REQUIRE m.nueva_fecha IS NOT NULL;
+
+CREATE CONSTRAINT mod_cita_motivo_exists IF NOT EXISTS
+FOR (m:Modificacion_Cita)
+REQUIRE m.motivo_cambio IS NOT NULL;
+
+CREATE CONSTRAINT mod_cita_tipo_exists IF NOT EXISTS
+FOR (m:Modificacion_Cita)
+REQUIRE m.tipo_modificacion IS NOT NULL;
 
 // ---------- DISPONIBILIDAD ----------
 CREATE CONSTRAINT dispo_pk IF NOT EXISTS
 FOR (d:Disponibilidad)
-REQUIRE d.id_disponibilidad IS UNIQUE;
+REQUIRE (d.id_disponibilidad) IS NODE KEY;
+
+CREATE CONSTRAINT dispo_fecha_exists IF NOT EXISTS
+FOR (d:Disponibilidad)
+REQUIRE d.fecha_dispo IS NOT NULL;
+
+CREATE CONSTRAINT dispo_hora_ini_exists IF NOT EXISTS
+FOR (d:Disponibilidad)
+REQUIRE d.hora_inicio IS NOT NULL;
+
+CREATE CONSTRAINT dispo_hora_fin_exists IF NOT EXISTS
+FOR (d:Disponibilidad)
+REQUIRE d.hora_fin IS NOT NULL;
+
+CREATE CONSTRAINT dispo_estado_exists IF NOT EXISTS
+FOR (d:Disponibilidad)
+REQUIRE d.estado_dispo IS NOT NULL;
 
 // ---------- RECURSO_PSICOEDUCATIVO ----------
 CREATE CONSTRAINT recurso_pk IF NOT EXISTS
 FOR (r:Recurso_Psicoeducativo)
-REQUIRE r.id_recurso IS UNIQUE;
+REQUIRE (r.id_recurso) IS NODE KEY;
+
+CREATE CONSTRAINT recurso_titulo_exists IF NOT EXISTS
+FOR (r:Recurso_Psicoeducativo)
+REQUIRE r.titulo IS NOT NULL;
+
+CREATE CONSTRAINT recurso_categoria_exists IF NOT EXISTS
+FOR (r:Recurso_Psicoeducativo)
+REQUIRE r.categoria IS NOT NULL;
+
+CREATE CONSTRAINT recurso_tipo_exists IF NOT EXISTS
+FOR (r:Recurso_Psicoeducativo)
+REQUIRE r.tipo_recurso IS NOT NULL;
+
+CREATE CONSTRAINT recurso_fecha_exists IF NOT EXISTS
+FOR (r:Recurso_Psicoeducativo)
+REQUIRE r.fecha_publicacion IS NOT NULL;
 
 // ---------- ESTADO_EMOCIONAL ----------
 CREATE CONSTRAINT estado_emocional_pk IF NOT EXISTS
 FOR (e:Estado_Emocional)
-REQUIRE e.id_estado_emocional IS UNIQUE;
+REQUIRE (e.id_estado_emocional) IS NODE KEY;
+
+CREATE CONSTRAINT estado_emocional_nivel_exists IF NOT EXISTS
+FOR (e:Estado_Emocional)
+REQUIRE e.nivel_emocional IS NOT NULL;
+
+CREATE CONSTRAINT estado_emocional_fecha_exists IF NOT EXISTS
+FOR (e:Estado_Emocional)
+REQUIRE e.fecha_est IS NOT NULL;
+
+CREATE CONSTRAINT estado_emocional_criticidad_exists IF NOT EXISTS
+FOR (e:Estado_Emocional)
+REQUIRE e.nivel_criticidad IS NOT NULL;
+
+CREATE CONSTRAINT estado_emocional_hora_exists IF NOT EXISTS
+FOR (e:Estado_Emocional)
+REQUIRE e.hora_est IS NOT NULL;
 
 // ---------- ALERTA_EMOCIONAL ----------
 CREATE CONSTRAINT alerta_pk IF NOT EXISTS
 FOR (a:Alerta_Emocional)
-REQUIRE a.id_alerta IS UNIQUE;
+REQUIRE (a.id_alerta) IS NODE KEY;
+
+CREATE CONSTRAINT alerta_fecha_exists IF NOT EXISTS
+FOR (a:Alerta_Emocional)
+REQUIRE a.fecha_generacion IS NOT NULL;
+
+CREATE CONSTRAINT alerta_nivel_exists IF NOT EXISTS
+FOR (a:Alerta_Emocional)
+REQUIRE a.nivel_alerta IS NOT NULL;
+
+CREATE CONSTRAINT alerta_desc_exists IF NOT EXISTS
+FOR (a:Alerta_Emocional)
+REQUIRE a.descripcion_alerta IS NOT NULL;
+
+CREATE CONSTRAINT alerta_estado_exists IF NOT EXISTS
+FOR (a:Alerta_Emocional)
+REQUIRE a.estado_alerta IS NOT NULL;
 
 // ---------- ADMINISTRADOR ----------
 CREATE CONSTRAINT admin_pk IF NOT EXISTS
 FOR (ad:Administrador)
-REQUIRE ad.id_administrativo IS UNIQUE;
+REQUIRE (ad.id_administrativo) IS NODE KEY;
+
+CREATE CONSTRAINT admin_depto_exists IF NOT EXISTS
+FOR (ad:Administrador)
+REQUIRE ad.departamento IS NOT NULL;
+
+CREATE CONSTRAINT admin_cargo_exists IF NOT EXISTS
+FOR (ad:Administrador)
+REQUIRE ad.cargo IS NOT NULL;
+
+CREATE CONSTRAINT admin_nivel_exists IF NOT EXISTS
+FOR (ad:Administrador)
+REQUIRE ad.nivel_acceso IS NOT NULL;
 
 // ---------- ASIGNACION ----------
 CREATE CONSTRAINT asignacion_pk IF NOT EXISTS
 FOR (a:Asignacion)
-REQUIRE a.id_asignacion IS UNIQUE;
+REQUIRE (a.id_asignacion) IS NODE KEY;
+
+CREATE CONSTRAINT asignacion_tipo_exists IF NOT EXISTS
+FOR (a:Asignacion)
+REQUIRE a.tipo_asignacion IS NOT NULL;
+
+CREATE CONSTRAINT asignacion_fecha_ini_exists IF NOT EXISTS
+FOR (a:Asignacion)
+REQUIRE a.fecha_inicio_as IS NOT NULL;
+
+CREATE CONSTRAINT asignacion_fecha_fin_exists IF NOT EXISTS
+FOR (a:Asignacion)
+REQUIRE a.fecha_fin_as IS NOT NULL;
+
+CREATE CONSTRAINT asignacion_vigencia_exists IF NOT EXISTS
+FOR (a:Asignacion)
+REQUIRE a.vigencia IS NOT NULL;
 
 // ---------- USUARIO ----------
 CREATE CONSTRAINT usuario_pk IF NOT EXISTS
 FOR (u:Usuario)
-REQUIRE u.id_usuario IS UNIQUE;
+REQUIRE (u.id_usuario) IS NODE KEY;
 
 CREATE CONSTRAINT usuario_correo_unique IF NOT EXISTS
 FOR (u:Usuario)
 REQUIRE u.correo_institucional IS UNIQUE;
 
+CREATE CONSTRAINT usuario_correo_exists IF NOT EXISTS
+FOR (u:Usuario)
+REQUIRE u.correo_institucional IS NOT NULL;
+
+CREATE CONSTRAINT usuario_contrasena_exists IF NOT EXISTS
+FOR (u:Usuario)
+REQUIRE u.contrasena IS NOT NULL;
+
+CREATE CONSTRAINT usuario_fecha_crea_exists IF NOT EXISTS
+FOR (u:Usuario)
+REQUIRE u.fecha_creacion IS NOT NULL;
+
+CREATE CONSTRAINT usuario_ultimo_acceso_exists IF NOT EXISTS
+FOR (u:Usuario)
+REQUIRE u.ultimo_acceso IS NOT NULL;
+
 // ---------- TRAZABILIDAD ----------
 CREATE CONSTRAINT trazabilidad_pk IF NOT EXISTS
 FOR (t:Trazabilidad)
-REQUIRE t.id_trazabilidad IS UNIQUE;
+REQUIRE (t.id_trazabilidad) IS NODE KEY;
 
+CREATE CONSTRAINT trazabilidad_accion_exists IF NOT EXISTS
+FOR (t:Trazabilidad)
+REQUIRE t.accion_realizada IS NOT NULL;
+
+CREATE CONSTRAINT trazabilidad_fecha_exists IF NOT EXISTS
+FOR (t:Trazabilidad)
+REQUIRE t.fecha_t IS NOT NULL;
+
+CREATE CONSTRAINT trazabilidad_hora_exists IF NOT EXISTS
+FOR (t:Trazabilidad)
+REQUIRE t.hora_t IS NOT NULL;
+
+CREATE CONSTRAINT trazabilidad_entidad_exists IF NOT EXISTS
+FOR (t:Trazabilidad)
+REQUIRE t.entidad_afectada IS NOT NULL;
 
 // =====================================================
 // 2. CREACION DE DATOS (10–25 REGISTROS POR ENTIDAD)
@@ -244,47 +448,21 @@ CREATE (:Disponibilidad {
 });
 
 // RECURSO_PSICOEDUCATIVO (15)
-// ===============================
-
-WITH [
-{id_recurso:1, titulo:'Comprender trastornos de ansiedad', categoria:'Ansiedad', tipo_recurso:'WEB', autor:'Mayo Clinic', isbn:null, fecha_publicacion:'2025-07-29', descripcion:'Recurso psicoeducativo sobre trastornos de ansiedad.', enlace:'https://www.mayoclinic.org/es/diseases-conditions/anxiety/symptoms-causes/syc-20350961'},
-{id_recurso:2, titulo:'Estrategias para el Manejo del Estrés Académico', categoria:'Estrés', tipo_recurso:'WEB', autor:'MedlinePlus', isbn:null, fecha_publicacion:'2022-03-15', descripcion:'Artículo sobre técnicas para reducir el estrés en estudiantes universitarios.', enlace:'https://medlineplus.gov/spanish/ency/article/003211.htm'},
-{id_recurso:3, titulo:'Depresión: señales y tratamiento psicológico', categoria:'Depresión', tipo_recurso:'YOUTUBE', autor:'PsicoVlog', isbn:null, fecha_publicacion:'2023-01-08', descripcion:'Video educativo sobre síntomas de depresión y alternativas terapéuticas.', enlace:'https://www.youtube.com/watch?v=z-IR48Mb3W0'},
-{id_recurso:4, titulo:'Fortaleciendo la Autoestima en Jóvenes', categoria:'Autoestima', tipo_recurso:'PDF', autor:'Nathaniel Branden', isbn:'9788449324031', fecha_publicacion:'2020-08-20', descripcion:'Libro enfocado en el desarrollo de la autoestima y seguridad personal.', enlace:'https://cdn.bookey.app/files/pdf/book/es/c%C3%B3mo-mejorar-su-autoestima.pdf'},
-{id_recurso:5, titulo:'Cómo Regular las Emociones en Situaciones Difíciles', categoria:'Manejo de emociones', tipo_recurso:'WEB', autor:'Psicología y Mente', isbn:null, fecha_publicacion:'2021-11-02', descripcion:'Artículo sobre regulación emocional y control de impulsos.', enlace:'https://psicologiaymente.com/psicologia/regulacion-emocional'},
-{id_recurso:6, titulo:'El Proceso de Duelo y la Adaptación Emocional', categoria:'Duelo', tipo_recurso:'PDF', autor:'Elisabeth Kübler-Ross', isbn:'9788499081519', fecha_publicacion:'2019-06-12', descripcion:'Guía psicológica sobre las etapas del duelo y la adaptación emocional.', enlace:'https://www.academia.edu/75429219/Sobre_el_duelo_y_el_dolor_Elisabeth_Kubler_Ross'},
-{id_recurso:7, titulo:'Motivación Personal y Cumplimiento de Metas', categoria:'Motivación', tipo_recurso:'YOUTUBE', autor:'TEDx Talks', isbn:null, fecha_publicacion:'2022-07-19', descripcion:'Charla motivacional sobre disciplina y logro de objetivos personales.', enlace:'https://www.youtube.com/watch?v=mgmVOuLgFB0'},
-{id_recurso:8, titulo:'Creación de Hábitos Saludables para la Vida Universitaria', categoria:'Hábitos', tipo_recurso:'PDF', autor:'James Clear', isbn:'9780735211292', fecha_publicacion:'2021-09-14', descripcion:'Artículo basado en hábitos positivos y productividad personal.', enlace:'https://librerialatina.co/wp-content/uploads/2024/04/HABITOS-ATOMICOS-JAMES-CLEAR.pdf'},
-{id_recurso:9, titulo:'Inteligencia Emocional', categoria:'Inteligencia emocional', tipo_recurso:'PDF', autor:'Daniel Goleman', isbn:'9786073167710', fecha_publicacion:'2018-01-01', descripcion:'Libro sobre inteligencia emocional y habilidades sociales.', enlace:'https://clea.edu.mx/biblioteca/files/original/1a11e84af28b90565734784add0bd2dc.pdf'},
-{id_recurso:10, titulo:'Construcción del Proyecto de Vida', categoria:'Proyecto de vida', tipo_recurso:'WEB', autor:'Editorial Etecé', isbn:null, fecha_publicacion:'2025-09-21', descripcion:'Documento educativo para la planificación del futuro académico y personal.', enlace:'https://concepto.de/proyecto-de-vida/'},
-{id_recurso:11, titulo:'Encantado de conocerme', categoria:'Autoconocimiento', tipo_recurso:'WEB', autor:'Borja Vilaseca', isbn:'9788466348898', fecha_publicacion:'2020-12-29', descripcion:'Un título dirigido a personas que sienten una necesidad de cambio personal y/o profesional.', enlace:'https://www.casadellibro.com.co/libro-encantado-de-conocerme-edicion-ampliada/9788466348898/9674824'},
-{id_recurso:12, titulo:'La comunicación asertiva: qué es, técnicas y ejemplos', categoria:'Comunicación asertiva', tipo_recurso:'WEB', autor:'Rosario Linares', isbn:null, fecha_publicacion:'2026-02-17', descripcion:'Articulo sobre comunicación asertiva', enlace:'https://elpradopsicologos.es/blog/comunicacion-asertiva-que-es-tecnicas-ejemplos/'},
-{id_recurso:13, titulo:'Relaciones Familiares Saludables', categoria:'Relaciones familiares', tipo_recurso:'PDF', autor:'Salvador Minuchin', isbn:'9788475090986', fecha_publicacion:'2019-12-03', descripcion:'Libro sobre dinámicas familiares y comunicación en el hogar.', enlace:'https://docs.google.com/file/d/0B08c1LEUictRUFFnTDlTZkFLOEU/view?resourcekey=0-lht1Eq80-ktB2pnqp3XEzw'},
-{id_recurso:14, titulo:'Construyendo Relaciones de Pareja Sanas', categoria:'Relaciones de pareja', tipo_recurso:'WEB', autor:'Psychology Today', isbn:null, fecha_publicacion:'2023-05-16', descripcion:'Artículo sobre vínculos afectivos saludables y resolución de problemas.', enlace:'https://www.psychologytoday.com/us/topics/relationships'},
-{id_recurso:15, titulo:'Técnicas de Resolución de Conflictos', categoria:'Resolución de conflictos', tipo_recurso:'YOUTUBE', autor:'UNICEF', isbn:null, fecha_publicacion:'2020-07-27', descripcion:'Video educativo sobre mediación y resolución pacífica de conflictos.', enlace:'https://www.youtube.com/watch?v=KY5TWVz5ZDU'},
-{id_recurso:16, titulo:'Habilidades Sociales para la Vida Cotidiana', categoria:'Habilidades sociales', tipo_recurso:'PDF', autor:'Vicente Caballo', isbn:'9788436819770', fecha_publicacion:'2021-03-11', descripcion:'Manual práctico sobre desarrollo de habilidades sociales.', enlace:'https://www.academia.edu/24963835/Vicente_E_Caballo_Manual_de_Evaluacion_y_Entrenamiento_de_Las_Habilidades_Sociales'},
-{id_recurso:17, titulo:'Técnicas de Estudio Efectivas', categoria:'Técnicas de estudio', tipo_recurso:'WEB', autor:'UNIBETAS', isbn:null, fecha_publicacion:'2021-09-07', descripcion:'Guía académica sobre métodos de estudio y aprendizaje efectivo.', enlace:'https://unibetas.com/tecnicas-de-estudio/'},
-{id_recurso:18, titulo:'Claves para potenciar la Atención/Concentración', categoria:'Atención y concentración', tipo_recurso:'PDF', autor:'Carlos Caamaño Silva', isbn:'9780061771293', fecha_publicacion:'2020-10-06', descripcion:'Libro sobre concentración, productividad y enfoque mental.', enlace:'https://www.academia.edu/86128522/Cuadernillo_para_potenciar_la_Atenci%C3%B3n_y_Concentraci%C3%B3n'},
-{id_recurso:19, titulo:'Administración del Tiempo para Estudiantes', categoria:'Manejo del tiempo', tipo_recurso:'YOUTUBE', autor:'ProductividadTop', isbn:null, fecha_publicacion:'2021-01-13', descripcion:'Video con estrategias para mejorar la gestión del tiempo.', enlace:'https://www.youtube.com/watch?v=iONDebHX9qk'},
-{id_recurso:20, titulo:'Orientación Vocacional: qué es y para qué sirve', categoria:'Orientación vocacional', tipo_recurso:'PDF', autor:'Grecia Guzmán Martínez', isbn:null, fecha_publicacion:'2018-08-04', descripcion:'Orientación Vocacional: qué es y para qué sirve', enlace:'https://psicologiaymente.com/organizaciones/orientacion-vocacional'},
-{id_recurso:21, titulo:'Educación Inclusiva y Diversidad', categoria:'Educación inclusiva', tipo_recurso:'WEB', autor:'UNESCO', isbn:null, fecha_publicacion:'2022-06-30', descripcion:'Artículo sobre inclusión educativa y diversidad en el aula.', enlace:'https://www.unesco.org/es/education/inclusion'}
-] AS recursos
-
-UNWIND recursos AS recurso
-MERGE (r:Recurso_Psicoeducativo {id_recurso: recurso.id_recurso})
-SET r.titulo = recurso.titulo,
-    r.categoria = recurso.categoria,
-    r.tipo_recurso = recurso.tipo_recurso,
-    r.autor = recurso.autor,
-    r.isbn = recurso.isbn,
-    r.fecha_publicacion = recurso.fecha_publicacion,
-    r.descripcion = recurso.descripcion,
-    r.enlace = recurso.enlace,
-    r.fileName = CASE WHEN recurso.tipo_recurso = 'PDF' THEN recurso.titulo + '.pdf' ELSE null END,
-    r.status = 'Publicado',
-    r.creator = recurso.autor,
-    r.downloads = 10 + recurso.id_recurso,
-    r.updatedAt = datetime();
+UNWIND range(1,15) AS i
+CREATE (:Recurso_Psicoeducativo {
+  id_recurso: i,
+  titulo: "Recurso psicoeducativo " + i,
+  categoria: CASE
+    WHEN i % 3 = 0 THEN "Ansiedad"
+    WHEN i % 3 = 1 THEN "Depresion"
+    ELSE "Estres"
+  END,
+  tipo_recurso: CASE
+    WHEN i % 2 = 0 THEN "Articulo"
+    ELSE "Video"
+  END,
+  fecha_publicacion: "2023-0" + toString(1 + (i % 6)) + "-10"
+});
 
 // ESTADO_EMOCIONAL (25)
 UNWIND range(1,25) AS i
@@ -342,110 +520,93 @@ CREATE (:Asignacion {
 // =====================================================
 
 // 1. SOLICITA  Estudiante — Cita
-MATCH (e:Estudiante)
-MATCH (c:Cita)
+MATCH (e:Estudiante), (c:Cita)
 WHERE e.id_estudiante = c.id_cita
    OR (c.id_cita % 5) = (e.id_estudiante % 5)
 CREATE (e)-[:SOLICITA]->(c);
 
 // 2. ATIENDE  Psicologo — Cita
-MATCH (p:Psicologo)
-MATCH (c:Cita)
+MATCH (p:Psicologo), (c:Cita)
 WHERE (c.id_cita % 10) + 1 = p.id_psicologo
 CREATE (p)-[:ATIENDE]->(c);
 
 // 3. POSEE  Estudiante — Historial_Clinico
-MATCH (e:Estudiante)
-MATCH (h:Historial_Clinico)
+MATCH (e:Estudiante), (h:Historial_Clinico)
 WHERE e.id_estudiante = h.id_historial
 CREATE (e)-[:POSEE]->(h);
 
 // 4. CONTIENE  Historial_Clinico — Nota_Seguimiento
-MATCH (h:Historial_Clinico)
-MATCH (n:Nota_Seguimiento)
+MATCH (h:Historial_Clinico), (n:Nota_Seguimiento)
 WHERE (n.id_nota % 15) + 1 = h.id_historial
 CREATE (h)-[:CONTIENE]->(n);
 
 // 5. REGISTRA  Psicologo — Nota_Seguimiento
-MATCH (p:Psicologo)
-MATCH (n:Nota_Seguimiento)
+MATCH (p:Psicologo), (n:Nota_Seguimiento)
 WHERE (n.id_nota % 10) + 1 = p.id_psicologo
 CREATE (p)-[:REGISTRA]->(n);
 
 // 6. GENERA  Cita — Nota_Seguimiento
-MATCH (c:Cita)
-MATCH (n:Nota_Seguimiento)
+MATCH (c:Cita), (n:Nota_Seguimiento)
 WHERE (n.id_nota % 20) + 1 = c.id_cita
 CREATE (c)-[:GENERA]->(n);
 
 // 7. MODIFICA  Cita — Modificacion_Cita
-MATCH (c:Cita)
-MATCH (m:Modificacion_Cita)
+MATCH (c:Cita), (m:Modificacion_Cita)
 WHERE (m.id_modificacion % 10) + 1 = c.id_cita
 CREATE (c)-[:MODIFICA]->(m);
 
 // 8. TIENE_DISPONIBILIDAD  Psicologo — Disponibilidad
-MATCH (p:Psicologo)
-MATCH (d:Disponibilidad)
+MATCH (p:Psicologo), (d:Disponibilidad)
 WHERE (p.id_psicologo % 8) + 1 = d.id_disponibilidad
 CREATE (p)-[:TIENE_DISPONIBILIDAD]->(d);
 
 // 9. REPORTA  Estudiante — Estado_Emocional
-MATCH (e:Estudiante)
-MATCH (s:Estado_Emocional)
+MATCH (e:Estudiante), (s:Estado_Emocional)
 WHERE (s.id_estado_emocional % 15) + 1 = e.id_estudiante
 CREATE (e)-[:REPORTA]->(s);
 
 // 10. GENERA_ALERTA  Estado_Emocional — Alerta_Emocional
-MATCH (s:Estado_Emocional)
-MATCH (a:Alerta_Emocional)
+MATCH (s:Estado_Emocional), (a:Alerta_Emocional)
 WHERE (a.id_alerta % 25) + 1 = s.id_estado_emocional
 CREATE (s)-[:GENERA_ALERTA]->(a);
 
 // 11. CREA  Psicologo — Recurso_Psicoeducativo
-MATCH (p:Psicologo)
-MATCH (r:Recurso_Psicoeducativo)
+MATCH (p:Psicologo), (r:Recurso_Psicoeducativo)
 WHERE (r.id_recurso % 10) + 1 = p.id_psicologo
 CREATE (p)-[:CREA]->(r);
 
 // 12. TIENE  Administrador — Usuario, Estudiante – Usuario, Psicologo – Usuario
 
 // Admin → usuarios 1–5
-MATCH (ad:Administrador)
-MATCH (u:Usuario)
+MATCH (ad:Administrador), (u:Usuario)
 WHERE u.id_usuario <= 5
   AND ad.id_administrativo = u.id_usuario
 CREATE (ad)-[:TIENE]->(u);
 
 // Estudiante → usuarios 6–15
-MATCH (e:Estudiante)
-MATCH (u:Usuario)
+MATCH (e:Estudiante), (u:Usuario)
 WHERE u.id_usuario >= 6 AND u.id_usuario <= 15
   AND (u.id_usuario - 5) = e.id_estudiante
 CREATE (e)-[:TIENE]->(u);
 
 // Psicologo → usuarios 16–20
-MATCH (p:Psicologo)
-MATCH (u:Usuario)
+MATCH (p:Psicologo), (u:Usuario)
 WHERE u.id_usuario >= 16 AND u.id_usuario <= 20
   AND (u.id_usuario - 15) = p.id_psicologo
 CREATE (p)-[:TIENE]->(u);
 
 // 13. REALIZA  Usuario — Trazabilidad
-MATCH (u:Usuario)
-MATCH (t:Trazabilidad)
+MATCH (u:Usuario), (t:Trazabilidad)
 WHERE (t.id_trazabilidad % 20) + 1 = u.id_usuario
 CREATE (u)-[:REALIZA]->(t);
 
 // 14. ASIGNA  Estudiante — Asignacion
-MATCH (e:Estudiante)
-MATCH (a:Asignacion)
+MATCH (e:Estudiante), (a:Asignacion)
 WHERE (a.id_asignacion % 15) + 1 = e.id_estudiante
 CREATE (e)-[:ASIGNA]->(a);
 
 // 15. CORRESPONDE  Psicologo — Asignacion
-MATCH (p:Psicologo)
-MATCH (a:Asignacion)
+MATCH (p:Psicologo), (a:Asignacion)
 WHERE (a.id_asignacion % 10) + 1 = p.id_psicologo
 CREATE (p)-[:CORRESPONDE]->(a);
 

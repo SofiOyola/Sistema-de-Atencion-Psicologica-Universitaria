@@ -15,6 +15,7 @@ SET r.status = 'Publicado',
     r.updatedAt = datetime()
 
 // Crear relación CREA entre el psicólogo 1 y todos los recursos
-MATCH (p:Psicologo {id_psicologo: 1}), (r:Recurso_Psicoeducativo)
+MATCH (p:Psicologo {id_psicologo: 1})
+MATCH (r:Recurso_Psicoeducativo)
 MERGE (p)-[:CREA]->(r)
 RETURN p.nombre, count(r) AS recursos_asignados;
