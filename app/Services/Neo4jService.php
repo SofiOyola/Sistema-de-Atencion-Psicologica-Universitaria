@@ -27,7 +27,7 @@ class Neo4jService
     {
         $uri      = env('NEO4J_URI', 'bolt://neo4j:7687');
         $user     = env('NEO4J_USERNAME', 'neo4j');
-        $pass     = env('NEO4J_PASSWORD', 'secret1234');
+        $pass     = env('NEO4J_PASSWORD', '');
         $database = env('NEO4J_DATABASE', 'neo4j');
 
         $builder = ClientBuilder::create()

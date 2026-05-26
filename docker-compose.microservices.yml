@@ -1,3 +1,10 @@
+x-laravel-healthcheck: &laravel-healthcheck
+  test: ["CMD-SHELL", "curl -fsS http://localhost:8000/up > /dev/null || exit 1"]
+  interval: 30s
+  timeout: 5s
+  retries: 3
+  start_period: 30s
+
 services:
   gateway:
     image: nginx:1.27-alpine
@@ -12,6 +19,12 @@ services:
       - student-service
       - psychologist-service
       - admin-service
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
 
   frontend:
     build: .
@@ -22,12 +35,13 @@ services:
       ASSET_URL: http://localhost:8080
       SESSION_DRIVER: file
       SAPU_SERVICE: frontend
-      NEO4J_URI: bolt://neo4j:7687
-      NEO4J_USERNAME: neo4j
-      NEO4J_PASSWORD: secret1234
-      NEO4J_DATABASE: neo4j
+      NEO4J_URI: ${NEO4J_URI:-bolt://neo4j:7687}
+      NEO4J_USERNAME: ${NEO4J_USERNAME:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:?Set NEO4J_PASSWORD in .env}
+      NEO4J_DATABASE: ${NEO4J_DATABASE:-neo4j}
     depends_on:
       - neo4j
+    healthcheck: *laravel-healthcheck
 
   auth-service:
     build: .
@@ -36,12 +50,13 @@ services:
       APP_DEBUG: "false"
       SESSION_DRIVER: file
       SAPU_SERVICE: auth
-      NEO4J_URI: bolt://neo4j:7687
-      NEO4J_USERNAME: neo4j
-      NEO4J_PASSWORD: secret1234
-      NEO4J_DATABASE: neo4j
+      NEO4J_URI: ${NEO4J_URI:-bolt://neo4j:7687}
+      NEO4J_USERNAME: ${NEO4J_USERNAME:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:?Set NEO4J_PASSWORD in .env}
+      NEO4J_DATABASE: ${NEO4J_DATABASE:-neo4j}
     depends_on:
       - neo4j
+    healthcheck: *laravel-healthcheck
 
   resources-service:
     build: .
@@ -50,12 +65,13 @@ services:
       APP_DEBUG: "false"
       SESSION_DRIVER: file
       SAPU_SERVICE: resources
-      NEO4J_URI: bolt://neo4j:7687
-      NEO4J_USERNAME: neo4j
-      NEO4J_PASSWORD: secret1234
-      NEO4J_DATABASE: neo4j
+      NEO4J_URI: ${NEO4J_URI:-bolt://neo4j:7687}
+      NEO4J_USERNAME: ${NEO4J_USERNAME:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:?Set NEO4J_PASSWORD in .env}
+      NEO4J_DATABASE: ${NEO4J_DATABASE:-neo4j}
     depends_on:
       - neo4j
+    healthcheck: *laravel-healthcheck
 
   student-service:
     build: .
@@ -64,12 +80,13 @@ services:
       APP_DEBUG: "false"
       SESSION_DRIVER: file
       SAPU_SERVICE: student
-      NEO4J_URI: bolt://neo4j:7687
-      NEO4J_USERNAME: neo4j
-      NEO4J_PASSWORD: secret1234
-      NEO4J_DATABASE: neo4j
+      NEO4J_URI: ${NEO4J_URI:-bolt://neo4j:7687}
+      NEO4J_USERNAME: ${NEO4J_USERNAME:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:?Set NEO4J_PASSWORD in .env}
+      NEO4J_DATABASE: ${NEO4J_DATABASE:-neo4j}
     depends_on:
       - neo4j
+    healthcheck: *laravel-healthcheck
 
   psychologist-service:
     build: .
@@ -78,12 +95,13 @@ services:
       APP_DEBUG: "false"
       SESSION_DRIVER: file
       SAPU_SERVICE: psychologist
-      NEO4J_URI: bolt://neo4j:7687
-      NEO4J_USERNAME: neo4j
-      NEO4J_PASSWORD: secret1234
-      NEO4J_DATABASE: neo4j
+      NEO4J_URI: ${NEO4J_URI:-bolt://neo4j:7687}
+      NEO4J_USERNAME: ${NEO4J_USERNAME:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:?Set NEO4J_PASSWORD in .env}
+      NEO4J_DATABASE: ${NEO4J_DATABASE:-neo4j}
     depends_on:
       - neo4j
+    healthcheck: *laravel-healthcheck
 
   admin-service:
     build: .
@@ -92,12 +110,13 @@ services:
       APP_DEBUG: "false"
       SESSION_DRIVER: file
       SAPU_SERVICE: admin
-      NEO4J_URI: bolt://neo4j:7687
-      NEO4J_USERNAME: neo4j
-      NEO4J_PASSWORD: secret1234
-      NEO4J_DATABASE: neo4j
+      NEO4J_URI: ${NEO4J_URI:-bolt://neo4j:7687}
+      NEO4J_USERNAME: ${NEO4J_USERNAME:-neo4j}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD:?Set NEO4J_PASSWORD in .env}
+      NEO4J_DATABASE: ${NEO4J_DATABASE:-neo4j}
     depends_on:
       - neo4j
+    healthcheck: *laravel-healthcheck
 
   neo4j:
     image: neo4j:5
@@ -105,9 +124,15 @@ services:
       - "7475:7474"
       - "7688:7687"
     environment:
-      - NEO4J_AUTH=neo4j/secret1234
+      - NEO4J_AUTH=${NEO4J_USERNAME:-neo4j}/${NEO4J_PASSWORD:?Set NEO4J_PASSWORD in .env}
     volumes:
       - neo4j_microservices_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:7474 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
 volumes:
   neo4j_microservices_data:

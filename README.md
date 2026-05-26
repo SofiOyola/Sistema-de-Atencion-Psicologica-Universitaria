@@ -1,59 +1,193 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SAPU - Sistema de Atencion Psicologica Universitaria
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Plataforma academica para la gestion de atencion psicologica universitaria, construida con Laravel, React, Vite, Neo4j, Docker y Docker Compose bajo una arquitectura orientada a microservicios.
 
-## About Laravel
+## Integrantes
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Maria Sofia Oyola
+- Lucas Fernando Ardila
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Descripcion
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+SAPU centraliza los procesos principales de acompanamiento psicologico dentro de una universidad. La plataforma permite registrar usuarios, gestionar estudiantes y psicologos, consultar recursos psicoeducativos, programar citas, hacer seguimiento clinico, registrar estados emocionales, generar alertas y consultar informacion administrativa.
 
-## Learning Laravel
+La solucion se ejecuta con un gateway Nginx en `http://localhost:8080`, que redirige las peticiones hacia servicios Laravel separados por dominio. El frontend React se entrega desde el servicio `frontend` y consume APIs relativas como `/api/auth/login`, `/api/resources` y `/api/student/profile/{id}`.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Objetivos
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Facilitar el acceso de estudiantes a servicios de bienestar psicologico.
+- Permitir a psicologos gestionar agenda, pacientes, seguimiento clinico, alertas emocionales y recursos.
+- Proveer al area administrativa herramientas para gestionar estudiantes, psicologos, recursos, reportes y configuracion.
+- Centralizar informacion relacional en Neo4j para representar estudiantes, psicologos, citas, alertas, recursos e historiales clinicos.
+- Desplegar la solucion en contenedores usando Docker Compose.
 
-## Laravel Sponsors
+## Modulos
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Frontend SPA:** interfaz React servida por Laravel/Vite.
+- **Auth Service:** registro, login y logout.
+- **Resources Service:** consulta de recursos psicoeducativos y categorias.
+- **Student Service:** citas, perfil, bienestar emocional y seguimiento del estudiante.
+- **Psychologist Service:** agenda, pacientes, seguimiento clinico, alertas, perfil y recursos del psicologo.
+- **Admin Service:** dashboard administrativo, gestion de estudiantes, psicologos, recursos, reportes y configuracion.
+- **Gateway Nginx:** punto unico de entrada en `localhost:8080`.
+- **Neo4j:** base de datos grafica persistente.
 
-### Premium Partners
+## Requisitos
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- Git
+- Docker Desktop
+- Docker Compose
 
-## Contributing
+## Clonar el proyecto
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd Sistema-de-Atencion-Psicologica-Universitaria
+```
 
-## Code of Conduct
+## Configurar variables de entorno
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Crear el archivo `.env` a partir de `.env.example`:
 
-## Security Vulnerabilities
+```bash
+cp .env.example .env
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Configurar las variables de Neo4j en `.env`:
 
-## License
+```env
+NEO4J_URI=bolt://neo4j:7687
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=tu-password-local
+NEO4J_DATABASE=neo4j
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+El archivo `docker-compose.microservices.yml` no contiene claves reales; lee `NEO4J_PASSWORD` desde `.env`.
+
+## Levantar la solucion
+
+Construir y ejecutar los microservicios:
+
+```bash
+docker compose -p sapu_micro -f docker-compose.microservices.yml up -d --build
+```
+
+Verificar que los contenedores esten activos y saludables:
+
+```bash
+docker compose -p sapu_micro -f docker-compose.microservices.yml ps
+```
+
+Resultado esperado: todos los servicios deben aparecer como `healthy`.
+
+Servicios principales:
+
+- Aplicacion: `http://localhost:8080`
+- Login: `http://localhost:8080/login`
+- Registro: `http://localhost:8080/register`
+- Neo4j Browser: `http://localhost:7475`
+
+## Probar la solucion
+
+Verificar que el frontend responda:
+
+```bash
+curl http://localhost:8080/login
+```
+
+Probar recursos psicoeducativos:
+
+```bash
+curl http://localhost:8080/api/resources
+```
+
+Probar registro:
+
+```bash
+curl -X POST http://localhost:8080/api/auth/register \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"name":"Maria Sofia Oyola Lozano","identification":"123456789","program":"Ingenieria de Sistemas","email":"moyola@unab.edu.co","password":"123456789","password_confirmation":"123456789"}'
+```
+
+Probar login:
+
+```bash
+curl -X POST http://localhost:8080/api/auth/login \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"email":"moyola@unab.edu.co","password":"123456789"}'
+```
+
+Listar rutas de un servicio:
+
+```bash
+docker compose -p sapu_micro -f docker-compose.microservices.yml exec auth-service php artisan route:list --path=api
+```
+
+Consultar logs:
+
+```bash
+docker compose -p sapu_micro -f docker-compose.microservices.yml logs gateway --tail=100
+docker compose -p sapu_micro -f docker-compose.microservices.yml logs auth-service --tail=100
+```
+
+Verificar health checks:
+
+```bash
+docker compose -p sapu_micro -f docker-compose.microservices.yml ps
+```
+
+## Detener la solucion
+
+Detener los contenedores sin borrar volumenes:
+
+```bash
+docker compose -p sapu_micro -f docker-compose.microservices.yml down
+```
+
+Detener y borrar tambien el volumen de Neo4j:
+
+```bash
+docker compose -p sapu_micro -f docker-compose.microservices.yml down -v
+```
+
+Usar `down -v` solo si se desea eliminar los datos persistidos.
+
+## Arquitectura de servicios
+
+El gateway Nginx enruta las peticiones asi:
+
+- `/` hacia `frontend`
+- `/api/auth/` hacia `auth-service`
+- `/api/resources` hacia `resources-service`
+- `/api/student/` hacia `student-service`
+- `/api/psychologist/` hacia `psychologist-service`
+- `/api/admin/` hacia `admin-service`
+
+Cada servicio Laravel se activa con la variable `SAPU_SERVICE`, definida en `docker-compose.microservices.yml`.
+
+## Persistencia
+
+La persistencia se realiza en Neo4j. La base se mantiene en el volumen:
+
+```text
+neo4j_microservices_data
+```
+
+Aunque los servicios estan separados, comparten Neo4j porque el dominio usa relaciones de grafo entre estudiantes, psicologos, citas, alertas, recursos e historiales clinicos.
+
+## Observabilidad
+
+El archivo `docker-compose.microservices.yml` define health checks para:
+
+- Servicios Laravel: `http://localhost:8000/up`
+- Gateway Nginx: `http://127.0.0.1`
+- Neo4j: `http://localhost:7474`
+
+Los logs se revisan con:
+
+```bash
+docker compose -p sapu_micro -f docker-compose.microservices.yml logs <servicio> --tail=100
+```
+
