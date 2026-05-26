@@ -53,7 +53,7 @@ RUN php -r "file_exists('.env') || copy('.env.example', '.env');" && \
     php artisan key:generate --ansi || true
 
 # ── Entrypoint ──
-COPY docker-entrypoint-prod.sh /usr/local/bin/docker-entrypoint.sh
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 8000
